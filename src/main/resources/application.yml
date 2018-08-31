@@ -3,9 +3,21 @@ spring:
     name: form
     
 server:
-  port: 6001
-  
+  #port: 6001
+  port: 6002
+  servlet:
+    context-path: /${spring.application.name}
+
 eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8000/eureka/
+  # 涉及到项目配置有server.servlet.context-path属性的相关处理
+  instance:
+    metadata-map:
+      management:
+        context-path: ${server.servlet.context-path}/actuator
+    health-check-url: http://127.0.0.1:${server.port}${server.servlet.context-path}/actuator/health
+    status-page-url: http://127.0.0.1:${server.port}${server.servlet.context-path}/actuator/info
+    home-page-url: http://127.0.0.1:${server.port}/
+      
