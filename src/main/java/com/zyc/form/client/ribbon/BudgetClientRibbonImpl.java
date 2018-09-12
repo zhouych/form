@@ -1,6 +1,7 @@
 package com.zyc.form.client.ribbon;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,17 +16,18 @@ import com.zyc.form.client.BudgetClient;
 @Service
 public class BudgetClientRibbonImpl implements BudgetClient {
 
-	private static final String API_PATH = "http://BUDGET/budget";
+	@Value("${api.budget.url}")
+	private String apiBudgetUrl;
 
 	@Autowired
 	protected RestTemplate restTemplate;
 	
 	@HystrixCommand(fallbackMethod = "budgetTypesFallback")
 	public String budgetTypes() {
-		return this.restTemplate.getForEntity(API_PATH + "/budgetTypes", String.class).getBody();
+		return this.restTemplate.getForEntity(this.apiBudgetUrl + "/budgetTypes", String.class).getBody();
 	}
 	
 	public String budgetTypesFallback() {
-		return "Error: " + API_PATH;
+		return "Error: " + this.apiBudgetUrl;
 	}
 }

@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "api.budget.url",
+    "type": "java.lang.String",
+    "description": "A description for 'api.budget.url'"
+  }
+]}
