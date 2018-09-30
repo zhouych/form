@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title th:text="${actionText} + '表单域'"></title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+	});
+</script>
+</html>

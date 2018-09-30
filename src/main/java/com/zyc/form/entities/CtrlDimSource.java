@@ -2,6 +2,7 @@ package com.zyc.form.entities;
 
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.aopv.Verifiable;
 import com.zyc.baselibs.entities.BaseEntity;
 
 /**
@@ -9,6 +10,7 @@ import com.zyc.baselibs.entities.BaseEntity;
  * @author zhouyancheng
  *
  */
+@Verifiable
 @DatabaseTable(name = "ctrldimsources")
 public class CtrlDimSource extends BaseEntity {
 

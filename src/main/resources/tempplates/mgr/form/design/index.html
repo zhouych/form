@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>表单格式设计</title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/pygments.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/hierarchy-select.min.css}" ></link>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+		        <div class="btn-group hierarchy-select" data-resize="auto" id="form_tree">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                       	<span class="selected-label pull-left">&nbsp;</span>
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu open">
+                        <div class="hs-searchbox">
+                            <input type="text" class="form-control" autocomplete="off">
+                        </div>
+                        <ul class="dropdown-menu inner" role="menu">
+                        	<li th:each="node:${formTree}" th:attr="data-value=${node.value},data-level=${node.level}">
+                                <a href="#" th:text="${node.text}"></a>
+                        	</li>
+                        </ul>
+                    </div>
+                    <!-- <input class="hidden hidden-field" name="example_one" readonly="readonly" aria-hidden="true" type="text"/> -->
+                </div>
+			</div>
+			<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+				<!-- <div th:replace="/fragments/spread::spread('spread')" /> -->
+			</div>
+		</div>
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-3.3.1.min.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.min.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/hierarchy-select/js/hierarchy-select.js}" ></script>
+<script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
+<script type="text/javascript">
+
+	$(document).ready(function() {
+        $('#form_tree').hierarchySelect({
+            width: 300,
+            emptyNodeValue: zyc.emptyNodeType.OPTIONAL.value,
+            disabledLevels: [ 1 ]
+        });
+        
+		//var spreadContext = spread();
+	});
+</script>
+</html>

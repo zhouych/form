@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<body>
+    <!-- Header -->
+    <div th:fragment="header(title)" th:replace="/fragments/header::header(${title})" />
+    
+    <!-- Footer -->
+    <div th:fragment="footer"  th:replace="/fragments/footer::footer" />
+</body>
+</html>

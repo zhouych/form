@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<body>
+    <!-- Header -->
+    <div th:fragment="header(title)" class="container-fluid text-left">
+        <div>
+            <span th:text="${title}" />
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.zyc.form;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableHystrix
+@MapperScan(basePackages = { "com.zyc.baselibs.dao", "com.zyc.form.dao" })
 public class FormApplication {
 	
 	@Autowired

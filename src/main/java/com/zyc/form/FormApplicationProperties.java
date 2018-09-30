@@ -7,6 +7,6 @@ import com.zyc.baselibs.AbstractSpringBoot2ApplicationProperties;
 
 @PropertySource({ "classpath:application.yml" })
 @Service
-public class ApplicationProperties extends AbstractSpringBoot2ApplicationProperties {
+public class FormApplicationProperties extends AbstractSpringBoot2ApplicationProperties {
 
 }

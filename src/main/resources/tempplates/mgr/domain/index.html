@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>表单域</title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		<div id="toolbar-domains">
+			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}">新增表单域</a>
+		</div>
+		<table id="table-domains">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>编码</th>
+					<th>名称</th>
+					<th>预算控制</th>
+					<th>数据状态</th>
+					<th>创建日期</th>
+					<th>编辑日期</th>
+					<th>版本号</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="domain:${domains}">
+					<td th:text="${domain.id}" ></td>
+					<td th:text="${domain.domaincode}" ></td>
+					<td th:text="${domain.domainname}" ></td>
+					<td th:text="${domain.enabledbudgetctrl}"></td>
+					<td th:text="${domain.datastatus}" ></td>
+					<td th:text="${domain.createdat}" ></td>
+					<td th:text="${domain.updatedat}" ></td>
+					<td th:text="${domain.version}" ></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/table/bootstrap-table.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/table/locale/bootstrap-table-zh-CN.js}" ></script>
+<script type="text/javascript" th:inline="javascript">
+	$(document).ready(function() {
+		var getBstableQueryParams = function() {
+			return {};
+		}
+		
+		$('#table-domains').bootstrapTable({
+			uniqueId: "id",
+			toolbar: '#toolbar-domains',
+			//queryParams: getBstableQueryParams(),
+			striped: true,
+			cache: false,
+			pagination: true,
+			sidePagination: 'client',
+			pageNumber: 1,
+			pageSize: 5,
+			pageList: [5, 10, 20, 50 ],
+			search: true,
+			strictSearch: true,
+			showColumns: true,
+			showRefresh: true,
+			minimumCountColumns: 2,
+			clickToSelect: true,
+			showToggle: false,
+			cardView: false,
+			detailView: false,
+			sortable: true,
+			sortOrder: 'asc'
+		});
+	});
+</script>
+</html>
