@@ -8,17 +8,19 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/pygments.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/hierarchy-select.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+				<input type="hidden" name="currentFormid" th:value="${currentFormid}" />
 		        <div class="btn-group hierarchy-select" data-resize="auto" id="form_tree">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                       	<span class="selected-label pull-left">&nbsp;</span>
+                       	<span class="selected-label pull-left"></span>
                         <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
+                        <!-- <span class="sr-only">Toggle Dropdown</span> -->
                     </button>
                     <div class="dropdown-menu open">
                         <div class="hs-searchbox">
@@ -26,12 +28,12 @@
                         </div>
                         <ul class="dropdown-menu inner" role="menu">
                         	<li th:each="node:${formTree}" th:attr="data-value=${node.value},data-level=${node.level}">
-                                <a href="#" th:text="${node.text}"></a>
+                                <a th:href="@{/mgr/form/design/} + ${node.value}" th:text="${node.text}"></a>
                         	</li>
                         </ul>
                     </div>
-                    <!-- <input class="hidden hidden-field" name="example_one" readonly="readonly" aria-hidden="true" type="text"/> -->
                 </div>
+                <div id="field_tree" />
 			</div>
 			<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 				<!-- <div th:replace="/fragments/spread::spread('spread')" /> -->
@@ -43,16 +45,52 @@
 <script type="text/javascript" th:src="@{/jquery/jquery-3.3.1.min.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.min.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/hierarchy-select/js/hierarchy-select.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
 <script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
-<script type="text/javascript">
-
+<script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
-        $('#form_tree').hierarchySelect({
+		var currentFormid = $('input[name="currentFormid"]').val()
+			, fieldTree = [[${fieldTree}]]
+			, nodeType = zyc.form.fieldTreeNodeType
+			, currSelectedFieldTreeNode = null;
+		
+        var $formTree = $('#form_tree').hierarchySelect({
             width: 300,
             emptyNodeValue: zyc.emptyNodeType.OPTIONAL.value,
-            disabledLevels: [ 1 ]
-        });
+            disabledLevels: [ 1 ],
+            afterNodeClick: function(e) {
+            	var href = $(this).attr('href');
+            	if(!currentFormid || href.indexOf(currentFormid) === -1) {
+                	window.location = window.location.origin + href;	
+            	}
+            }
+        })
+        
+        if(currentFormid) {
+            $formTree.hierarchySelect('setValue', currentFormid);	
+        }
+        
+		var $fieldTree = $('#field_tree').treeview({
+			data: fieldTree,
+			showCheckbox: false, 
+			emptyIcon: 'glyphicon', 
+			onNodeExpanded: function(ctx, node) {
+				//code ...
+			},
+			onNodeSelected: function(ctx, node) {
+				currSelectedFieldTreeNode = node;
+				var currNodeType = node.attrs["nodeType"];
+				if(nodeType.AREA.value === currNodeType) {
+					alert('1');
+				} else if(nodeType.FIELD.value === currNodeType) {
+					alert('2');
+				}
+			},
+			onNodeUnselected: function(ctx, node) {
+				currSelectedFieldTreeNode = null;
+			}
+		});                  
         
 		//var spreadContext = spread();
 	});

@@ -3,7 +3,7 @@ package com.zyc.form.entities;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.BaseEntity;
-import com.zyc.baselibs.entities.NameAndCode;
+import com.zyc.baselibs.entities.Labelable;
 
 /**
  * 表单域
@@ -11,7 +11,7 @@ import com.zyc.baselibs.entities.NameAndCode;
  *
  */
 @DatabaseTable(name = "formdomains")
-public class FormDomain extends BaseEntity implements java.io.Serializable, NameAndCode {
+public class FormDomain extends BaseEntity implements java.io.Serializable, Labelable {
 
 	private static final long serialVersionUID = -6163333646343142660L;
 
@@ -55,7 +55,7 @@ public class FormDomain extends BaseEntity implements java.io.Serializable, Name
 	}
 
 	@Override
-	public String combo() {
+	public String label() {
 		return this.getDomaincode() + " - " + this.getDomainname();
 	}
 }

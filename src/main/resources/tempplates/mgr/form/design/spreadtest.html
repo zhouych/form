@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Spread Test</title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/spread/css/gc.spread.sheets.excel2016colorful.11.2.2.css}"></link>
+</head>
+<body>
+	<div class="container">
+		<div id="sps"></div>
+		<button type="button" class="btn btn-primary clear">清空</button>
+		<button type="button" class="btn btn-primary restore">恢复</button>
+	</div>
+	<script type="text/javascript" th:src="@{/jquery/jquery-3.3.1.min.js}" ></script>
+	<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.min.js}" ></script>
+	<script type="text/javascript" th:src="@{/spread/js/gc.spread.sheets.all.11.2.2.min.js}"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var spread;
+			
+			var initSpread = function() {
+				var sps = document.getElementById("sps");
+				var spreadOptions = {
+					sheetCount: 1
+				};
+				
+				spread = new GC.Spread.Sheets.Workbook(sps, spreadOptions);
+			}
+			
+			var drawSpread = function() {
+				var sheet = spread.getActiveSheet();
+		        
+				//Overflow display is enabled.
+		        sheet.options.allowCellOverflow = false;
+	
+				//Merge cell: y, x, yc, xc
+				sheet.addSpan(1, 0, 2, 3);
+				
+		        sheet.getCell(1, 3).value("Any characters pushed outside the cell width are displayed as overflows.");
+			}
+			
+			initSpread();
+			drawSpread();
+	        
+			var historyJSON;
+			
+			$("button.btn.clear").on("click", function() {
+				historyJSON = JSON.stringify(spread.toJSON());
+				spread.clearSheets();
+			});
+	        
+			$("button.btn.restore").on("click", function() {
+			   	var sheet = new GC.Spread.Sheets.Worksheet('Sheet1');
+				spread.addSheet(0, sheet);
+				spread.fromJSON(JSON.parse(historyJSON));
+			});
+		});
+	</script>
+</body>
+</html>

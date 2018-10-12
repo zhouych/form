@@ -4,7 +4,7 @@ import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.BaseEntity;
-import com.zyc.baselibs.entities.NameAndCode;
+import com.zyc.baselibs.entities.Labelable;
 import com.zyc.form.data.FormType;
 
 /**
@@ -13,20 +13,20 @@ import com.zyc.form.data.FormType;
  *
  */
 @DatabaseTable(name = "forms")
-public class Form extends BaseEntity implements java.io.Serializable, NameAndCode {
+public class Form extends BaseEntity implements java.io.Serializable, Labelable {
 
 	private static final long serialVersionUID = -1527160855494247508L;
 
 	@FieldRule(required = true, externalUneditable = true)
 	private String formdomainid;
 	
-	@FieldRule(required = true, externalUneditable = false)
+	@FieldRule(required = true)
 	private String formname;
 	
 	@FieldRule(required = true, externalUneditable = true)
 	private String formcode;
 
-	@FieldRule(required = true)
+	@FieldRule(required = true, externalUneditable = true)
 	@EnumMapping(enumClazz = FormType.class)
 	private String formtype;
 
@@ -63,7 +63,7 @@ public class Form extends BaseEntity implements java.io.Serializable, NameAndCod
 	}
 
 	@Override
-	public String combo() {
+	public String label() {
 		return this.getFormcode() + " - " + this.getFormname();
 	}
 }

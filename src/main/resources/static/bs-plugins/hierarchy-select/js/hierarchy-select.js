@@ -165,6 +165,10 @@
                     e.stopPropagation();
                 } else {
                     that.setSelected(li);
+                    //扩展节点单击事件
+                    if('function' === typeof that.options.afterNodeClick) {
+                    	that.options.afterNodeClick.apply(this, [e]);
+                    }
                 }
             });
         },
@@ -320,7 +324,10 @@
         hierarchy: true,
         search: true,
         emptyNodeValue: null,
-        disabledLevels: []
+        disabledLevels: [],
+        afterNodeClick: function(e) {
+        	
+        }
     };
     $.fn.hierarchySelect.Constructor = HierarchySelect;
 

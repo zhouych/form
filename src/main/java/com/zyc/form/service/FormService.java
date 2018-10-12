@@ -6,5 +6,7 @@ import com.zyc.form.vo.FormVO;
 
 public interface FormService {
 
-	List<FormVO> selectAll(); 
+	List<FormVO> selectAll();
+	
+	FormVO selectByFormid(String formid);
 }

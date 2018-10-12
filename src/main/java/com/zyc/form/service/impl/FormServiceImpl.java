@@ -17,7 +17,7 @@ import com.zyc.form.vo.FormVO;
 @Service
 public class FormServiceImpl extends AbstractBaseService implements FormService {
 
-	private static final List<FormVO> testData = new ArrayList<FormVO>();
+	public static final List<FormVO> testData = new ArrayList<FormVO>();
 	
 	static {
 		Form form = null;
@@ -45,6 +45,20 @@ public class FormServiceImpl extends AbstractBaseService implements FormService 
 		@SuppressWarnings("unused")
 		List<FormVO> result = null;
 		return result;
+	}
+
+	@Override
+	public FormVO selectByFormid(String formid) {
+		if(true) {
+			for (FormVO vo : testData) {
+				if(vo.getId().equals(formid)) {
+					return vo;
+				}
+			}
+		}
+		
+		FormVO vo = null;
+		return vo;
 	}
 
 }

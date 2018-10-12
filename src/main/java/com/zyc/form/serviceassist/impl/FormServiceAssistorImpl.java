@@ -1,4 +1,4 @@
-package com.zyc.form.webadvisory.impl;
+package com.zyc.form.serviceassist.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,12 @@ import com.zyc.baselibs.web.bootstrap.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.service.FormService;
+import com.zyc.form.serviceassist.FormServiceAssistor;
 import com.zyc.form.vo.FormDomainVO;
 import com.zyc.form.vo.FormVO;
-import com.zyc.form.webadvisory.FormIndustryAdvisor;
 
 @Service
-public class FormIndustryAdvisorImpl implements FormIndustryAdvisor {
+public class FormServiceAssistorImpl implements FormServiceAssistor {
 
 	@Autowired
 	private FormDomainService domainService;
@@ -36,11 +36,11 @@ public class FormIndustryAdvisorImpl implements FormIndustryAdvisor {
 
 		List<HierarchySelectNode> data = new ArrayList<HierarchySelectNode>();
 		for (FormDomainVO domain : domains) {
-			data.add(new HierarchySelectNode(domain.getId(), 1, domain.combo()));
+			data.add(new HierarchySelectNode(domain.getId(), 1, domain.label()));
 			if(CollectionUtils.hasElement(forms)) {
 				for (FormVO form : forms) {
 					if(domain.getId().equals(form.getFormdomainid())) {
-						data.add(new HierarchySelectNode(form.getId(), 2, form.combo()));
+						data.add(new HierarchySelectNode(form.getId(), 2, form.label()));
 						removes.add(form);
 					}
 				}
