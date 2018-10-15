@@ -30,4 +30,11 @@ public class FormDomainVO extends FormDomain {
 	public void setCtrlDimSources(List<CtrlDimSource> ctrlDimSources) {
 		this.ctrlDimSources = ctrlDimSources;
 	}
+	
+	public static FormDomainVO newInstance() {
+		FormDomainVO vo = new FormDomainVO();
+		vo.init();
+		vo.generateId();
+		return vo;
+	}
 }

@@ -1,6 +1,10 @@
 spring:
   application:
     name: form
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
   thymeleaf:
     prefix: classpath:/tempplates
     suffix: .html

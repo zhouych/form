@@ -41,7 +41,7 @@ public class AreaFieldServiceImpl extends AbstractBaseService implements AreaFie
 				mf.setId(UUID.randomUUID().toString());
 				mf.setFormarea(test_Areas[i % 6].getValue());
 				mf.setFieldvalue(StringUtils.randomAlphabets(5));
-				mf.setFieldname(mf.getFieldname());
+				mf.setFieldname(mf.getFieldvalue());
 				mfvo = new MetaFieldVO(mf);
 				test_MetaField.add(mfvo);
 				

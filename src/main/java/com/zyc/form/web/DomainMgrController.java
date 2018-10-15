@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.mysql.MysqlScriptComponent;
 import com.zyc.baselibs.web.ClientAction;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.vo.FormDomainVO;
@@ -23,6 +25,9 @@ public class DomainMgrController extends BaseFormController {
 	@Autowired
 	private FormDomainService formDomainService;
 	
+	@Autowired
+	private MysqlScriptComponent mysqlScriptComponent;
+	
     @RequestMapping(value = mgrPath, method = RequestMethod.GET)
 	public String index(Model model) {
     	model.addAttribute("domains", this.formDomainService.selectAll());
@@ -31,8 +36,13 @@ public class DomainMgrController extends BaseFormController {
 
     @RequestMapping(value = mgrPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
-    	model.addAttribute("action", ClientAction.ADD.getValue());
-    	model.addAttribute("actionText", ClientAction.ADD.getText());
+    	this.handleDetailRequest(model, ClientAction.ADD, null);
+    	List<String> sqlscripts = mysqlScriptComponent.entity2tableSqlScripts("com.zyc.form.entities");
+    	if(sqlscripts != null && !sqlscripts.isEmpty()) {
+    		for (String sqlscript : sqlscripts) {
+				System.out.println(sqlscript);
+			}
+    	}
     	return mgrPath + "/detail";
     }
 
@@ -43,9 +53,23 @@ public class DomainMgrController extends BaseFormController {
 
     @RequestMapping(value = mgrPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
-    	model.addAttribute("action", ClientAction.EDIT.getValue());
-    	model.addAttribute("actionText", ClientAction.EDIT.getText());
-    	model.addAttribute("domain", this.formDomainService.selectByFormDomainId(formdomainid));
+    	this.handleDetailRequest(model, ClientAction.EDIT, formdomainid);
+    	return mgrPath + "/detail";
+    }
+    
+    private String handleDetailRequest(Model model, ClientAction action, String formdomainid) {
+    	model.addAttribute("action", action.getValue());
+    	model.addAttribute("actionText", action.getText());
+    	model.addAttribute("allDataStatus", DataStatus.toList());
+    	
+    	FormDomainVO domain = null;
+    	if(action == ClientAction.ADD) {
+    		domain = FormDomainVO.newInstance();
+    	} else if(action == ClientAction.EDIT) {
+    		domain = this.formDomainService.selectByFormDomainId(formdomainid);
+    	}
+    	model.addAttribute("domain", domain);
+    	
     	return mgrPath + "/detail";
     }
 

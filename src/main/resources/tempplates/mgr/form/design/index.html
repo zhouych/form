@@ -33,7 +33,7 @@
                         </ul>
                     </div>
                 </div>
-                <div id="field_tree" />
+                <div id="area_field_tree" />
 			</div>
 			<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 				<!-- <div th:replace="/fragments/spread::spread('spread')" /> -->
@@ -51,7 +51,7 @@
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		var currentFormid = $('input[name="currentFormid"]').val()
-			, fieldTree = [[${fieldTree}]]
+			, fieldTree = [[${areaFieldTree}]]
 			, nodeType = zyc.form.fieldTreeNodeType
 			, currSelectedFieldTreeNode = null;
 		
@@ -71,7 +71,7 @@
             $formTree.hierarchySelect('setValue', currentFormid);	
         }
         
-		var $fieldTree = $('#field_tree').treeview({
+		var $areaFieldTree = $('#area_field_tree').treeview({
 			data: fieldTree,
 			showCheckbox: false, 
 			emptyIcon: 'glyphicon', 
@@ -82,9 +82,9 @@
 				currSelectedFieldTreeNode = node;
 				var currNodeType = node.attrs["nodeType"];
 				if(nodeType.AREA.value === currNodeType) {
-					alert('1');
+					//
 				} else if(nodeType.FIELD.value === currNodeType) {
-					alert('2');
+					//
 				}
 			},
 			onNodeUnselected: function(ctx, node) {

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.zyc.baselibs.SpringContextHolder;
 import com.zyc.baselibs.aopv.ParamVerificationAspect;
 import com.zyc.baselibs.aopv.VerificationRulerContainer;
+import com.zyc.baselibs.mysql.MysqlScriptComponent;
 
 @Configuration
 public class FormApplicationConfiguration {
@@ -31,5 +32,10 @@ public class FormApplicationConfiguration {
 	@Bean
 	public VerificationRulerContainer verificationRulerContainer() {
 		return new VerificationRulerContainer();
+	}
+
+	@Bean
+	public MysqlScriptComponent MysqlScriptComponent() {
+		return new MysqlScriptComponent();
 	}
 }

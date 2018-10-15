@@ -3,21 +3,114 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title th:text="${actionText} + '表单域'"></title>
-<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
-<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
+<style type="text/css">
+	.bottom-btns {
+		text-align: center;
+	}
+	
+	.bottom-btns > button {
+		margin-right: 20px;
+	}
+</style>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
-		
+		<form id="domain-detail" class="form form-horizontal" method="post" th:action="@{/mgr/domain/} + ${action}">
+			<input type="hidden" name="action" /> 
+			<input type="hidden" name="id" th:value="${domain.id}" />
+			<div class="container-fluid">
+				<div class="row page-header">
+				  	<h4>basic info</h4>
+				</div>
+				<div class="row form-group">
+					<!-- *********** Form Domain 'domainname' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="domainname">Name</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				      	<input type="text" class="form-control" id="domainname" name="domainname" placeholder="Name" th:value="${domain.domainname}" />
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+					<!-- *********** Form Domain 'domaincode' *********** -->
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="domaincode">Code</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				      	<input type="text" class="form-control" id="domaincode" name="domaincode" placeholder="Code" th:value="${domain.domaincode}" />
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row form-group">
+					<!-- Form Domain 'enabledbudgetctrl' -->
+					<div class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-10 col-lg-10">
+				      	<div class="checkbox">
+				        	<label>
+				          		<input type="checkbox" id="enabledbudgetctrl" name="enabledbudgetctrl"> Enable Budget Control
+				        	</label>
+				      	</div>
+				    </div>
+				</div>
+				<div class="row form-group">
+					<!-- *********** Form Domain 'description' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="description">Description</label>
+				    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+				      	<input type="text" class="form-control" id="description" name="description" placeholder="Description" th:value="${domain.description}" />
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row page-header">
+				  	<h4>data tag</h4>
+				</div>
+				<div class="row form-group">
+					<!-- *********** Form Domain 'datastatus' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="datastatus">Data Status</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+						<select class="form-control" id="datastatus" name="datastatus">
+							<option th:each="ds:${allDataStatus}" th:value="${ds.value}" th:text="${ds.text}"></option>
+						</select>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+					<!-- *********** Form Domain 'version' *********** -->
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="version">Version</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				      	<input type="text" class="form-control" id="version" name="version" placeholder="Version" th:value="${domain.version}" readonly="readonly" />
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row form-group">
+					<!-- *********** Form Domain 'createdat' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="createdat">Created At</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+						<input type="hidden" id="createdat" name="createdat" th:value="${domain.createdat}" /> 
+						<input type="text" class="form-control date-show" readonly="readonly" />
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+					<!-- *********** Form Domain 'updatedat' *********** -->
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="updatedat">Updated At</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+						<input type="hidden" name="updatedat" value="${domain.updatedat}" />
+						<input type="text" class="form-control date-show" readonly="readonly" />
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row page-header">
+				  	<h4></h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns">
+						<button type="button" class="btn btn-default cancel">Cancel</button>
+						<button type="submit" class="btn btn-primary save">Save</button>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 	<div th:replace="/fragments/layout::footer" />
 </body>
-<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}" ></script>
-<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}"></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		
+
 	});
 </script>
 </html>

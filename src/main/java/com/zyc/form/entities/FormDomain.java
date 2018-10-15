@@ -17,10 +17,15 @@ public class FormDomain extends BaseEntity implements java.io.Serializable, Labe
 
 	@FieldRule(required = true, externalUneditable = false)
 	private String domainname;
+	
 	@FieldRule(required = true, externalUneditable = true)
 	private String domaincode;
+	
 	@FieldRule(required = true, externalUneditable = true)
 	private Boolean enabledbudgetctrl;
+
+	@FieldRule(required = false)
+	private String description;
 
 	public String getDomainname() {
 		return domainname;
@@ -44,6 +49,14 @@ public class FormDomain extends BaseEntity implements java.io.Serializable, Labe
 
 	public void setEnabledbudgetctrl(Boolean enabledbudgetctrl) {
 		this.enabledbudgetctrl = enabledbudgetctrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	@Override

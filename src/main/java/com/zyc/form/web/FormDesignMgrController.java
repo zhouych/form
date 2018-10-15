@@ -39,7 +39,7 @@ public class FormDesignMgrController {
     	boolean hasFormid = StringUtils.isNotBlank(formid);
     	model.addAttribute("currentFormid", hasFormid ? formid : "");
     	model.addAttribute("formTree", this.formServiceAssistor.composeFormTree(EmptyNodeType.OPTIONAL));
-    	model.addAttribute("fieldTree", hasFormid ? this.areaFieldServiceAssistor.composeAreaFieldTree(formid, null) : null);
+    	model.addAttribute("areaFieldTree", hasFormid ? this.areaFieldServiceAssistor.composeAreaFieldTree(formid, null) : null);
     }
 
     @RequestMapping(value = commonPath + "/spreadtest", method = RequestMethod.GET)
