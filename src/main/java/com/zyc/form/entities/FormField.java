@@ -1,5 +1,8 @@
 package com.zyc.form.entities;
 
+import java.sql.JDBCType;
+
+import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.Labelable;
@@ -15,9 +18,11 @@ public class FormField extends AbstractField implements java.io.Serializable, La
 	private static final long serialVersionUID = -433929870224425673L;
 
 	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
 	private String formid;
 	
 	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
 	private String metafieldid;
 	 
 	public String getFormid() {

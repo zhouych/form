@@ -1,19 +1,23 @@
 package com.zyc.form.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.zyc.baselibs.db.mysql.MysqlScriptComponent;
 import com.zyc.baselibs.entities.DataStatus;
-import com.zyc.baselibs.mysql.MysqlScriptComponent;
 import com.zyc.baselibs.web.ClientAction;
+import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.vo.FormDomainVO;
 
@@ -37,18 +41,21 @@ public class DomainMgrController extends BaseFormController {
     @RequestMapping(value = mgrPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
     	this.handleDetailRequest(model, ClientAction.ADD, null);
+    	
     	List<String> sqlscripts = mysqlScriptComponent.entity2tableSqlScripts("com.zyc.form.entities");
     	if(sqlscripts != null && !sqlscripts.isEmpty()) {
     		for (String sqlscript : sqlscripts) {
 				System.out.println(sqlscript);
 			}
     	}
+    	
     	return mgrPath + "/detail";
     }
 
     @RequestMapping(value = mgrPath + "/add", method = RequestMethod.POST)
-    public String add(FormDomainVO domain) {
-    	return null;
+    public String add(Model model, @ModelAttribute("domain") FormDomainVO domain) {
+    	
+    	return mgrPath + "/detail";
     }
 
     @RequestMapping(value = mgrPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
@@ -68,6 +75,16 @@ public class DomainMgrController extends BaseFormController {
     	} else if(action == ClientAction.EDIT) {
     		domain = this.formDomainService.selectByFormDomainId(formdomainid);
     	}
+    	
+    	domain.setCtrlDimSources(new ArrayList<CtrlDimSource>());
+    	CtrlDimSource cds = new CtrlDimSource();
+		BeanUtils.copyProperties(this.mdataClient.budgetCtrlDimensions().get(0), cds);
+		cds.setExpression("+@2(" + cds.getDimcode() + ");");
+		cds.setExpressiontext("包含@成员及后代（" + cds.getDimcode() + "）");
+    	domain.getCtrlDimSources().add(cds);
+    	
+    	domain.setCtrlDimUIOptionVos(this.mdataClient.budgetCtrlDimensions());
+    	
     	model.addAttribute("domain", domain);
     	
     	return mgrPath + "/detail";

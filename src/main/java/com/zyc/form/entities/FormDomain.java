@@ -1,8 +1,11 @@
 package com.zyc.form.entities;
 
+import java.sql.JDBCType;
+
+import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
-import com.zyc.baselibs.entities.BaseEntity;
+import com.zyc.baselibs.entities.DescriptionBaseEntity;
 import com.zyc.baselibs.entities.Labelable;
 
 /**
@@ -11,21 +14,21 @@ import com.zyc.baselibs.entities.Labelable;
  *
  */
 @DatabaseTable(name = "formdomains")
-public class FormDomain extends BaseEntity implements java.io.Serializable, Labelable {
+public class FormDomain extends DescriptionBaseEntity implements java.io.Serializable, Labelable {
 
 	private static final long serialVersionUID = -6163333646343142660L;
 
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
 	private String domainname;
 	
 	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 32)
 	private String domaincode;
 	
 	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
 	private Boolean enabledbudgetctrl;
-
-	@FieldRule(required = false)
-	private String description;
 
 	public String getDomainname() {
 		return domainname;
@@ -50,20 +53,13 @@ public class FormDomain extends BaseEntity implements java.io.Serializable, Labe
 	public void setEnabledbudgetctrl(Boolean enabledbudgetctrl) {
 		this.enabledbudgetctrl = enabledbudgetctrl;
 	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	
 	@Override
 	public FormDomain clean() {
 		super.clean();
 		this.domainname = null;
 		this.domaincode = null;
+		this.enabledbudgetctrl = null;
 		return this;
 	}
 

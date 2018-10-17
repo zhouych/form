@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title th:text="${actionText} + '表单域'"></title>
+<link type="text/css" rel="stylesheet"
+	th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
+<link type="text/css" rel="stylesheet"
+	th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
+<style type="text/css">
+.bottom-btns {
+	text-align: center;
+}
+
+.bottom-btns>button {
+	margin-right: 20px;
+}
+</style>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		<form class="layui-form x-center" th:action="@{/param/save2}" style="width: 80%">
+			<div class="layui-tab-content" style="height: 100px;">
+				<div class="layui-tab-item layui-show">
+					<table class="layui-table" id="t_customerInfo">
+						<thead>
+							<tr id="constant">
+								<th>名称</th>
+								<th>变量</th>
+								<th>值</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!--<th:block th:each="mylist,iterStat:${list}">-->
+							<tr th:each="setting, iterStat : ${setting}" id="tr">
+								<td th:text="${setting.name}"></td>
+								<td th:text="${setting.paramkey}"></td>
+								<td><input th:type="text" th:value="${setting.paramvalue}" th:name="'setting[\'' + ${iterStat.index} + '\']'" /></td>
+								<input th:type="hidden" th:value="${setting.paramkey}" th:name="'key[\'' + ${iterStat.index} + '\']'" />
+							</tr>
+						</tbody>
+					</table>
+					<button class="layui-btn" lay-submit="" lay-filter="sreach"
+						id="but">
+						<i class="layui-icon">保存</i>
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}"></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+	});
+</script>
+</html>

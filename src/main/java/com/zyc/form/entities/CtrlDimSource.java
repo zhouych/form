@@ -1,5 +1,8 @@
 package com.zyc.form.entities;
 
+import java.sql.JDBCType;
+
+import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.aopv.Verifiable;
@@ -15,16 +18,22 @@ import com.zyc.baselibs.entities.BaseEntity;
 public class CtrlDimSource extends BaseEntity {
 
 	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
 	private String formdomainid;
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
 	private String dimid;
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
 	private String dimname;
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
 	private String dimcode;
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 1024)
 	private String expression;
 	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 2048)
 	private String expressiontext;
 	
 	public String getFormdomainid() {

@@ -5,6 +5,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 import com.zyc.baselibs.web.BaseController;
 import com.zyc.form.client.BudgetClient;
+import com.zyc.form.client.MdataClient;
 
 public abstract class BaseFormController extends BaseController {
 
@@ -13,4 +14,7 @@ public abstract class BaseFormController extends BaseController {
 	
 	@Autowired
 	protected BudgetClient budgetClient;
+	
+	@Autowired
+	protected MdataClient mdataClient; 
 }
