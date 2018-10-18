@@ -1754,7 +1754,7 @@
           getPlacement = function ($element) {
             var containerPosition = {},
                 // fall back to dropdown's default display setting if display is not manually set
-                display = that.options.display || $.fn.dropdown.Constructor.Default.display;
+                display = that.options.display || ($.fn.dropdown.Constructor.Default && $.fn.dropdown.Constructor.Default.display);
 
             that.$bsContainer.addClass($element.attr('class').replace(/form-control|fit-width/gi, '')).toggleClass(classNames.DROPUP, $element.hasClass(classNames.DROPUP));
             pos = $element.offset();

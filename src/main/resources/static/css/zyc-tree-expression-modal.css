@@ -1,0 +1,41 @@
+/* ========================================================================
+ * 用于构建树形表达式的模态框的样式: zyc-tree-expression-modal.css
+ * ========================================================================
+ * Author: ZhouYancheng
+ * Created at: 2018-10
+ * ======================================================================== */
+ 
+ .zyc-tem .page-header {
+ 	margin: 0px;
+ 	margin-bottom: 10px;
+ 	padding: 10px;
+ 	text-align: left;
+ 	background-color: #f5f5f5;
+ }
+ 
+ .zyc-tem .page-header h5 {
+ 	font-weight: bold;
+ 	margin: 0px;
+ }
+ 
+ .isolate {
+ 	margin: 10px 0px;
+ }
+ 
+ .middle {
+ 	text-align: center;
+ }
+ 
+ .middle button {
+ 	width: 100px;
+ }
+ /* 
+ .right .list-group-item {
+ 	border: none;
+ }
+ 
+ .right .list-group-item:last-child {
+ 	border-bottom-right-radius: 0px;
+ 	border-bottom-left-radius: 0px;
+ 	border: none;
+ } */

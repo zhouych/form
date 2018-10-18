@@ -7,6 +7,37 @@
 
 +function ($) {
 	'use strict';
+	
+	//TreeExpressionModal data
+	var expressionStructure = {
+		operate: {
+			value: '',
+			text: ''
+		},
+		relation: {
+			value: '',
+			text: ''
+		}
+	};
+
+	//fill TreeExpressionModal data
+	var fillExpressionStructure = function(structure) {
+		expressionStructure = $.extend(true, expressionStructure, structure);
+	}
+	
+	//get TreeExpressionModal data
+	var getExpressionStructure = function() {
+		return expressionStructure;
+	}
+	
+	//@options: Example: [{ value: '', text: '' }]
+	var buildSelectOptionHtmls = function(options) {
+		var htmls = [];
+		for(var i = 0; i < options.length; i++) {
+			htmls.push('<option value="' + options[i].value + '">' + options[i].text + '</option>');
+		}
+		return htmls;
+	}
 		
 	// TreeExpressionModal Class Definition
 	var TreeExpressionModal = function (container, options) {
@@ -29,9 +60,22 @@
 		button: {
 			close: { text: '<span aria-hidden="true">&times;</span>', show: true },
 			save: { text: 'Save', show: true },
-			cancel: { text: 'Cancel', show: true }
+			cancel: { text: 'Cancel', show: true },
+			setup: { text: 'Set up', show: true },
+			remove: { text: 'Remove', show: true },
+			removeall: { text: 'Remove all', show: true }
 		},
 		show: true,
+		leftTitle: '数据源',
+		middleTitle: '操作',
+		rightTitle: '结果集',
+		leftSourceData: [],
+		leftSourceLoadingIcon: 'fa fa-hourglass',
+		leftSourceLazyLoadUrl: null,
+		leftSourceGetLazyLoadParentId: function(node) {
+			alert('参数选项leftSourceGetLazyLoadParentId函数未定义。');
+		}
+		operateOptions: [],
 		relationOptions: [],
 		modalOptions: {
 		    backdrop: true,
@@ -40,21 +84,11 @@
 		}
 	}
 	
-	TreeExpressionModal.prototype.fillData = function(_data) {
-		this.data = $.extend(true, this.data, _data);
-	}
-	
 	TreeExpressionModal.prototype.init = function () {
-		var that = this;
-		
-		var relationHtmls = [], temp;
-		for (var i = 0; i < this.options.relationOptions.length; i++) {
-			temp = this.options.relationOptions[i];
-			relationHtmls.push('<option value="' + temp.value + '">' + temp.text + '</option>');
-		}
+		var that = this, temp;
 		
 		var modal = 
-		'<div class="modal fade bs-example-modal-lg" id="' + this.options.id + '" tabindex="-1" role="dialog" aria-labelledby="' + this.options.id + '_label">' +
+		'<div class="modal fade bs-example-modal-lg zyc-tem" id="' + this.options.id + '" tabindex="-1" role="dialog" aria-labelledby="' + this.options.id + '_label">' +
 			'<div class="modal-dialog modal-lg" role="document">' +
 		    	'<div class="modal-content container-fluid">' +
 		      		'<div class="modal-header">' +
@@ -62,17 +96,49 @@
 		        		'<h4 class="modal-title" id="' + this.options.id + '_label">' + this.options.title + '</h4>' +
 		      		'</div>' +
 		      		'<div class="modal-body row">' +
-		      			'<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">' + 
-	      					'...' +
+		      			'<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 left">' + 
+			      			'<div class="page-header">' +
+				      		  	'<h5>' + this.options.leftTitle + '</h5>' +
+				      		'</div>' +
+			      			'<div>' +
+			      		  		'<div class="tree-source" />' +
+				      		'</div>' +
 		      			'</div>' +
-		      			'<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">' + 
-		      				'...' +
-		      				'<select class="selectpicker">' +
-		      					relationHtmls.join('') +
-			      			'</select>' +
+		      			'<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 middle">' +
+			      			'<div class="page-header">' +
+				      		  	'<h5>' + this.options.middleTitle + '</h5>' +
+				      		'</div>' +
+			      			'<div>' +
+		      					'<select class="selectpicker operate" data-bind-type="operate">' +
+		      						buildSelectOptionHtmls(this.options.operateOptions).join('') +
+				      			'</select>' +
+				      			'<div class="isolate"></div>' +
+			      				'<select class="selectpicker relation" data-bind-type="relation">' +
+			      					buildSelectOptionHtmls(this.options.relationOptions).join('') +
+				      			'</select>' +
+				      			'<div class="isolate"></div>' +
+				      			'<button type="button" class="btn btn-default setup">' + this.options.button.setup.text + '</button>' + 
+				      			'<div class="isolate"></div>' +
+				      			'<button type="button" class="btn btn-default remove">' + this.options.button.remove.text + '</button>' + 
+				      			'<div class="isolate"></div>' +
+				      			'<button type="button" class="btn btn-default removeall">' + this.options.button.removeall.text + '</button>' + 
+				      		'</div>' +
 		      			'</div>' +
-		      			'<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">' + 
-	      					'...' +
+		      			'<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 right">' + 
+			      			'<div class="page-header">' +
+				      		  	'<h5>' + this.options.rightTitle + '</h5>' +
+				      		'</div>' +
+			      			'<div>' +
+				      		  	'<div class="list-group result">' +
+				      		  		'<a href="#" class="list-group-item">Cras justo odio</a>' +
+				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis in</a>' +
+				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
+				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis in</a>' +
+				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
+				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis inDapibus ac facilisis inDapibus ac facilisis in</a>' +
+				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
+				      		  	'</div>' +
+				      		'</div>' +
 		      			'</div>' +
 		      		'</div>' +
 		      		'<div class="modal-footer">' +
@@ -85,16 +151,51 @@
 		
 		this.$modal = $(modal).appendTo(this.$container);
 		
-		var $relationSelect = $('.selectpicker').selectpicker();
-		$relationSelect.on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-			alert(that.data.relation.value + ';' + that.data.relation.text);
-			that.fillData({ 
-				relation: { 
-					value: $relationSelect.val(), 
-					text: $('div.filter-option-inner-inner').text() 
-				} 
+		var _lazyLoad = function(node, func) {
+			$.ajax({
+			    type: 'get',
+			    url: that.options.leftSourceLazyLoadUrl,
+			    data: { parentId: that.options.leftSourceGetLazyLoadParentId(node) },
+			    success: function(data) {
+			    	func(data);
+			    },
+			    error: function(err) {
+			    	alert('error');
+			    }
 			});
-			alert(that.data.relation.value + ';' + that.data.relation.text);
+		}
+		
+		var $treeSource = $('.left .tree-source').treeview({
+			data: that.options.leftSourceData,
+			loadingIcon: that.options.leftSourceLoadingIcon,
+			lazyLoad: _lazyLoad,
+			showCheckbox: false, 
+			emptyIcon: 'glyphicon', 
+			onNodeExpanded: function(ctx, node) {
+				//code ...
+			},
+			onNodeSelected: function(ctx, node) {
+				//code ...
+			},
+			onNodeUnselected: function(ctx, node) {
+				//code ...
+			}
+		});  
+		
+		$('.selectpicker.operate, .selectpicker.relation').selectpicker({
+			width: 'auto'
+		}).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+			var $target = $(e.target || e)
+				, type = $target.attr('data-bind-type')
+				, value = $target.val() || ''
+				, struct = {};
+			
+			struct[type] = {
+				value: value, 
+				text: value ? $('.bootstrap-select.' + type + ' div.filter-option-inner-inner').text() : '' 
+			};
+				
+			fillExpressionStructure(struct);
 		});
 		
 		for(var key in this.options.button) {

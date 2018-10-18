@@ -6,6 +6,8 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/css/zyc-tree-expression-modal.css}"></link>
 <style type="text/css">
 	.bottom-btns {
 		text-align: center;
@@ -130,6 +132,7 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/bootstrap-select.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
+<script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
 <script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
 <script type="text/javascript" th:src="@{/js/zyc-tree-expression-modal.js}"></script>
@@ -138,18 +141,21 @@
 		//var ctrlDimSources = [[${domain.ctrlDimSources}]];
 		//alert(ctrlDimSources.length);
 		
-		var relation = [], temp;
-		for(var key in zyc.memberRelation) {
-			temp = zyc.memberRelation[key];
-			relation.push({ value: temp.value, text: temp.text });
-		}
-		
+		var _operateOptions = zyc.entryBeans(zyc.inexOperate)
+			, _relationOptions = zyc.entryBeans(zyc.memberRelation);
 		
 		$('span.dim-source-set.hand').off('click').on('click', function(e) {
 			if(!$(this).attr('disabled')) {
 				$(document.body).treeexpressionmodal({
 					id: 'dim_source_set_modal_' + $(this).attr('data-bind-index'),
-					relationOptions: relation
+					title: 'Budget Control Dimension Data Source Settings',
+					operateOptions: _operateOptions,
+					relationOptions: _relationOptions,
+					leftSourceData: [],
+					leftSourceLazyLoadUrl: '',
+					leftSourceGetLazyLoadParentId: function(node) {
+						return '';
+					}
 				});
 			}
 		});
