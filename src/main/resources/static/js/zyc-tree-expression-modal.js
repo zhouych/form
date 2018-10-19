@@ -69,10 +69,9 @@
 		leftTitle: '数据源',
 		middleTitle: '操作',
 		rightTitle: '结果集',
-		leftSourceData: [],
 		leftSourceLoadingIcon: 'fa fa-hourglass',
-		leftSourceLazyLoadUrl: null,
-		leftSourceGetLazyLoadParentId: function(node) {
+		leftSourceLoadDataUrl: null,
+		leftSourceGetLoadParentId: function(node) {
 			alert('参数选项leftSourceGetLazyLoadParentId函数未定义。');
 		}
 		operateOptions: [],
@@ -151,24 +150,41 @@
 		
 		this.$modal = $(modal).appendTo(this.$container);
 		
-		var _lazyLoad = function(node, func) {
+		var _loadData = function(node, func, async) {
+			var _async = 'undefined' === typeof async ? true : async
+				, result = null;
+			
 			$.ajax({
 			    type: 'get',
-			    url: that.options.leftSourceLazyLoadUrl,
-			    data: { parentId: that.options.leftSourceGetLazyLoadParentId(node) },
-			    success: function(data) {
-			    	func(data);
+			    url: that.options.leftSourceLoadDataUrl,
+			    data: { 
+			    	parentId: node && hat.options.leftSourceGetLoadParentId(node) || '' 
+			    },
+				async: _async,
+			    success: function(response) {
+			    	if(response.status === '0') {
+			    		result = response.data;
+			    		if(typeof func === 'function' && func) {
+			    			func(result);
+			    		}
+			    	} else {
+				    	alert(response.status + ': ' + (response.message || ''));
+			    	}
 			    },
 			    error: function(err) {
 			    	alert('error');
 			    }
 			});
+			
+			if(!_async) {
+				return result;
+			}
 		}
 		
 		var $treeSource = $('.left .tree-source').treeview({
-			data: that.options.leftSourceData,
+			data: _loadData(null, null, false),
 			loadingIcon: that.options.leftSourceLoadingIcon,
-			lazyLoad: _lazyLoad,
+			lazyLoad: _loadData,
 			showCheckbox: false, 
 			emptyIcon: 'glyphicon', 
 			onNodeExpanded: function(ctx, node) {

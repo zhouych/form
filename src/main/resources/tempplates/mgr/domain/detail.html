@@ -151,9 +151,8 @@
 					title: 'Budget Control Dimension Data Source Settings',
 					operateOptions: _operateOptions,
 					relationOptions: _relationOptions,
-					leftSourceData: [],
-					leftSourceLazyLoadUrl: '',
-					leftSourceGetLazyLoadParentId: function(node) {
+					leftSourceLoadDataUrl: '/mdata/api/dimensionMembers',
+					leftSourceGetLoadParentId: function(node) {
 						return '';
 					}
 				});
