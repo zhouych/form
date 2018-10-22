@@ -8,28 +8,6 @@
 +function ($) {
 	'use strict';
 	
-	//TreeExpressionModal data
-	var expressionStructure = {
-		operate: {
-			value: '',
-			text: ''
-		},
-		relation: {
-			value: '',
-			text: ''
-		}
-	};
-
-	//fill TreeExpressionModal data
-	var fillExpressionStructure = function(structure) {
-		expressionStructure = $.extend(true, expressionStructure, structure);
-	}
-	
-	//get TreeExpressionModal data
-	var getExpressionStructure = function() {
-		return expressionStructure;
-	}
-	
 	//@options: Example: [{ value: '', text: '' }]
 	var buildSelectOptionHtmls = function(options) {
 		var htmls = [];
@@ -38,17 +16,121 @@
 		}
 		return htmls;
 	}
+	
+	var _apendExpression = function(expression, expressionText, expressionHtml) {
+		var that = this;
+		var exists = false; //用于判重，如果已经存在，不需要再添加了。
+		that.$expression.find('a.list-group-item').each(function() {
+			if($(this).attr('data-bind-value') === expression) {
+				exists = true;
+				return false;
+			}
+		});
+		
+		if(!exists) {
+			var $item = $('<a href="#" class="list-group-item" data-bind-value="' + expression + '" data-bind-text="' + expressionText + '">' + expressionHtml + '</a>');
+			$item.off('click').on('click', function(e) {
+				var active = $(this).hasClass('active');
+				if(!active) {
+					that.$expression.find('a.list-group-item.active:not([data-bind-value="' + expression + '"])').removeClass('active');
+				}
+				$(this)[active ? 'removeClass' : 'addClass']('active');
+			});
+			that.$expression.append($item);	
+		}
+	}
+	
+	var _setup = function(e) {
+		var nodes = this.$treeSource.treeview('getSelected')
+			, memberValues = []
+			, memberTexts = [];
+		
+		if($.isArray(nodes)) {
+			for(var i = 0; i < nodes.length; i++) {
+				memberValues.push(this.options.sourceGetNodeBoundValue(nodes[i]));
+				memberTexts.push(this.options.sourceGetNodeBoundText(nodes[i]));
+			}
+		}
+		
+		if(!memberValues.length) {
+			alert('请在左侧数据源中至少选择一个数据节点！');
+			return;
+		}
+		
+		var	operate = this.$operate.val()
+			, operateText = this.$modal.find('.bootstrap-select.operate div.filter-option-inner-inner').text() || ''
+			, relation = this.$relation.val()
+			, relationText = this.$modal.find('.bootstrap-select.relation div.filter-option-inner-inner').text() || ''
+			, expression = operate + '@' + relation + '(' + memberValues.join(',') + ');'
+			, expressionText = operateText + '@' + relationText + '(' + memberTexts.join(',') + ');'
+			, expressionHtml = '<code class="operate">' + operateText + '</code><code class="relation">@' + relationText + '</code><code class="value">(' + memberTexts.join(',') + ');</code>';
+		
+		_apendExpression.apply(this, [expression, expressionText, expressionHtml]);
+	}
+	
+	var _remove = function(e) {
+		var $items = this.$expression.find('a.list-group-item.active');
+		if(!$items.length) {
+			alert('请从右边结果集中选择待移除的表达式！');
+			return;
+		}
+		$items.remove();
+	}
+	
+	var _removeall = function(e) {
+		if(confirm("您确认要移除右侧所有表达式？")) {
+			this.$expression.html('');
+		}
+	}
+	
+	var _hasChanges = function () {
+		var old = this.options.expressionResult
+			, count = 0
+			, existsCount = 0;
+		this.$expression.find('a.list-group-item').each(function() {
+			var val = $(this).attr('data-bind-value');
+			for (var i = 0; i < old.length; i++) {
+				if(val === old.value) {
+					existsCount++;
+					break;
+				}
+			}
+			count++;
+		});
+		
+		return old.length !== count || old.length !== existsCount;
+	} 
+	
+	var _cancel = function(e) {
+		if(_hasChanges.apply(this, [])) {
+			if(confirm("数据发生了更改，是否取消这些更改？")) {
+				this.hide();
+			}
+		} else {
+			this.hide();
+		}
+	}
+	
+	var _save = function(e) {
+		if(!_hasChanges.apply(this, [])) {
+			if(confirm('数据没有发生变化，不需要保存。是否关闭窗口？')) {
+				this.hide();
+			}
+		} else {
+			this.hide();
+			
+			var expressionResult = [];
+			this.$expression.find('a.list-group-item').each(function() {
+				expressionResult.push({ value: $(this).attr('data-bind-value'), text: $(this).attr('data-bind-text') });
+			});
+			this.options.onSaveExpressionResult(expressionResult);
+		}
+	}
 		
 	// TreeExpressionModal Class Definition
 	var TreeExpressionModal = function (container, options) {
 		this.options = options;
 		this.$container = $(container || document.body);
-		this.data = {
-			relation: {
-				value: '',
-				text: ''
-			}
-		};
 		this.init();
 	}
 
@@ -69,13 +151,23 @@
 		leftTitle: '数据源',
 		middleTitle: '操作',
 		rightTitle: '结果集',
-		leftSourceLoadingIcon: 'fa fa-hourglass',
-		leftSourceLoadDataUrl: null,
-		leftSourceGetLoadParentId: function(node) {
-			alert('参数选项leftSourceGetLazyLoadParentId函数未定义。');
-		}
+		sourceLoadingIcon: 'fa fa-hourglass',
+		sourceLoadDataUrl: null,
+		sourceGetParentIdForLoading: function(node) {
+			return node.attrs.id;
+		},
+		sourceGetNodeBoundValue: function(node) {
+			return node.attrs.membercode;
+		},
+		sourceGetNodeBoundText: function(node) {
+			return node.attrs.membername;
+		},
 		operateOptions: [],
 		relationOptions: [],
+		expressionResult: [],
+		onSaveExpressionResult: function(expressionResult) {
+			//code...
+		},
 		modalOptions: {
 		    backdrop: true,
 		    keyboard: true,
@@ -99,7 +191,7 @@
 			      			'<div class="page-header">' +
 				      		  	'<h5>' + this.options.leftTitle + '</h5>' +
 				      		'</div>' +
-			      			'<div>' +
+			      			'<div class="tree-source-wrap">' +
 			      		  		'<div class="tree-source" />' +
 				      		'</div>' +
 		      			'</div>' +
@@ -107,7 +199,7 @@
 			      			'<div class="page-header">' +
 				      		  	'<h5>' + this.options.middleTitle + '</h5>' +
 				      		'</div>' +
-			      			'<div>' +
+			      			'<div class="operate-wrap">' +
 		      					'<select class="selectpicker operate" data-bind-type="operate">' +
 		      						buildSelectOptionHtmls(this.options.operateOptions).join('') +
 				      			'</select>' +
@@ -115,7 +207,7 @@
 			      				'<select class="selectpicker relation" data-bind-type="relation">' +
 			      					buildSelectOptionHtmls(this.options.relationOptions).join('') +
 				      			'</select>' +
-				      			'<div class="isolate"></div>' +
+				      			'<div class="isolate-max"></div>' +
 				      			'<button type="button" class="btn btn-default setup">' + this.options.button.setup.text + '</button>' + 
 				      			'<div class="isolate"></div>' +
 				      			'<button type="button" class="btn btn-default remove">' + this.options.button.remove.text + '</button>' + 
@@ -127,21 +219,14 @@
 			      			'<div class="page-header">' +
 				      		  	'<h5>' + this.options.rightTitle + '</h5>' +
 				      		'</div>' +
-			      			'<div>' +
-				      		  	'<div class="list-group result">' +
-				      		  		'<a href="#" class="list-group-item">Cras justo odio</a>' +
-				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis in</a>' +
-				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
-				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis in</a>' +
-				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
-				      		  		'<a href="#" class="list-group-item">Dapibus ac facilisis inDapibus ac facilisis inDapibus ac facilisis in</a>' +
-				      		  		'<a href="#" class="list-group-item">Morbi leo risus</a>' +
+			      			'<div class="expression-wrap">' +
+				      		  	'<div class="list-group expression">' +
 				      		  	'</div>' +
 				      		'</div>' +
 		      			'</div>' +
 		      		'</div>' +
 		      		'<div class="modal-footer">' +
-		        		'<button type="button" class="btn btn-default cancel" data-dismiss="modal">' + this.options.button.cancel.text + '</button>' +
+		        		'<button type="button" class="btn btn-default cancel">' + this.options.button.cancel.text + '</button>' +
 		        		'<button type="button" class="btn btn-primary save">' + this.options.button.save.text + '</button>' +
 		      		'</div>' +
 		    	'</div>' +
@@ -156,11 +241,12 @@
 			
 			$.ajax({
 			    type: 'get',
-			    url: that.options.leftSourceLoadDataUrl,
+			    url: that.options.sourceLoadDataUrl,
 			    data: { 
-			    	parentId: node && hat.options.leftSourceGetLoadParentId(node) || '' 
+			    	parentId: node && that.options.sourceGetParentIdForLoading(node) || '' 
 			    },
 				async: _async,
+				dataType: 'json',
 			    success: function(response) {
 			    	if(response.status === '0') {
 			    		result = response.data;
@@ -181,9 +267,10 @@
 			}
 		}
 		
-		var $treeSource = $('.left .tree-source').treeview({
+		this.$treeSource = this.$modal.find('.left .tree-source').treeview({
 			data: _loadData(null, null, false),
-			loadingIcon: that.options.leftSourceLoadingIcon,
+			loadingIcon: that.options.sourceLoadingIcon,
+			levels: 2,
 			lazyLoad: _loadData,
 			showCheckbox: false, 
 			emptyIcon: 'glyphicon', 
@@ -197,29 +284,25 @@
 				//code ...
 			}
 		});  
+
+		this.$operate = this.$modal.find('.middle .selectpicker.operate').selectpicker({ width: '120' });
+		this.$relation = this.$modal.find('.middle .selectpicker.relation').selectpicker({ width: '120' });
+		this.$setup = this.$modal.find('.middle .btn.setup').off('click').on('click', $.proxy(_setup, this));
+		this.$remove = this.$modal.find('.middle .btn.remove').off('click').on('click', $.proxy(_remove, this));
+		this.$removeall = this.$modal.find('.middle .btn.removeall').off('click').on('click', $.proxy(_removeall, this));
 		
-		$('.selectpicker.operate, .selectpicker.relation').selectpicker({
-			width: 'auto'
-		}).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-			var $target = $(e.target || e)
-				, type = $target.attr('data-bind-type')
-				, value = $target.val() || ''
-				, struct = {};
-			
-			struct[type] = {
-				value: value, 
-				text: value ? $('.bootstrap-select.' + type + ' div.filter-option-inner-inner').text() : '' 
-			};
-				
-			fillExpressionStructure(struct);
-		});
+		this.$expression = this.$modal.find('.right div.expression');
+		this.$expression.html('');
+		
+		this.$cancel = this.$modal.find('.modal-footer .btn.cancel').off('click').on('click', $.proxy(_cancel, this));
+		this.$save = this.$modal.find('.modal-footer .btn.save').off('click').on('click', $.proxy(_save, this));
 		
 		for(var key in this.options.button) {
 			if(!this.options.button[key].show) {
 				this.$modal.find('div.modal-content button.btn.' + key).hide();
 			}
 		}
-
+		
 		var modalOptions = $.extend({}, TreeExpressionModal.DEFAULTS.modalOptions, typeof this.options.modalOptions == 'object' && this.options.modalOptions);
 		modalOptions.show = this.options.show;
 		this.$modal.modal(modalOptions);
@@ -227,6 +310,10 @@
 	
 	TreeExpressionModal.prototype.show = function(_relatedTarget) {
 		this.$modal.modal('show');
+	}
+	
+	TreeExpressionModal.prototype.hide = function(_relatedTarget) {
+		this.$modal.modal('hide');
 	}
 
 	// TreeExpressionModal Plugin Definition

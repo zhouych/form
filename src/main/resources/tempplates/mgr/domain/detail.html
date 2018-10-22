@@ -151,9 +151,12 @@
 					title: 'Budget Control Dimension Data Source Settings',
 					operateOptions: _operateOptions,
 					relationOptions: _relationOptions,
-					leftSourceLoadDataUrl: '/mdata/api/dimensionMembers',
-					leftSourceGetLoadParentId: function(node) {
-						return '';
+					sourceLoadDataUrl: '/mdata/api/dimensionMembers',
+					sourceGetParentIdForLoading: function(node) {
+						return node.attrs.id; //绑定到当前节点的主键id即其子节点的parentid
+					},
+					onSaveExpressionResult: function(expressionResult) {
+						
 					}
 				});
 			}
