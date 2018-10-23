@@ -1,9 +1,10 @@
-package com.zyc.security.cache;
+package com.zyc.form.cache;
 
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
+@EnableCaching
 public class RedisConfig {
 
     @Value("${spring.redis.host}")

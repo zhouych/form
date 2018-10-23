@@ -67,15 +67,19 @@
 				<div class="row page-header">
 				  	<h4>budget control dimensions</h4>
 				</div>
-				<div class="row form-group budget-ctrl-dim" th:each="dim,dimStat:${domain.ctrlDimUIOptionVos}" th:attr="data-bind-code=${dim.dimcode}">
-				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="description" th:text="${dim.dimname}"></label>
+				<div class="row form-group budget-ctrl-dim" th:each="cds,cdsStat:${domain.ctrlDimSources}" th:attr="data-bind-code=${cds.dimcode}">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label label" th:text="${cds.dimname}" th:attr="data-bind-code=${cds.dimcode},data-bind-index=${cdsStat.index}"></label>
 				   	<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 input-group">
 						<span class="input-group-addon">
-							<input type="checkbox" class="ctrl-dim-enabled" th:value="${dim.dimid}" th:attr="data-bind-code=${dim.dimcode},checked=${dim.enabled}">
+							<input type="checkbox" class="ctrl-dim-enabled" th:name="${'ctrlDimSources[' + cdsStat.index + '].enabled'}" th:attr="data-bind-code=${cds.dimcode},checked=${cds.enabled}">
 						</span>
-						<input type="hidden" class="dim-source" th:value="${dim.expression}" th:attr="data-bind-code=${dim.dimcode}" />
-			        	<input type="text" class="form-control dim-source-text visible-ui" th:value="${dim.expressiontext}" th:attr="data-bind-code=${dim.dimcode},disabled=!${dim.enabled}" readonly="readonly" />
-			        	<span class="input-group-addon dim-source-set hand visible-ui" th:attr="data-bind-code=${dim.dimcode},data-bind-index=${dimStat.index},disabled=!${dim.enabled},title='设置维度[' + ${dim.dimname} + ']数据源'">@</span>
+						<input type="hidden" th:name="${'ctrlDimSources[' + cdsStat.index + '].formdomainid'}" th:value="${cds.formdomainid} == null ? ${domain.id} : ${cds.formdomainid}" />
+						<input type="hidden" th:name="${'ctrlDimSources[' + cdsStat.index + '].dimid'}" th:value="${cds.dimid}" />
+						<input type="hidden" th:name="${'ctrlDimSources[' + cdsStat.index + '].dimname'}" th:value="${cds.dimname}" />
+						<input type="hidden" th:name="${'ctrlDimSources[' + cdsStat.index + '].dimcode'}" th:value="${cds.dimcode}" />
+						<input type="hidden" class="dim-source" th:name="${'ctrlDimSources[' + cdsStat.index + '].expression'}" th:value="${cds.expression}" th:attr="data-bind-code=${cds.dimcode},data-bind-index=${cdsStat.index}" />
+			        	<input type="text" class="form-control dim-source-text visible-ui" th:name="${'ctrlDimSources[' + cdsStat.index + '].expressiontext'}" th:value="${cds.expressiontext}" th:attr="data-bind-code=${cds.dimcode},data-bind-index=${cdsStat.index},disabled=!${cds.enabled}" readonly="readonly" />
+			        	<span class="input-group-addon dim-source-set hand visible-ui" th:attr="data-bind-code=${cds.dimcode},data-bind-index=${cdsStat.index},disabled=!${cds.enabled},title='设置维度[' + ${cds.dimname} + ']数据源'">@</span>
 			      	</div>
 					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"></div>
 				</div>
@@ -138,25 +142,39 @@
 <script type="text/javascript" th:src="@{/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
-		//var ctrlDimSources = [[${domain.ctrlDimSources}]];
-		//alert(ctrlDimSources.length);
 		
 		var _operateOptions = zyc.entryBeans(zyc.inexOperate)
 			, _relationOptions = zyc.entryBeans(zyc.memberRelation);
 		
 		$('span.dim-source-set.hand').off('click').on('click', function(e) {
+			var index = $(this).attr('data-bind-index')
+				, dimcode = $(this).attr('data-bind-code')
+				, dimtext = $('label.control-label.label[data-bind-index="' + index + '"]').text()
+				, currExpressionResult = [];
+			
 			if(!$(this).attr('disabled')) {
 				$(document.body).treeexpressionmodal({
-					id: 'dim_source_set_modal_' + $(this).attr('data-bind-index'),
-					title: 'Budget Control Dimension Data Source Settings',
+					id: 'dim_source_set_modal_' + index,
+					title: '预算控制维度[' + dimtext + ']数据源设置',
 					operateOptions: _operateOptions,
 					relationOptions: _relationOptions,
 					sourceLoadDataUrl: '/mdata/api/dimensionMembers',
-					sourceGetParentIdForLoading: function(node) {
-						return node.attrs.id; //绑定到当前节点的主键id即其子节点的parentid
+					sourceLoadDataParam: function(node) {
+						return {
+							dimensionCode: dimcode,
+							//绑定到当前节点的主键id即其子节点的parentid
+							parentId: node && node.attrs.id || ''
+						};
 					},
+					expressionResult: currExpressionResult,
 					onSaveExpressionResult: function(expressionResult) {
-						
+						var value = '', text = '';
+						for(var i = 0, l = expressionResult.length; i < l; i++) {
+							value += expressionResult[i].value;
+							text += expressionResult[i].text;
+						}
+						$('input.dim-source[data-bind-index="' + index + '"]').val(value);
+						$('input.dim-source-text[data-bind-index="' + index + '"]').val(text);
 					}
 				});
 			}

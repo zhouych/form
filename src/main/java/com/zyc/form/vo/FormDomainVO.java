@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 
 import com.zyc.baselibs.aopv.Verifiable;
+import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.form.client.vo.DimensionVO;
 import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.entities.FormDomain;
@@ -15,63 +16,79 @@ public class FormDomainVO extends FormDomain {
 	
 	private static final long serialVersionUID = -7241150664326724541L;
 	
-	private List<CtrlDimSource> ctrlDimSources;
-	
-	private List<CtrlDimUIOptionVO> ctrlDimUIOptionVos;
+	private List<CtrlDimSourceOptionVO> ctrlDimSources;
 
 	public FormDomainVO() {
-		
+		this.ctrlDimSources = new ArrayList<CtrlDimSourceOptionVO>();
 	}
 	
 	public FormDomainVO(FormDomain formDomain) {
 		BeanUtils.copyProperties(formDomain, this);
-	}
-	
-	public List<CtrlDimSource> getCtrlDimSources() {
-		return ctrlDimSources;
-	}
-
-	public void setCtrlDimSources(List<CtrlDimSource> ctrlDimSources) {
-		this.ctrlDimSources = ctrlDimSources;
+		this.ctrlDimSources = new ArrayList<CtrlDimSourceOptionVO>();
 	}
 	
 	public static FormDomainVO newInstance() {
 		FormDomainVO vo = new FormDomainVO();
 		vo.init();
-		vo.generateId();
+		vo.createIdWhenNot();
 		return vo;
 	}
 
-	public List<CtrlDimUIOptionVO> getCtrlDimUIOptionVos() {
-		return ctrlDimUIOptionVos;
+	public List<CtrlDimSourceOptionVO> getCtrlDimSources() {
+		return ctrlDimSources;
 	}
-
-	public void setCtrlDimUIOptionVos(List<DimensionVO> dimvos) {
-		if(this.ctrlDimUIOptionVos == null) {
-			this.ctrlDimUIOptionVos = new ArrayList<CtrlDimUIOptionVO>();
-		} else {
-			this.ctrlDimUIOptionVos.clear();
+	
+	public void addCtrlDimSource(CtrlDimSource source, boolean enabled) {
+		CtrlDimSourceOptionVO vo = null;
+		for (CtrlDimSourceOptionVO item : this.getCtrlDimSources()) {
+			if(item.businessEquals(source)) {
+				vo = item;
+				break;
+			}
 		}
 		
-		CtrlDimUIOptionVO option; 
-		for (DimensionVO dimvo : dimvos) {
-			option = null;
-			if(this.getCtrlDimSources() != null && !this.getCtrlDimSources().isEmpty()) {
-				for (CtrlDimSource cds : this.getCtrlDimSources()) {
-					if(cds.getDimid().equals(dimvo.getDimid())) {
-						option = new CtrlDimUIOptionVO(cds);
-						option.setEnabled(true);
-						break;
-					}
-				}	
+		//没有重复则添加，如果重复则覆盖。
+		if(vo == null) {
+			vo = new CtrlDimSourceOptionVO(source);
+			vo.setEnabled(enabled);
+			this.getCtrlDimSources().add(vo);
+		} else {
+			BeanUtils.copyProperties(source, vo);
+			vo.setEnabled(enabled);
+		}
+	}
+	
+	public void addCtrlDimSources(List<CtrlDimSource> sources, boolean enabled) {
+		if(CollectionUtils.hasElement(sources)) {
+			for (CtrlDimSource source : sources) {
+				this.addCtrlDimSource(source, enabled);
 			}
-			
-			if(option == null) {
-				option = new CtrlDimUIOptionVO();
-				BeanUtils.copyProperties(dimvo, option);
+		}
+	}
+
+	public void addCtrlDimSourceOption(DimensionVO dimension) {
+		CtrlDimSourceOptionVO vo = null;
+		for (CtrlDimSourceOptionVO item : this.getCtrlDimSources()) {
+			if(item.getDimid().equals(dimension.getDimid()) || item.getDimcode().equals(dimension.getDimcode())) {
+				vo = item;
+				break;
 			}
-			
-			this.ctrlDimUIOptionVos.add(option);
+		}
+
+		//没有重复则添加，如果重复则覆盖。
+		if(vo == null) {
+			vo = CtrlDimSourceOptionVO.newInstance(dimension);
+			this.getCtrlDimSources().add(vo);
+		} else {
+			BeanUtils.copyProperties(dimension, vo);
+		}
+	}
+	
+	public void addCtrlDimSourceOptions(List<DimensionVO> dimensions) {
+		if(CollectionUtils.hasElement(dimensions)) {
+			for (DimensionVO dimension : dimensions) {
+				this.addCtrlDimSourceOption(dimension);
+			}
 		}
 	}
 }

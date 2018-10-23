@@ -1,5 +1,7 @@
 package com.zyc.form;
 
+import java.util.List;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,15 @@ public class FormApplicationConfiguration {
 
 	@Bean
 	public MysqlScriptComponent MysqlScriptComponent() {
-		return new MysqlScriptComponent();
+		MysqlScriptComponent mysqlScriptComponent = new MysqlScriptComponent();
+		
+		List<String> sqlscripts = mysqlScriptComponent.entity2tableSqlScripts("com.zyc.form.entities");
+    	if(sqlscripts != null && !sqlscripts.isEmpty()) {
+    		for (String sqlscript : sqlscripts) {
+				System.out.println(sqlscript);
+			}
+    	}
+    	
+		return mysqlScriptComponent;
 	}
 }

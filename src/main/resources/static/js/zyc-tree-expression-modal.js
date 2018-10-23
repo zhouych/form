@@ -17,6 +17,30 @@
 		return htmls;
 	}
 	
+	var expressionHtml = function(expressionText) {
+		var index = expressionText.indexOf('@')
+			, operateText = expressionText.substr(0, index)
+			, right = operateText.substr(index + 1)
+			, relationText = ''
+			, memberText = ''
+			, tmp;
+		
+		for(var key in zyc.memberRelation) {
+			tmp = zyc.memberRelation[key];
+			if(right.indexOf(tmp.text) === 0) {
+				relationText = tmp.text;
+				memberText = right.substr(tmp.text.length + 1);
+				break;
+			}
+		}
+		
+		return formatExpressionNodeHtml(operateText, relationText, memberText);
+	}
+	
+	var formatExpressionNodeHtml = function(operateText, relationText, memberText) {
+		return '<code class="operate">' + operateText + '</code><code class="relation">@' + relationText + '</code><code class="value">' + memberText + '</code>';
+	}
+	
 	var _apendExpression = function(expression, expressionText, expressionHtml) {
 		var that = this;
 		var exists = false; //用于判重，如果已经存在，不需要再添加了。
@@ -63,7 +87,7 @@
 			, relationText = this.$modal.find('.bootstrap-select.relation div.filter-option-inner-inner').text() || ''
 			, expression = operate + '@' + relation + '(' + memberValues.join(',') + ');'
 			, expressionText = operateText + '@' + relationText + '(' + memberTexts.join(',') + ');'
-			, expressionHtml = '<code class="operate">' + operateText + '</code><code class="relation">@' + relationText + '</code><code class="value">(' + memberTexts.join(',') + ');</code>';
+			, expressionHtml = formatExpressionNodeHtml(operateText, relationText, '(' + memberTexts.join(',') + ');');
 		
 		_apendExpression.apply(this, [expression, expressionText, expressionHtml]);
 	}
@@ -90,7 +114,7 @@
 		this.$expression.find('a.list-group-item').each(function() {
 			var val = $(this).attr('data-bind-value');
 			for (var i = 0; i < old.length; i++) {
-				if(val === old.value) {
+				if(val === old[i].value) {
 					existsCount++;
 					break;
 				}
@@ -112,18 +136,22 @@
 	}
 	
 	var _save = function(e) {
-		if(!_hasChanges.apply(this, [])) {
-			if(confirm('数据没有发生变化，不需要保存。是否关闭窗口？')) {
-				this.hide();
-			}
-		} else {
-			this.hide();
-			
+		if(_hasChanges.apply(this, [])) {
 			var expressionResult = [];
 			this.$expression.find('a.list-group-item').each(function() {
 				expressionResult.push({ value: $(this).attr('data-bind-value'), text: $(this).attr('data-bind-text') });
 			});
-			this.options.onSaveExpressionResult(expressionResult);
+			
+			if(typeof this.options.onSaveExpressionResult === 'function') {
+				this.options.onSaveExpressionResult(expressionResult);	
+			}
+			
+			this.hide();
+			this.options.expressionResult = expressionResult; //跟新历史数据，保存最新的值。
+		} else {
+			if(confirm('数据没有发生变化，不需要保存。是否关闭窗口？')) {
+				this.hide();
+			}
 		}
 	}
 		
@@ -153,8 +181,8 @@
 		rightTitle: '结果集',
 		sourceLoadingIcon: 'fa fa-hourglass',
 		sourceLoadDataUrl: null,
-		sourceGetParentIdForLoading: function(node) {
-			return node.attrs.id;
+		sourceLoadDataParam: function(node) {
+			return {};
 		},
 		sourceGetNodeBoundValue: function(node) {
 			return node.attrs.membercode;
@@ -242,9 +270,7 @@
 			$.ajax({
 			    type: 'get',
 			    url: that.options.sourceLoadDataUrl,
-			    data: { 
-			    	parentId: node && that.options.sourceGetParentIdForLoading(node) || '' 
-			    },
+			    data: that.options.sourceLoadDataParam(node),
 				async: _async,
 				dataType: 'json',
 			    success: function(response) {
@@ -293,6 +319,11 @@
 		
 		this.$expression = this.$modal.find('.right div.expression');
 		this.$expression.html('');
+		var tmp, expressionHtml; 
+		for(var i = 0; i < this.options.expressionResult.length; i++) {
+			tmp = this.options.expressionResult[i];
+			_apendExpression.apply(this, [tmp.value, tmp.text, expressionHtml(tmp.text)]);	
+		}
 		
 		this.$cancel = this.$modal.find('.modal-footer .btn.cancel').off('click').on('click', $.proxy(_cancel, this));
 		this.$save = this.$modal.find('.modal-footer .btn.save').off('click').on('click', $.proxy(_save, this));
@@ -325,7 +356,7 @@
 				//$this.data()不做深度拷贝
 				, options = $.extend(options, $this.data())
 				, dataKey = 'bs.TreeExpressionModal.' + options.id
-			 	, data = $this.data(dataKey + options.id);
+			 	, data = $this.data(dataKey);
 
 			if (!data) {
 				$this.data(dataKey, (data = new TreeExpressionModal(this, options)))

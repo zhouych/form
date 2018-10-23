@@ -14,5 +14,5 @@ public interface MdataClient {
 	
 	List<DimensionVO> budgetCtrlDimensions();
 
-	List<TreeViewNodeForLazyLoad> dimensionMembers(String parentId);
+	List<TreeViewNodeForLazyLoad> dimensionMembers(String dimensionCode, String parentId);
 }

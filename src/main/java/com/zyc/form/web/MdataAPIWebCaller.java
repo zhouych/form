@@ -16,11 +16,11 @@ public class MdataAPIWebCaller extends BaseFormController {
 	private static final String CALLER_PATH = "/mdata/api";
 
 	@RequestMapping(value = CALLER_PATH + "/dimensionMembers", method = RequestMethod.GET)
-	public String dimensionMembers(String parentId) {
+	public String dimensionMembers(String dimensionCode, String parentId) {
 		ResponseResult result = new ResponseResult();
 		
 		try {
-			result.setData(this.mdataClient.dimensionMembers(parentId));
+			result.setData(this.mdataClient.dimensionMembers(dimensionCode, parentId));
 		} catch (Exception e) {
 			this.handleException(result, e, logger);
 		}

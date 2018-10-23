@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,6 +23,7 @@ import com.zyc.form.dao.FormDomainMapper;
 import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.entities.FormDomain;
 import com.zyc.form.service.FormDomainService;
+import com.zyc.form.vo.CtrlDimSourceOptionVO;
 import com.zyc.form.vo.FormDomainVO;
 
 @Service
@@ -47,7 +49,6 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 			fd.setDomainname(fd.getDomaincode());
 			vo = new FormDomainVO(fd);
 			
-			vo.setCtrlDimSources(new ArrayList<CtrlDimSource>());
 			cds = new CtrlDimSource();
 			cds.init();
 			cds.setId(UUID.randomUUID().toString());
@@ -57,7 +58,8 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 			cds.setDimname(cds.getDimcode());
 			cds.setExpression("+@2(" + cds.getDimid() + ");");
 			cds.setExpressiontext("包含@成员及后代（" + cds.getDimcode() + "）");
-			vo.getCtrlDimSources().add(cds);
+			
+			vo.addCtrlDimSource(cds, true);
 			
 			testData.add(vo);
 		}
@@ -80,7 +82,7 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 				vo = new FormDomainVO(formDomain);
 				
 				cds.setFormdomainid(formDomain.getId());
-				vo.setCtrlDimSources(this.ctrlDimSourceMapper.select(cds));
+				vo.addCtrlDimSources(this.ctrlDimSourceMapper.select(cds), true);
 
 				result.add(vo);
 			}
@@ -104,8 +106,7 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 		
 		CtrlDimSource cds = new CtrlDimSource().clean();
 		cds.setFormdomainid(formdomainid);
-		
-		vo.setCtrlDimSources(this.ctrlDimSourceMapper.select(cds));
+		vo.addCtrlDimSources(this.ctrlDimSourceMapper.select(cds), true);
 		
 		return vo;
 	}
@@ -129,8 +130,7 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 
 		CtrlDimSource cds = new CtrlDimSource().clean();
 		cds.setFormdomainid(formDomain.getId());
-		
-		vo.setCtrlDimSources(this.ctrlDimSourceMapper.select(cds));
+		vo.addCtrlDimSources(this.ctrlDimSourceMapper.select(cds), true);
 		
 		return vo;
 	}
@@ -153,32 +153,69 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 		}
 		
 		FormDomainVO newvo = new FormDomainVO(newfd);
-		newvo.setCtrlDimSources(this.create(vo.getCtrlDimSources(), newfd.getId()));
+		newvo.addCtrlDimSources(this.createCtrlDimSource(vo.getCtrlDimSources(), newfd.getId()), true);
+		
 		return newvo;
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public List<CtrlDimSource> create(List<CtrlDimSource> cdss, String formdomainid) throws Exception {
+	public List<CtrlDimSource> createCtrlDimSource(List<CtrlDimSourceOptionVO> ctrlDimSources, String formdomainid) throws Exception {
 		List<CtrlDimSource> result = null;
-		if(CollectionUtils.hasElement(cdss)) {
+		
+		//查询旧数据...
+		CtrlDimSource condition = new CtrlDimSource();
+		condition.clean().setFormdomainid(formdomainid);
+		List<CtrlDimSource> olds = this.ctrlDimSourceMapper.select(condition);
+		
+		//如果存在待保存的数据，则开始保存这些数据...
+		if(CollectionUtils.hasElement(ctrlDimSources)) {
 			result = new ArrayList<CtrlDimSource>();
-			CtrlDimSource newcds = null;
-			for (CtrlDimSource cds : cdss) {
-				newcds = this.create(cds, formdomainid);
-				if(newcds == null) {
-					throw new BussinessException("Created 'CtrlDimSource' failed.");
+			for (CtrlDimSourceOptionVO ctrlDimSource : ctrlDimSources) {
+				if(!ctrlDimSource.isEnabled()) {
+					continue; //没有启用的控制维度不需要处理。
 				}
-				result.add(newcds);
+
+				CtrlDimSource old = null, newCtrlDimSource = null;
+				if(CollectionUtils.hasElement(olds)) {
+					for (CtrlDimSource item : olds) {
+						if(item.equals(ctrlDimSource)) {
+							old = item; //尝试在旧数据中寻找与当前待保存数据一致的数据，找到了则记录下来。
+							break;
+						}
+					}
+				}
+				
+				if(old == null) {
+					newCtrlDimSource = this.createCtrlDimSource(ctrlDimSource, formdomainid); //当前待保存数据没有被保存过，则创建。
+				} else {
+					BeanUtils.copyProperties(ctrlDimSource, old);
+					this.ctrlDimSourceMapper.update(old); //当前待保存数据已经被保存过，则更新。
+					newCtrlDimSource = old;
+					olds.remove(old);
+				}
+				
+				if(newCtrlDimSource == null) {
+					throw new BussinessException("Created 'CtrlDimSource' failed."); //创建或更新失败，则抛异常，确保事务回滚。
+				}
+				result.add(newCtrlDimSource);
 			}
 		}
+
+		//没有被当前待保存的控制维度所匹配的旧数据，在此处开始予以物理删除...
+		if(CollectionUtils.hasElement(olds)) {
+			for (CtrlDimSource item : olds) {
+				this.ctrlDimSourceMapper.delete(item);
+			}
+		}
+		
 		return result;
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
-	public CtrlDimSource create(CtrlDimSource cds, String formdomainid) throws Exception {
+	public CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO cds, String formdomainid) throws Exception {
 		//formdomainid为表单域主键ID，该ID为当前待添加数据的外键（表单域主键ID）的正确值
 		if(StringUtils.isBlank(formdomainid) || !formdomainid.equals(cds.getFormdomainid())) {
 			throw new IllegalValueException(String.format("The data 'formdomainid' does not match. (formdomainid: %s!=%s)", cds.getFormdomainid(), formdomainid));
@@ -195,10 +232,16 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 	}
 
 	@Override
+	public <T extends CtrlDimSource> CtrlDimSource modifyCtrlDimSource(T ctrlDimSource, String formdomainid)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public FormDomainVO modify(FormDomainVO vo) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

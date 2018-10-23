@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.form.entities.CtrlDimSource;
+import com.zyc.form.vo.CtrlDimSourceOptionVO;
 import com.zyc.form.vo.FormDomainVO;
 
 public interface FormDomainService {
@@ -17,9 +18,11 @@ public interface FormDomainService {
 
 	FormDomainVO create(FormDomainVO vo) throws Exception;
 
-	List<CtrlDimSource> create(List<CtrlDimSource> cdss, String formdomainid) throws Exception;
+	List<CtrlDimSource> createCtrlDimSource(List<CtrlDimSourceOptionVO> ctrlDimSources, String formdomainid) throws Exception;
 	
-	CtrlDimSource create(CtrlDimSource cds, String formdomainid) throws Exception;
+	CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO ctrlDimSource, String formdomainid) throws Exception;
+	
+	<T extends CtrlDimSource> CtrlDimSource modifyCtrlDimSource(T ctrlDimSource, String formdomainid) throws Exception;
 	
 	FormDomainVO modify(FormDomainVO vo) throws Exception;
 	
