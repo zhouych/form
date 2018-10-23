@@ -64,7 +64,7 @@ eureka:
   client:
     service-url:
       # 使用Eureka Server的集群环境
-      defaultZone: http://localhost:8001/eureka/#http://peer1:8001/eureka/,http://peer2:8002/eureka/,http://peer3:8003/eureka/
+      defaultZone: http://peer1:8001/eureka/#http://peer1:8001/eureka/,http://peer2:8002/eureka/,http://peer3:8003/eureka/
   # 没有必要使用以下配置
   # 涉及到项目配置有server.servlet.context-path属性的相关处理
   #instance:

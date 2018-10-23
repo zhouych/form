@@ -139,7 +139,7 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public FormDomainVO create(FormDomainVO vo) throws Exception {
-		FormDomain fd = (FormDomain) vo;
+		FormDomain fd = vo.toEntity();
 		//依据id与code进行判重
 		if(this.formDomainMapper.load(fd.getId(), FormDomain.class) != null || this.selectByFormDomainCode(fd.getDomaincode()) != null) {
 			throw new BussinessException("This form domain already exists. (id=" + fd.getId() + ", domaincode=" + fd.getDomaincode() + ")");
@@ -216,6 +216,7 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO cds, String formdomainid) throws Exception {
+		CtrlDimSource source = cds.toEntity();
 		//formdomainid为表单域主键ID，该ID为当前待添加数据的外键（表单域主键ID）的正确值
 		if(StringUtils.isBlank(formdomainid) || !formdomainid.equals(cds.getFormdomainid())) {
 			throw new IllegalValueException(String.format("The data 'formdomainid' does not match. (formdomainid: %s!=%s)", cds.getFormdomainid(), formdomainid));
@@ -226,9 +227,9 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 			throw new BussinessException("This dimension source already exists. (id=" + cds.getId() + ", formdomainid=" + cds.getFormdomainid() + ")");
 		}
 		
-		cds.init();
-		int result = this.ctrlDimSourceMapper.insert(cds);
-		return  result > 0 ? this.ctrlDimSourceMapper.load(cds.getId(), CtrlDimSource.class) : null;
+		source.init();
+		int result = this.ctrlDimSourceMapper.insert(source);
+		return  result > 0 ? this.ctrlDimSourceMapper.load(source.getId(), CtrlDimSource.class) : null;
 	}
 
 	@Override

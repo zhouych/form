@@ -3,7 +3,6 @@ package com.zyc.form.client.ribbon;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -27,12 +26,6 @@ public class MdataClientRibbonImpl implements MdataClient {
 	static final List<DimensionVO> budget_ctrl_dims = new ArrayList<DimensionVO>();
 	
 	static final List<MemberVO> members = new ArrayList<MemberVO>();
-	
-	public static void main(String[] args) {
-		for (int i = 0; i < 10; i++) {
-			System.out.println(UUID.randomUUID().toString());
-		}
-	}
 	
 	static {
 		budget_ctrl_dims.add(new DimensionVO("44adde71-e67c-42fd-9ddf-f6f06008559a", "组织机构", "Organization"));
