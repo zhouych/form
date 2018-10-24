@@ -4,6 +4,9 @@
     
 	var zyc = window['zyc'] = {
     	comWebsite: 'www.zyc.com',
+    	redirect: function(relativeOriginPath) {
+    		window.location = window.location.origin + relativeOriginPath;
+    	},
     	emptyNodeType: {
     		NONE: { value: 'none', text: '' },
     		ALL: { value: 'all', text: '全部' },

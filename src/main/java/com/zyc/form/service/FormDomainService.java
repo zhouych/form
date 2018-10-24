@@ -18,11 +18,9 @@ public interface FormDomainService {
 
 	FormDomainVO create(FormDomainVO vo) throws Exception;
 
-	List<CtrlDimSource> createCtrlDimSource(List<CtrlDimSourceOptionVO> ctrlDimSources, String formdomainid) throws Exception;
+	List<CtrlDimSource> createCtrlDimSource(List<CtrlDimSourceOptionVO> vos, String formdomainid) throws Exception;
 	
-	CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO ctrlDimSource, String formdomainid) throws Exception;
-	
-	<T extends CtrlDimSource> CtrlDimSource modifyCtrlDimSource(T ctrlDimSource, String formdomainid) throws Exception;
+	CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO vo, String formdomainid) throws Exception;
 	
 	FormDomainVO modify(FormDomainVO vo) throws Exception;
 	

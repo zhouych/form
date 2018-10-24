@@ -6,17 +6,23 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
+<style type="text/css">
+	table th {
+		text-align: center;
+	}
+</style>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<div id="toolbar-domains">
 			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}">新增表单域</a>
+			<a role="button" class="btn btn-default btn-edit-domain" th:attr="data-bind-href=@{/mgr/domain/editpage}">编辑表单域</a>
 		</div>
 		<table id="table-domains">
-			<thead>
+			<!-- <thead>
 				<tr>
-					<th>ID</th>
+					<th></th>
 					<th>编码</th>
 					<th>名称</th>
 					<th>预算控制</th>
@@ -27,17 +33,20 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="domain:${domains}">
-					<td th:text="${domain.id}" ></td>
-					<td th:text="${domain.domaincode}" ></td>
-					<td th:text="${domain.domainname}" ></td>
-					<td th:text="${domain.enabledbudgetctrl}"></td>
-					<td th:text="${domain.datastatus}" ></td>
-					<td th:text="${domain.createdat}" ></td>
-					<td th:text="${domain.updatedat}" ></td>
-					<td th:text="${domain.version}" ></td>
+				<tr class="domain-row" th:each="domain,domainStat:${domains}">
+					<td data-bind-field="id">
+						<input type="hidden" name="id" th:value="${domain.id}" /> 
+						<input type="checkbox" />
+					</td>
+					<td data-bind-field="domaincode" th:text="${domain.domaincode}" ></td>
+					<td data-bind-field="domainname" th:text="${domain.domainname}" ></td>
+					<td data-bind-field="enabledbudgetctrl" th:text="${domain.enabledbudgetctrl}"></td>
+					<td data-bind-field="datastatus" th:text="${domain.datastatus}" ></td>
+					<td data-bind-field="createdat" th:text="${#dates.format(domain.createdat,'yyyy-MM-dd HH:mm:ss')}" ></td>
+					<td data-bind-field="updatedat" th:text="${#dates.format(domain.updatedat,'yyyy-MM-dd HH:mm:ss')}" ></td>
+					<td data-bind-field="version" th:text="${domain.version}" ></td>
 				</tr>
-			</tbody>
+			</tbody> -->
 		</table>
 	</div>
 	<div th:replace="/fragments/layout::footer" />
@@ -46,16 +55,88 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/bootstrap-table.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/locale/bootstrap-table-zh-CN.js}" ></script>
+<script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
 <script type="text/javascript" th:inline="javascript">
 	$(document).ready(function() {
 		var getBstableQueryParams = function() {
-			return {};
+			return {   
+                rows: 10,
+                page: 1,
+                sort: 'id',  
+                sortOrder: 'asc' 
+            };
 		}
 		
-		$('#table-domains').bootstrapTable({
-			uniqueId: "id",
+		$table = $('#table-domains').bootstrapTable({
+			//url: window.location.origin + '/api/domains',
+			url: '/api/domains',
+            method: 'get',                      //请求方式（*）
+            //toolbar: '#toolbar',              //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 10,                     //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列（选择显示的列）
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+          	//是否显示详细视图
+            cardView: false,                    
+          	//是否显示父子表
+            detailView: false,                  
+            //得到查询的参数
+            queryParams: getBstableQueryParams(),
+            columns: [
+            	{ checkbox: true, visible: true } 
+            	, { field: 'id', title: 'id', sortable: true }
+            	, { field: 'domaincode', title: '编码', sortable: true }
+            	, { field: 'domainname', title: '名称', sortable: true }
+            	, { field: 'enabledbudgetctrl', title: '启用预算控制', sortable: true }
+            	, { field: 'datastatus', title: '状态', sortable: true }
+            	, { field: 'createdat', title: '创建日期', sortable: true }
+            	, { field: 'updatedat', title: '跟新日期', sortable: true }
+            	, { field: 'version', title: '版本号', sortable: true }
+            ],
+            onLoadSuccess: function (data) {
+            	/**
+            	
+					<td data-bind-field="enabledbudgetctrl" th:text="${domain.enabledbudgetctrl}"></td>
+					<td data-bind-field="datastatus" th:text="${domain.datastatus}" ></td>
+					<td data-bind-field="createdat" th:text="${#dates.format(domain.createdat,'yyyy-MM-dd HH:mm:ss')}" ></td>
+					<td data-bind-field="updatedat" th:text="${#dates.format(domain.updatedat,'yyyy-MM-dd HH:mm:ss')}" ></td>
+					<td data-bind-field="version" th:text="${domain.version}" ></td>
+            	*/
+            },
+            onLoadError: function (status) {
+                alert('error');
+            },
+            onDblClickRow: function (row, $element) {
+            	
+            },
+        });
+		
+		/* $('#table-domains').bootstrapTable({
+			uniqueId: 'id',
 			toolbar: '#toolbar-domains',
-			//queryParams: getBstableQueryParams(),
+			//url: window.location.origin + '/api/domains',
+			url: '/api/domains',
+			ajax: true,
+			queryParams: getBstableQueryParams(),
+			columns: [
+				{ checkbox: true }
+				, { field: 'id', title: 'Item ID' }
+			],
 			striped: true,
 			cache: false,
 			pagination: true,
@@ -68,13 +149,36 @@
 			showColumns: true,
 			showRefresh: true,
 			minimumCountColumns: 2,
-			clickToSelect: true,
 			showToggle: false,
 			cardView: false,
 			detailView: false,
 			sortable: true,
-			sortOrder: 'asc'
-		});
+			sortOrder: 'asc',
+			clickToSelect: true,
+			singleSelect: true,
+			onClickRow: function (item, $element) {
+				$btnEditDomain.data('formdomainid', $element.find('input[name="id"]').val()).attr('disabled', false);
+	            return false;
+	        },
+			onDblClickRow: function (item, $element) {
+				$btnEditDomain.data('formdomainid', $element.find('input[name="id"]').val()).attr('disabled', false).trigger("click");
+	            return false;
+	        }
+		}); */
+		
+		//$('tr.domain-row').tooltip({ html: true });
+		
+		var $btnEditDomain = $('.btn-edit-domain').off('click').on('click', function(e) {
+			if(!$(this).attr('disabled')) {
+				var id = $(this).data('formdomainid');
+				if(!id) {
+					alert('请选择需要编辑的数据行！');	
+				} else {
+					zyc.redirect($(this).attr('data-bind-href') + '/' + id);
+				}
+			}
+		}).attr('disabled', true);
+		
 	});
 </script>
 </html>

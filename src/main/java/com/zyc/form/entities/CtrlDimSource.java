@@ -92,7 +92,7 @@ public class CtrlDimSource extends BaseEntity implements Businessable<CtrlDimSou
 			return false;
 		}
 		
-		//同一表单下，控制维度数据源不能出现重复（重复依据：维度id或者维度编码相同）
-		return this.getFormdomainid().equals(obj.getFormdomainid()) && (this.getDimid().equals(obj.getDimid()) || this.getDimcode().equals(obj.getDimcode()));
+		//同一表单下，两个控制维度数据源各自的维度id、维度编码都相等，则业务上它们是相等的。
+		return this.getFormdomainid().equals(obj.getFormdomainid()) && this.getDimid().equals(obj.getDimid()) && this.getDimcode().equals(obj.getDimcode());
 	}
 }

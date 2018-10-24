@@ -2082,7 +2082,7 @@
                 this.options.totalRows : this.options.pageSize;
             params.pageNumber = this.options.pageNumber;
         }
-
+        
         if (!(url || this.options.url) && !this.options.ajax) {
             return;
         }

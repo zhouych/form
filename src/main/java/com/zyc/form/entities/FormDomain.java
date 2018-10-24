@@ -5,6 +5,7 @@ import java.sql.JDBCType;
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.entities.Businessable;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 import com.zyc.baselibs.entities.Labelable;
 
@@ -14,7 +15,7 @@ import com.zyc.baselibs.entities.Labelable;
  *
  */
 @DatabaseTable(name = "formdomains")
-public class FormDomain extends DescriptionBaseEntity implements java.io.Serializable, Labelable {
+public class FormDomain extends DescriptionBaseEntity implements java.io.Serializable, Labelable, Businessable<FormDomain> {
 
 	private static final long serialVersionUID = -6163333646343142660L;
 
@@ -66,5 +67,15 @@ public class FormDomain extends DescriptionBaseEntity implements java.io.Seriali
 	@Override
 	public String label() {
 		return this.getDomaincode() + " - " + this.getDomainname();
+	}
+
+	@Override
+	public boolean businessEquals(FormDomain obj) {
+		if(obj == null) {
+			return false;
+		}
+		
+		//主键id、编码都相等，则他们在业务上是相等的。
+		return obj.getId().equals(this.getId()) && obj.getDomaincode().equals(this.getDomaincode());
 	}
 }

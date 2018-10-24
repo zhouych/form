@@ -27,22 +27,22 @@
 	<div class="container-fluid">
 		<form id="domain-detail" class="form form-horizontal" method="post" th:action="@{/mgr/domain/} + ${action}" th:object="${domain}">
 			<input type="hidden" name="action" /> 
-			<input type="hidden" th:value="${domain.id}" th:field="*{id}" />
+			<input type="hidden" th:field="*{id}" />
 			<div class="container-fluid">
 				<div class="row page-header">
-				  	<h4>basic info</h4>
+				  	<h3>basic info</h3>
 				</div>
 				<div class="row form-group">
 					<!-- *********** Form Domain 'domainname' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="domainname">Name</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Name" th:value="${domain.domainname}" th:field="*{domainname}" />
+				      	<input type="text" class="form-control" placeholder="Name" th:field="*{domainname}" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 					<!-- *********** Form Domain 'domaincode' *********** -->
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="domaincode">Code</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Code" th:value="${domain.domaincode}" th:field="*{domaincode}" />
+				      	<input type="text" class="form-control" placeholder="Code" th:field="*{domaincode}" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -50,7 +50,7 @@
 					<!-- *********** Form Domain 'description' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="description">Description</label>
 				    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-				      	<input type="text" class="form-control" placeholder="Description" th:value="${domain.description}" th:field="*{description}" />
+				      	<input type="text" class="form-control" placeholder="Description" th:field="*{description}" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -64,8 +64,8 @@
 				      	</div>
 				    </div>
 				</div>
-				<div class="row page-header">
-				  	<h4>budget control dimensions</h4>
+				<div class="row page-header budget-ctrl-dim">
+				  	<h3>budget control dimensions</h3>
 				</div>
 				<div class="row form-group budget-ctrl-dim" th:each="cds,cdsStat:${domain.ctrlDimSources}" th:attr="data-bind-code=${cds.dimcode}">
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label label" th:text="${cds.dimname}" th:attr="data-bind-code=${cds.dimcode},data-bind-index=${cdsStat.index}"></label>
@@ -85,7 +85,7 @@
 					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"></div>
 				</div>
 				<div class="row page-header">
-				  	<h4>data tag</h4>
+				  	<h3>data tag</h3>
 				</div>
 				<div class="row form-group">
 					<!-- *********** Form Domain 'datastatus' *********** -->
@@ -99,7 +99,7 @@
 					<!-- *********** Form Domain 'version' *********** -->
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="version">Version</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Version" th:value="${domain.version}" th:field="*{version}" readonly="readonly" />
+				      	<input type="text" class="form-control" placeholder="Version" th:field="*{version}" readonly="readonly" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -107,15 +107,15 @@
 					<!-- *********** Form Domain 'createdat' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="createdat">Created At</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<input type="hidden" th:value="${domain.createdat}" th:field="*{createdat}" /> 
-						<input type="text" class="form-control date-show" readonly="readonly" />
+						<input type="hidden" th:field="*{createdat}" /> 
+						<input type="text" class="form-control" th:value="${#dates.format(domain.createdat,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 					<!-- *********** Form Domain 'updatedat' *********** -->
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="updatedat">Updated At</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<input type="hidden" th:value="${domain.updatedat}" th:field="*{updatedat}" />
-						<input type="text" class="form-control date-show" readonly="readonly" />
+						<input type="hidden" th:field="*{updatedat}" />
+						<input type="text" class="form-control" th:value="${#dates.format(domain.updatedat,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -124,7 +124,7 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns">
-						<button type="button" class="btn btn-default cancel">Cancel</button>
+						<button type="button" class="btn btn-default return">Return</button>
 						<button type="submit" class="btn btn-primary save">Save</button>
 					</div>
 				</div>
@@ -143,6 +143,16 @@
 <script type="text/javascript" th:src="@{/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
+		
+		var setBudgetctrldimVisiable = function(visiable) {
+			$('div.budget-ctrl-dim')[visiable ? 'show' : 'hide']();
+		}
+		
+		var $enabledbudgetctrl = $('input[name="enabledbudgetctrl"]').off('change').on('change', function(e) {
+			setBudgetctrldimVisiable($(this).is(':checked'));
+		});
+		
+		setBudgetctrldimVisiable($enabledbudgetctrl.is(':checked'));
 		
 		var _operateOptions = zyc.entryBeans(zyc.inexOperate)
 			, _relationOptions = zyc.entryBeans(zyc.memberRelation);
@@ -196,6 +206,10 @@
 				$text.data(keyBackupValue, $text.val() || '').val('');
 				$value.data(keyBackupValue, $value.val() || '').val('');
 			}
+		});
+		
+		$('.bottom-btns .btn.return').off('click').on('click', function(e) {
+			zyc.redirect('/mgr/domain');
 		});
 	});
 </script>
