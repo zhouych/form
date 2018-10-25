@@ -11,7 +11,7 @@ import com.zyc.baselibs.commons.ReflectUtils;
 import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.vo.EntryBean;
-import com.zyc.baselibs.web.bootstrap.EmptyNodeType;
+import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.TreeViewNode;
 import com.zyc.baselibs.web.bootstrap.TreeViewNodeState;
 import com.zyc.form.data.FieldTreeNodeType;

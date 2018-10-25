@@ -3,7 +3,7 @@ package com.zyc.form.serviceassist;
 import java.util.List;
 
 import com.zyc.baselibs.ex.BussinessException;
-import com.zyc.baselibs.web.bootstrap.EmptyNodeType;
+import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.TreeViewNode;
 
 public interface AreaFieldServiceAssistor {

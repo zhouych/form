@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zyc.baselibs.commons.CollectionUtils;
-import com.zyc.baselibs.web.bootstrap.EmptyNodeType;
+import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.service.FormService;

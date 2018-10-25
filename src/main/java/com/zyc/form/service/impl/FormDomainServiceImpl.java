@@ -19,18 +19,20 @@ import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.entities.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.ex.IllegalValueException;
-import com.zyc.baselibs.service.AbstractBaseService;
+import com.zyc.baselibs.service.AbstractSelectByPageService;
 import com.zyc.baselibs.vo.DeleteMode;
+import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.dao.CtrlDimSourceMapper;
 import com.zyc.form.dao.FormDomainMapper;
 import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.entities.FormDomain;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.vo.CtrlDimSourceOptionVO;
+import com.zyc.form.vo.FormDomainQueryVO;
 import com.zyc.form.vo.FormDomainVO;
 
 @Service
-public class FormDomainServiceImpl extends AbstractBaseService implements FormDomainService {
+public class FormDomainServiceImpl extends AbstractSelectByPageService implements FormDomainService {
 
 	@Autowired
 	private FormDomainMapper formDomainMapper;
@@ -70,14 +72,23 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 	
 	@Override
 	public List<FormDomainVO> selectAll() {
+		List<FormDomain> domains = this.formDomainMapper.select(new FormDomain().clean());
+		return this.fromEntities(domains);
+	}
+
+	@Override
+	public List<FormDomainVO> selectByPage(FormDomainQueryVO condition, String keyword, Pagination pagination) {
+		List<FormDomain> domains = this.selectByPage(this.formDomainMapper, condition.toEntity(), keyword, pagination);
+		return this.fromEntities(domains);
+	}
+	
+	private List<FormDomainVO> fromEntities(List<FormDomain> domains) {
 		List<FormDomainVO> result = null;
-		
-		List<FormDomain> formDomains = this.formDomainMapper.select(new FormDomain().clean());
-		if(CollectionUtils.hasElement(formDomains)) {
+		if(CollectionUtils.hasElement(domains)) {
 			result = new ArrayList<FormDomainVO>();
 			CtrlDimSource cds = new CtrlDimSource().clean();
 			FormDomainVO vo = null;
-			for (FormDomain formDomain : formDomains) {
+			for (FormDomain formDomain : domains) {
 				vo = new FormDomainVO(formDomain);
 				
 				cds.setFormdomainid(formDomain.getId());
@@ -86,10 +97,9 @@ public class FormDomainServiceImpl extends AbstractBaseService implements FormDo
 				result.add(vo);
 			}
 		}
-		
 		return result;
 	}
-
+	
 	@Override
 	public FormDomainVO selectByFormDomainId(String formdomainid) {
 		if(StringUtils.isBlank(formdomainid)) {

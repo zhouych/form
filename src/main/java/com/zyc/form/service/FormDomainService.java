@@ -4,13 +4,17 @@ package com.zyc.form.service;
 import java.util.List;
 
 import com.zyc.baselibs.vo.DeleteMode;
+import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.vo.CtrlDimSourceOptionVO;
+import com.zyc.form.vo.FormDomainQueryVO;
 import com.zyc.form.vo.FormDomainVO;
 
 public interface FormDomainService {
 
-	List<FormDomainVO> selectAll(); 
+	List<FormDomainVO> selectAll();
+	
+	List<FormDomainVO> selectByPage(FormDomainQueryVO condition, String keyword, Pagination pagination);
 	
 	FormDomainVO selectByFormDomainId(String formdomainid);
 	

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.zyc.baselibs.commons.StringUtils;
-import com.zyc.baselibs.web.bootstrap.EmptyNodeType;
+import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.form.serviceassist.AreaFieldServiceAssistor;
 import com.zyc.form.serviceassist.FormServiceAssistor;
 
