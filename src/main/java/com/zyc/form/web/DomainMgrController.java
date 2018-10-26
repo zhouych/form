@@ -23,7 +23,7 @@ public class DomainMgrController extends BaseFormController {
 	
     @RequestMapping(value = mgrPath, method = RequestMethod.GET)
 	public String index(Model model) {
-    	model.addAttribute("domains", this.formDomainService.selectAll());
+    	//model.addAttribute("domains", this.formDomainService.selectAll());
 		return mgrPath + "/index";
 	}
 

@@ -6,6 +6,7 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/css/zyc.css}" ></link>
 <style type="text/css">
 	table th {
 		text-align: center;
@@ -17,37 +18,10 @@
 	<div class="container-fluid">
 		<div id="toolbar-domains">
 			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}">新增表单域</a>
-			<a role="button" class="btn btn-default btn-edit-domain" th:attr="data-bind-href=@{/mgr/domain/editpage}">编辑表单域</a>
+			<a role="button" class="btn btn-default btn-edit-domain limit-operate" th:attr="data-bind-href=@{/mgr/domain/editpage}">编辑表单域</a>
+			<a role="button" class="btn btn-default btn-delete-domain limit-operate" th:attr="data-bind-href=@{/api/domain/}">删除表单域</a>
 		</div>
-		<table id="table-domains">
-			<!-- <thead>
-				<tr>
-					<th></th>
-					<th>编码</th>
-					<th>名称</th>
-					<th>预算控制</th>
-					<th>数据状态</th>
-					<th>创建日期</th>
-					<th>编辑日期</th>
-					<th>版本号</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="domain-row" th:each="domain,domainStat:${domains}">
-					<td data-bind-field="id">
-						<input type="hidden" name="id" th:value="${domain.id}" /> 
-						<input type="checkbox" />
-					</td>
-					<td data-bind-field="domaincode" th:text="${domain.domaincode}" ></td>
-					<td data-bind-field="domainname" th:text="${domain.domainname}" ></td>
-					<td data-bind-field="enabledbudgetctrl" th:text="${domain.enabledbudgetctrl}"></td>
-					<td data-bind-field="datastatus" th:text="${domain.datastatus}" ></td>
-					<td data-bind-field="createdat" th:text="${#dates.format(domain.createdat,'yyyy-MM-dd HH:mm:ss')}" ></td>
-					<td data-bind-field="updatedat" th:text="${#dates.format(domain.updatedat,'yyyy-MM-dd HH:mm:ss')}" ></td>
-					<td data-bind-field="version" th:text="${domain.version}" ></td>
-				</tr>
-			</tbody> -->
-		</table>
+		<table id="table-domains"></table>
 	</div>
 	<div th:replace="/fragments/layout::footer" />
 </body>
@@ -60,40 +34,94 @@
 <script type="text/javascript" th:src="@{/js/zyc-bs-table.js}" ></script>
 <script type="text/javascript" th:inline="javascript">
 	$(document).ready(function() {
-
-		var $btnEditDomain = $('.btn-edit-domain').off('click').on('click', function(e) {
+		var limitOperate = function(e, operateText, handle) {
 			if(!$(this).attr('disabled')) {
 				var id = $(this).data('formdomainid');
 				if(!id) {
-					alert('请选择需要编辑的数据行！');	
+					alert('请选择需要' + operateText + '的数据行！');	
 				} else {
-					zyc.redirect($(this).attr('data-bind-href') + '/' + id);
+					handle.apply(this, [e, id]);
 				}
 			}
+		}
+		
+		var $btnEditDomain = $('.btn.btn-edit-domain').off('click').on('click', function(e) {
+			limitOperate.apply(this, [ e, '编辑', 
+				function(e, id) {
+					zyc.redirect($(this).attr('data-bind-href') + '/' + id);
+				} 
+			]);
 		}).attr('disabled', true);
 		
+		var $btnDeleteDomain = $('.btn.btn-delete-domain').off('click').on('click', function(e) {
+			limitOperate.apply(this, [ e, '删除', 
+				function(e, id) {
+					if(confirm('您确认要删除当前选择的数据行吗？')) {
+						$.ajax({
+							url : $(this).attr('data-bind-href') + '/' + id,
+							data: {},
+							type: 'delete',
+							dataType: 'json',
+							async: true,
+							success: function(resp) {
+								if(resp.status === '0') {
+									zyc.alert(resp.message || '删除成功！');
+									$table.bootstrapTable('refresh');
+								} else {
+							    	zyc.alert(resp.message, 'error');
+								};
+							},
+						    error: function(err) {
+						    	zyc.alert(null, 'error');
+						    }
+						});	
+					}
+				} 
+			]);
+		}).attr('disabled', true);
+		
+		var textEnabledbudgetctrl = function(value, item, i) {
+			return value ? '已启用' : '未启用';
+		} 
+		
+		var textCtrlDimSources = function(value, item, index) {
+			return bstable.tooltipArrayColumn(item.enabledbudgetctrl, function(o) {
+				return { classes: 'ctrl-dim-source', text: o.dimname, title: [ o.dimcode + ' - ' + o.dimname, ': ', o.expressiontext ] };
+			}, value, item, index);
+		}
+		
 		var $table;
+		
 		bstable.init($table = $('#table-domains'), {
 			toolbar: '#toolbar-domains',
 			url: '/api/domains',
 			method: 'post',
 			columns: [
             	{ checkbox: true, visible: true } 
-            	, { field: 'id', title: 'id', sortable: true }
+            	, { field: 'id', title: 'id', sortable: true, visible: false }
             	, { field: 'domaincode', title: '编码', sortable: true }
             	, { field: 'domainname', title: '名称', sortable: true }
-            	, { field: 'enabledbudgetctrl', title: '启用预算控制', sortable: true }
-            	, { field: 'datastatus', title: '状态', sortable: true }
-            	, { field: 'createdat', title: '创建日期', sortable: true }
-            	, { field: 'updatedat', title: '跟新日期', sortable: true }
-            	, { field: 'version', title: '版本号', sortable: true }
+            	, { field: 'enabledbudgetctrl', title: '启用预算控制', sortable: true, halign: 'center', align: 'center', formatter: textEnabledbudgetctrl }
+            	, { field: 'ctrlDimSources', title: '预算控制维度', sortable: false, halign: 'center', align: 'center', formatter: textCtrlDimSources, cellStyle: bstable.cellDisableRowTooltip }
+            	, { field: 'datastatus', title: '状态', sortable: true, halign: 'center', align: 'center', formatter: zyc.textDataStatus }
+            	, { field: 'createdat', title: '创建日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
+            	, { field: 'updatedat', title: '更新日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
+            	, { field: 'version', title: '版本号', sortable: true, halign: 'center', align: 'right' }
             ],
+            rowTooltipable: true,
+            rowTooltipTitle: '单击选中当前行，双击进入详情页。',
+            onLoadSuccess: function(data) {
+        		$table.find('tbody input[type="checkbox"][name="btSelectItem"]').off('change').on('change', function(e) {
+        			var checked = $(this).is(':checked'),
+        				value = $(this).val();
+    				$('.limit-operate').data('formdomainid', checked ? value : null).attr('disabled', !checked);
+        		});
+            },
 			onClickRow: function (item, $element) {
-				$btnEditDomain.data('formdomainid', item.id).attr('disabled', false);
 	            return false;
 	        },
 			onDblClickRow: function (item, $element) {
-				$btnEditDomain.data('formdomainid', item.id).attr('disabled', false).trigger("click");
+				$('.limit-operate').data('formdomainid', item.id).attr('disabled', false).trigger("click");
 	            return false;
 	        }
 		}, function(params) {
@@ -102,8 +130,6 @@
 				searchText: params.search
 			};
 		});
-		
-		//$('tr.domain-row').tooltip({ html: true });
 		
 	});
 </script>

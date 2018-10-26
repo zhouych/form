@@ -1,9 +1,40 @@
 (function() {
 	
 	//扩展查询参数
-	var extendQueryParams = function(params, old, extension) {
+	var _extendQueryParams = function(params, old, extension) {
 		return $.extend(true, {}, old(params), extension(params));
 	}
+
+    _onLoadSuccess = function (data) {
+    	var that = this;
+    	if(that.rowTooltipable) {
+    		that.$elmt.find('tbody tr[data-uniqueid] td:not(.disable-row-tooltip)').each(function(index) {
+	    		$(this).tooltip({
+	    			container: 'body',
+	    			html: true,
+	    			title: '<span class="label label-none">' + (that.rowTooltipTitle || $(this).text()) + '</span>',
+	    			placement: 'bottom',
+	    			delay: { show: 400, hide: 100 }
+	    		})
+	    	});
+    	}
+		
+    	that.$elmt.find('.arrcol-item-tooltip').each(function(index) {
+    		var $this = $(this)
+    			, count = parseInt($this.attr('data-bind-part-count'));
+    		
+    		if(!isNaN(count)) {
+    			var titles = [], tmp;
+    			for(var i = 0; i < count; i++) {
+    				tmp = $this.attr('data-bind-part-' + i);
+    				if(tmp) {
+    					titles.push('<span class="label label-none href">' + tmp + '</span>');
+    				}
+    			}
+	    		$(this).tooltip({ html: true, title: titles.join(''), placement: 'bottom' });
+    		}
+    	});
+    }
 	
 	var bstable = window['bstable'] = {
 		//初始化bootstrap-table，即执行$.fn.bootstrapTable函数
@@ -11,16 +42,53 @@
 		//@param options: bootstrap-table插件的参数选项
 		//@param queryParamsExtension: 函数，用于扩展bootstrap-table插件的参数选项queryParams属性
 		init: function($element, options, queryParamsExtension) {
-			var currentOptions = {};
-			$.extend(true, currentOptions, DEFAULTS, typeof options == 'object' && options || {});
+			options = typeof options == 'object' && options || {}
+			var currentOptions = { $elmt: $element };
+			$.extend(true, currentOptions, DEFAULTS, options);
 			
 			if(typeof queryParamsExtension === 'function') {
 				currentOptions.queryParams = function(params) {
-					return extendQueryParams(params, DEFAULTS.queryParams, queryParamsExtension);
+					return _extendQueryParams(params, DEFAULTS.queryParams, queryParamsExtension);
+				}
+			}
+			
+			if(typeof options.onLoadSuccess === 'function') {
+				currentOptions.onLoadSuccess = function(data) {
+					DEFAULTS.onLoadSuccess.apply(this, [ data ]);
+					options.onLoadSuccess.apply(this, [ data ]);
 				}
 			}
 			
 			$element.bootstrapTable(currentOptions);
+		},
+		tooltipArrayColumn: function(enabledLoop, func, value, item, i) {
+			if(!enabledLoop) {
+				return '';
+			}
+
+			var l = $.isArray(value) && value.length || 0
+				, isFunction = typeof func === 'function'
+				, htmls = [], info, parts, attrHtml
+				, template = '<span class="label label-tag hand arrcol-item-tooltip %s" href %s>%s</span>';
+			
+			for(var k = 0; k < l; k++) {
+				if(isFunction) {
+					info = func(value[k]);
+					if(info) {
+						parts = info.title && $.isArray(info.title) ? info.title : [ info.title || info.text ];
+						attrHtml = 'data-bind-part-count="' + parts.length + '"';
+						for(var m = 0; m < parts.length; m++) {
+							attrHtml += ' data-bind-part-' + m + '="' + parts[m] + '"';
+						}
+						htmls.push(zyc.sprintf(template, info.classes, attrHtml, info.text));
+					}
+				}
+			}
+			
+			return htmls.length ? htmls.join(' ') : '';
+		},
+		cellDisableRowTooltip: function(value, row, index, field) {
+			return { classes: 'disable-row-tooltip' };
 		}
 	};
 
@@ -115,8 +183,9 @@
 	    //	//You must use `this.data` array in order to sort the data. NO use `this.options.data`.
 		//}
 	    customSort: $.noop,
-	    onLoadSuccess: function (data) {
-	    },
+	    rowTooltipable: false,
+	    rowTooltipTitle: '',
+	    onLoadSuccess: _onLoadSuccess,
 	    onLoadError: function (status) {
 	    },
 		onClickRow: function (item, $element) {

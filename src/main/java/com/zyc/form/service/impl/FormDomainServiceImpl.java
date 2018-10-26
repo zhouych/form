@@ -281,20 +281,18 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	public boolean deleteOnLogic(String formdomainid) throws Exception {
 		AssertThrowNonRuntime.hasText(formdomainid, "This parameter 'formdomainid' is null or empty. (formdomainid=" + formdomainid + ")");
 		
-		FormDomainVO entity = this.selectByFormDomainId(formdomainid);
-		AssertThrowNonRuntime.notNull(entity, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
-		if(entity.getDatastatus().equals(DataStatus.DELETED.getValue()) || entity.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
-			throw new BussinessException("The user was " + entity.getDatastatus().toLowerCase() + ". (domainname=" + entity.getDomainname() + ")");
+		FormDomainVO domain = this.selectByFormDomainId(formdomainid);
+		AssertThrowNonRuntime.notNull(domain, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
+		if(domain.getDatastatus().equals(DataStatus.DELETED.getValue()) || domain.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
+			throw new BussinessException("The user was " + domain.getDatastatus().toLowerCase() + ". (domainname=" + domain.getDomainname() + ")");
 		}
 		
-		entity.setDatastatus(DataStatus.DELETED.getValue());
-		int result = this.update(this.formDomainMapper, entity, ACTION_DELETE);
+		domain.setDatastatus(DataStatus.DELETED.getValue());
+		int result = this.update(this.formDomainMapper, domain.toEntity(), ACTION_DELETE);
 		if(result > 0) {
-			CtrlDimSource cds;
-			for (CtrlDimSourceOptionVO cdso : entity.getCtrlDimSources()) {
-				cds = cdso.toEntity();
-				cds.setDatastatus(DataStatus.DELETED.getValue());
-				this.update(this.ctrlDimSourceMapper, cds, ACTION_DELETE);
+			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
+				cdso.setDatastatus(DataStatus.DELETED.getValue());
+				this.update(this.ctrlDimSourceMapper, cdso.toEntity(), ACTION_DELETE);
 			}
 		}
 		
@@ -309,20 +307,25 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	public boolean deleteOnPhysical(String formdomainid) throws Exception {
 		AssertThrowNonRuntime.hasText(formdomainid, "This parameter 'formdomainid' is null or empty. (formdomainid=" + formdomainid + ")");
 
-		FormDomainVO entity = this.selectByFormDomainId(formdomainid);
-		AssertThrowNonRuntime.notNull(entity, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
-		if(entity.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
-			throw new BussinessException("The user was " + entity.getDatastatus().toLowerCase() + ". (domainname=" + entity.getDomainname() + ")");
+		FormDomainVO domain = this.selectByFormDomainId(formdomainid);
+		AssertThrowNonRuntime.notNull(domain, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
+		if(domain.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
+			throw new BussinessException("The user was " + domain.getDatastatus().toLowerCase() + ". (domainname=" + domain.getDomainname() + ")");
 		}
 		
-		FormDomain condition = new FormDomain().clean();
-		condition.setId(entity.getId());
-		condition.setVersion(entity.getVersion());
-		int result = this.formDomainMapper.delete(entity);
+		FormDomain target = new FormDomain().clean();
+		target.setId(domain.getId());
+		target.setVersion(domain.getVersion());
+		int result = this.formDomainMapper.delete(target);
 		if(result > 0) {
-			CtrlDimSource cds = new CtrlDimSource().clean();
-			cds.setFormdomainid(entity.getId());
-			this.ctrlDimSourceMapper.delete(cds);
+			Integer version;
+			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
+				version = cdso.getVersion();
+				cdso.toEntity().clean();
+				cdso.setVersion(version);
+				cdso.setFormdomainid(formdomainid);
+				this.ctrlDimSourceMapper.delete(cdso.toEntity());
+			}
 		}
 		
 		return result > 0;
