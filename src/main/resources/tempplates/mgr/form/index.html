@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>表单定义</title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}" ></link>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		<div id="toolbar-forms">
+			<a role="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}">新增</a>
+			<a role="button" id="btn_edit_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/editpage}">编辑</a>
+			<a role="button" id="btn_del_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/}">删除</a>
+			<a role="button" id="btn_form_design" class="btn btn-default limit-operate">格式设计</a>
+		</div>
+		<table id="table-forms"></table>
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/table/bootstrap-table.js}" ></script>
+<script type="text/javascript" th:src="@{/bs-plugins/table/locale/bootstrap-table-zh-CN.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-bs-table.js}" ></script>
+<script th:inline="javascript" type="text/javascript">
+	$(document).ready(function() {
+		//事件列表
+		var events = {
+			'btn_edit_form': function(e, id) {
+				zyc.redirect($(this).attr('data-bind-href') + '/' + id);
+			},
+			'btn_del_form': function(e, id) {
+				if(confirm('您确认要删除当前选择的表单吗？')) {
+					$.ajax({
+						url : $(this).attr('data-bind-href') + '/' + id,
+						data: {},
+						type: 'delete',
+						dataType: 'json',
+						async: true,
+						success: function(resp) {
+							if(resp.status === '0') {
+								zyc.alert(resp.message || '删除成功！');
+								$table.bootstrapTable('refresh');
+							} else {
+						    	zyc.alert(resp.message, 'error');
+							};
+						},
+					    error: function(err) {
+					    	zyc.alert(null, 'error');
+					    }
+					});	
+				}
+			},
+			'btn_form_design': function(e, id) {
+				zyc.redirect($(this).attr('data-bind-href') + '?formid=' + id);
+			}
+		};
+		
+		$('.btn.limit-operate').off('click').on('click', function(e) {
+			if(!$(this).attr('disabled')) {
+				var formid = $(this).data('formid');
+				if(!formid) {
+					alert('请选择需要' + $(this).text() + '的表单！');	
+				} else {
+					events[$(this).attr('id')].apply(this, [e, formid]);
+				}
+			}
+		}).attr('disabled', true);
+		
+		var $table;
+		
+		bstable.init($table = $('#table-forms'), {
+			toolbar: '#toolbar-forms',
+			url: '/mgr/form/forms',
+			method: 'post',
+			columns: [
+            	{ checkbox: true, visible: true } 
+            	, { field: 'id', title: 'id', sortable: true, visible: false }
+            	, { field: 'formdomainid', title: '表单域ID', sortable: true, halign: 'center', align: 'center' }
+            	, { field: 'formcode', title: '编码', sortable: true }
+            	, { field: 'formname', title: '名称', sortable: true }
+            	, { field: 'formtype', title: '表单类型', sortable: false, halign: 'center', align: 'center' }
+            	, { field: 'datastatus', title: '状态', sortable: true, halign: 'center', align: 'center', formatter: zyc.textDataStatus }
+            	, { field: 'createdat', title: '创建日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
+            	, { field: 'updatedat', title: '更新日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
+            	, { field: 'version', title: '版本号', sortable: true, halign: 'center', align: 'right' }
+            ],
+            sortName: 'formdomainid',
+            rowTooltipable: true,
+            rowTooltipTitle: '单击选中当前行，双击进入详情页。',
+            onLoadSuccess: function(data) {
+        		$table.find('tbody input[type="checkbox"][name="btSelectItem"]').off('change').on('change', function(e) {
+        			var checked = $(this).is(':checked'),
+        				value = $(this).val();
+    				$('.btn.limit-operate').data('formid', checked ? value : null).attr('disabled', !checked);
+        		});
+            },
+			onClickRow: function (item, $element) {
+	            return false;
+	        },
+			onDblClickRow: function (item, $element) {
+				$('#btn_edit_form').data('formid', item.id).attr('disabled', false).trigger("click");
+	            return false;
+	        }
+		}, function(params) {
+			return {
+				condition: {},
+				searchText: params.search
+			};
+		});
+	});
+</script>
+</html>

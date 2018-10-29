@@ -14,7 +14,7 @@
 	    			html: true,
 	    			title: '<span class="label label-none">' + (that.rowTooltipTitle || $(this).text()) + '</span>',
 	    			placement: 'bottom',
-	    			delay: { show: 400, hide: 100 }
+	    			delay: { show: 1000/*, hide: 50*/ }
 	    		})
 	    	});
     	}

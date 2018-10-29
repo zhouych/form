@@ -2,8 +2,11 @@ package com.zyc.form.serviceassist;
 
 import java.util.List;
 
+import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.web.EmptyNodeType;
+import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
+import com.zyc.form.vo.FormVO;
 
 public interface FormServiceAssistor {
 	
@@ -12,4 +15,13 @@ public interface FormServiceAssistor {
 	 * @return
 	 */
 	List<HierarchySelectNode> composeFormTree(EmptyNodeType emptyNodeType);
+
+	/**
+	 * 合成bootstrap-table表格插件的数据源
+	 * @param condition 过滤条件
+	 * @param searchText 过滤关键字
+	 * @param pagination 分页参数
+	 * @return
+	 */
+	BsTableDataSource<FormVO> composeBsTableDataSource(FormVO condition, String searchText, Pagination pagination);
 }

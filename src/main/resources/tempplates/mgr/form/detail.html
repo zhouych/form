@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title th:text="${actionText} + '表单域'"></title>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-tree-expression-modal.css}"></link>
+</head>
+<body>
+	<div th:replace="/fragments/layout::header('login') " />
+	<div class="container-fluid">
+		<form id="form-detail" class="form form-horizontal" method="post" th:object="${form}">
+			<input type="hidden" name="action" /> 
+			<input type="hidden" th:field="*{id}" />
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns">
+						<button type="button" class="btn btn-default return">Return</button>
+						<button type="submit" class="btn btn-primary save" th:attr="readonly=${readonly},disabled=${readonly}">Save</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div th:replace="/fragments/layout::footer" />
+</body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}"></script>
+<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
+<script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/bootstrap-select.js}"></script>
+<script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
+<script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
+<script th:inline="javascript" type="text/javascript">
+	$(document).ready(function() {
+
+		$('.bottom-btns .btn.return').off('click').on('click', function(e) {
+			zyc.redirect('/mgr/form');
+		});
+	});
+</script>
+</html>

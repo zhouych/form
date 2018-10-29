@@ -27,8 +27,6 @@ public class DomainRestController extends BaseFormController {
 	@Autowired
 	private FormDomainService formDomainService;
     
-    private static final String restPath = "/api";
-
     @RequestMapping(value = restPath + "/domain/{formdomainid}", method = RequestMethod.DELETE)
     public String domain(@PathVariable(name = "formdomainid") String formdomainid) {
     	ResponseResult result = new ResponseResult();

@@ -2,11 +2,11 @@ package com.zyc.form.vo;
 
 import org.springframework.beans.BeanUtils;
 
-import com.zyc.baselibs.entities.Entityable;
+import com.zyc.baselibs.entities.EntityCopyable;
 import com.zyc.form.client.vo.DimensionVO;
 import com.zyc.form.entities.CtrlDimSource;
 
-public class CtrlDimSourceOptionVO extends CtrlDimSource implements Entityable<CtrlDimSource> {
+public class CtrlDimSourceOptionVO extends CtrlDimSource implements EntityCopyable<CtrlDimSource> {
 	
 	private boolean enabled = false;
 
@@ -34,7 +34,7 @@ public class CtrlDimSourceOptionVO extends CtrlDimSource implements Entityable<C
 	}
 
 	@Override
-	public CtrlDimSource toEntity() {
+	public CtrlDimSource copyEntity() {
 		CtrlDimSource source = new CtrlDimSource();
 		BeanUtils.copyProperties(this, source);
 		return source;

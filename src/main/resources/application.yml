@@ -52,8 +52,8 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   
 server:
-  #port: 6001
-  port: 6002
+  port: 6001
+  #port: 6002
   # 没有必要使用以下配置
   #servlet:
   #  context-path: /${spring.application.name}

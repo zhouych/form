@@ -9,6 +9,7 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/pygments.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/hierarchy-select.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
@@ -46,8 +47,8 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.min.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/hierarchy-select/js/hierarchy-select.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		var currentFormid = $('input[name="currentFormid"]').val()

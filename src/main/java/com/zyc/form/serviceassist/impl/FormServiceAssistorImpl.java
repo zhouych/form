@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zyc.baselibs.commons.CollectionUtils;
+import com.zyc.baselibs.vo.Pagination;
+import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.baselibs.web.EmptyNodeType;
+import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.service.FormService;
@@ -57,6 +60,18 @@ public class FormServiceAssistorImpl implements FormServiceAssistor {
 		}
 		
 		return data;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BsTableDataSource<FormVO> composeBsTableDataSource(FormVO condition, String searchText, Pagination pagination) {
+		PaginationResult<FormVO> result = this.formService.selectByPage(condition, searchText, pagination);
+		BsTableDataSource<FormVO> dataSource = new BsTableDataSource<FormVO>();
+		dataSource.setRows(result.getRows());
+		dataSource.setTotal(result.getTotal());
+		return dataSource;
 	}
 
 }

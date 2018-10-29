@@ -23,26 +23,24 @@ public class DomainMgrController extends BaseFormController {
 	
     @RequestMapping(value = mgrPath, method = RequestMethod.GET)
 	public String index(Model model) {
-    	//model.addAttribute("domains", this.formDomainService.selectAll());
 		return mgrPath + "/index";
 	}
 
     @RequestMapping(value = mgrPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
-    	this.handleDetailRequest(model, ClientAction.ADD, null);
+    	this.handleDetailRequest(model, ClientAction.ADD, null, false);
     	return mgrPath + "/detail";
     }
 
     @RequestMapping(value = mgrPath + "/add", method = RequestMethod.POST)
     public String add(Model model, @ModelAttribute("domain") FormDomainVO domain) throws Exception {
     	domain = this.formDomainService.create(domain);
-    	//return this.editpage(model, domain.getId());
     	return "redirect:" + mgrPath + "/editpage/" + domain.getId();
     }
 
     @RequestMapping(value = mgrPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
-    	this.handleDetailRequest(model, ClientAction.EDIT, formdomainid);
+    	this.handleDetailRequest(model, ClientAction.EDIT, formdomainid, false);
     	return mgrPath + "/detail";
     }
 
@@ -52,7 +50,7 @@ public class DomainMgrController extends BaseFormController {
     	return "redirect:" + mgrPath + "/editpage/" + domain.getId();
     }
     
-    private String handleDetailRequest(Model model, ClientAction action, String formdomainid) {
+    private String handleDetailRequest(Model model, ClientAction action, String formdomainid, boolean readonly) {
     	model.addAttribute("action", action.getValue());
     	model.addAttribute("actionText", action.getText());
     	model.addAttribute("allDataStatus", DataStatus.toList());
@@ -71,6 +69,7 @@ public class DomainMgrController extends BaseFormController {
     	domain.addCtrlDimSourceOptions(this.mdataClient.budgetCtrlDimensions());
     	
     	model.addAttribute("domain", domain);
+    	model.addAttribute("readonly", readonly || !DataStatus.ENABLED.getValue().equals(domain.getDatastatus()));
     	
     	return mgrPath + "/detail";
     }

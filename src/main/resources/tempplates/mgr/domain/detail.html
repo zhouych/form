@@ -7,20 +7,8 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
-<link type="text/css" rel="stylesheet" th:href="@{/css/zyc-tree-expression-modal.css}"></link>
-<style type="text/css">
-	.bottom-btns {
-		text-align: center;
-	}
-	
-	.bottom-btns > button {
-		margin-right: 20px;
-	}
-	
-	.hand {
-		cursor: pointer; 
-	}
-</style>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-tree-expression-modal.css}"></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
@@ -36,13 +24,13 @@
 					<!-- *********** Form Domain 'domainname' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="domainname">Name</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Name" th:field="*{domainname}" />
+				      	<input type="text" class="form-control" placeholder="Name" th:field="*{domainname}" th:attr="readonly=${readonly}" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 					<!-- *********** Form Domain 'domaincode' *********** -->
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="domaincode">Code</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Code" th:field="*{domaincode}" />
+				      	<input type="text" class="form-control" placeholder="Code" th:field="*{domaincode}" th:attr="readonly=${readonly}" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -50,7 +38,7 @@
 					<!-- *********** Form Domain 'description' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="description">Description</label>
 				    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-				      	<input type="text" class="form-control" placeholder="Description" th:field="*{description}" />
+				      	<input type="text" class="form-control" placeholder="Description" th:field="*{description}" th:attr="readonly=${readonly}" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -59,7 +47,7 @@
 					<div class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-10 col-lg-10">
 				      	<div class="checkbox">
 				        	<label>
-				          		<input type="checkbox" th:field="*{enabledbudgetctrl}" /> Enable Budget Control
+				          		<input type="checkbox" th:field="*{enabledbudgetctrl}" th:attr="readonly=${readonly},disabled=${readonly}" /> Enable Budget Control
 				        	</label>
 				      	</div>
 				    </div>
@@ -91,7 +79,7 @@
 					<!-- *********** Form Domain 'datastatus' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="datastatus">Data Status</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<select class="form-control" th:field="*{datastatus}">
+						<select class="form-control" th:field="*{datastatus}" th:attr="readonly=${readonly},disabled=${readonly}">
 							<option th:each="ds:${allDataStatus}" th:value="${ds.value}" th:text="${ds.text}"></option>
 						</select>
 					</div>
@@ -125,7 +113,7 @@
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns">
 						<button type="button" class="btn btn-default return">Return</button>
-						<button type="submit" class="btn btn-primary save">Save</button>
+						<button type="submit" class="btn btn-primary save" th:attr="readonly=${readonly},disabled=${readonly}">Save</button>
 					</div>
 				</div>
 			</div>
@@ -138,9 +126,9 @@
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/bootstrap-select.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc-tree-expression-modal.js}"></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		

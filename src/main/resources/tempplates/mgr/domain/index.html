@@ -6,12 +6,7 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
-<link type="text/css" rel="stylesheet" th:href="@{/css/zyc.css}" ></link>
-<style type="text/css">
-	table th {
-		text-align: center;
-	}
-</style>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}" ></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
@@ -20,6 +15,7 @@
 			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}">新增表单域</a>
 			<a role="button" class="btn btn-default btn-edit-domain limit-operate" th:attr="data-bind-href=@{/mgr/domain/editpage}">编辑表单域</a>
 			<a role="button" class="btn btn-default btn-delete-domain limit-operate" th:attr="data-bind-href=@{/api/domain/}">删除表单域</a>
+			<a role="button" class="btn btn-default btn-add-form limit-operate" th:attr="data-bind-href=@{/mgr/form/addpage}">新增表单</a>
 		</div>
 		<table id="table-domains"></table>
 	</div>
@@ -29,16 +25,16 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/bootstrap-table.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/locale/bootstrap-table-zh-CN.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc-form.js}" ></script>
-<script type="text/javascript" th:src="@{/js/zyc-bs-table.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-bs-table.js}" ></script>
 <script type="text/javascript" th:inline="javascript">
 	$(document).ready(function() {
 		var limitOperate = function(e, operateText, handle) {
 			if(!$(this).attr('disabled')) {
 				var id = $(this).data('formdomainid');
 				if(!id) {
-					alert('请选择需要' + operateText + '的数据行！');	
+					alert('请选择需要' + operateText + '的表单域！');	
 				} else {
 					handle.apply(this, [e, id]);
 				}
@@ -51,7 +47,7 @@
 					zyc.redirect($(this).attr('data-bind-href') + '/' + id);
 				} 
 			]);
-		}).attr('disabled', true);
+		});
 		
 		var $btnDeleteDomain = $('.btn.btn-delete-domain').off('click').on('click', function(e) {
 			limitOperate.apply(this, [ e, '删除', 
@@ -78,7 +74,17 @@
 					}
 				} 
 			]);
-		}).attr('disabled', true);
+		});
+		
+		var $btnAddForm = $('.btn.btn-add-form').off('click').on('click', function(e) {
+			limitOperate.apply(this, [ e, '新增表单', 
+				function(e, id) {
+					zyc.redirect($(this).attr('data-bind-href') + '?formdomainid=' + id);
+				} 
+			]);
+		});
+		
+		$('.btn.limit-operate').attr('disabled', true);
 		
 		var textEnabledbudgetctrl = function(value, item, i) {
 			return value ? '已启用' : '未启用';
@@ -121,7 +127,7 @@
 	            return false;
 	        },
 			onDblClickRow: function (item, $element) {
-				$('.limit-operate').data('formdomainid', item.id).attr('disabled', false).trigger("click");
+				$btnEditDomain.data('formdomainid', item.id).attr('disabled', false).trigger("click");
 	            return false;
 	        }
 		}, function(params) {

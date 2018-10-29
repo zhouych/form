@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.service.AbstractBaseService;
+import com.zyc.baselibs.vo.Pagination;
+import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.service.FormService;
@@ -59,6 +61,27 @@ public class FormServiceImpl extends AbstractBaseService implements FormService 
 		
 		FormVO vo = null;
 		return vo;
+	}
+
+	@Override
+	public PaginationResult<FormVO> selectByPage(FormVO condition, String searchText, Pagination pagination) {
+		PaginationResult<FormVO> result = new PaginationResult<FormVO>();
+		
+		List<FormVO> rows = new ArrayList<FormVO>();
+		rows.addAll(testData);
+		result.setRows(rows);
+		
+		result.setTotal(testData.size());
+		
+		result.setPagination(pagination);
+		
+		return result;
+	}
+
+	@Override
+	public FormVO create(FormVO form) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

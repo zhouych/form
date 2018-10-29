@@ -78,7 +78,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 
 	@Override
 	public List<FormDomainVO> selectByPage(FormDomainQueryVO condition, String keyword, Pagination pagination) {
-		List<FormDomain> domains = this.selectByPage(this.formDomainMapper, condition.toEntity(), keyword, pagination);
+		List<FormDomain> domains = this.selectByPage(this.formDomainMapper, condition.copyEntity(), keyword, pagination);
 		return this.fromEntities(domains);
 	}
 	
@@ -148,7 +148,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public FormDomainVO create(FormDomainVO vo) throws Exception {
-		FormDomain fd = vo.toEntity();
+		FormDomain fd = vo.copyEntity();
 		//依据id与code进行判重
 		if(this.formDomainMapper.load(fd.getId(), FormDomain.class) != null || this.selectByFormDomainCode(fd.getDomaincode()) != null) {
 			throw new BussinessException("This form domain already exists. (id=" + fd.getId() + ", domaincode=" + fd.getDomaincode() + ")");
@@ -225,7 +225,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public CtrlDimSource createCtrlDimSource(CtrlDimSourceOptionVO vo, String formdomainid) throws Exception {
-		CtrlDimSource source = vo.toEntity();
+		CtrlDimSource source = vo.copyEntity();
 		//formdomainid为表单域主键ID，该ID为当前待添加数据的外键（表单域主键ID）的正确值
 		if(StringUtils.isBlank(formdomainid) || !formdomainid.equals(vo.getFormdomainid())) {
 			throw new IllegalValueException(String.format("The data 'formdomainid' does not match. (formdomainid: %s!=%s)", vo.getFormdomainid(), formdomainid));
@@ -245,7 +245,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	@ParamVerification(rules = { FieldRule.class })
 	public FormDomainVO modify(FormDomainVO vo) throws Exception {
-		FormDomain domain = vo.toEntity();
+		FormDomain domain = vo.copyEntity();
 		
 		FormDomain old = this.formDomainMapper.load(domain.getId(), FormDomain.class);
 		if(old == null || !domain.businessEquals(old)) {
@@ -288,11 +288,11 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 		}
 		
 		domain.setDatastatus(DataStatus.DELETED.getValue());
-		int result = this.update(this.formDomainMapper, domain.toEntity(), ACTION_DELETE);
+		int result = this.update(this.formDomainMapper, domain.copyEntity(), ACTION_DELETE);
 		if(result > 0) {
 			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
 				cdso.setDatastatus(DataStatus.DELETED.getValue());
-				this.update(this.ctrlDimSourceMapper, cdso.toEntity(), ACTION_DELETE);
+				this.update(this.ctrlDimSourceMapper, cdso.copyEntity(), ACTION_DELETE);
 			}
 		}
 		
@@ -321,10 +321,10 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 			Integer version;
 			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
 				version = cdso.getVersion();
-				cdso.toEntity().clean();
+				cdso.copyEntity().clean();
 				cdso.setVersion(version);
 				cdso.setFormdomainid(formdomainid);
-				this.ctrlDimSourceMapper.delete(cdso.toEntity());
+				this.ctrlDimSourceMapper.delete(cdso.copyEntity());
 			}
 		}
 		

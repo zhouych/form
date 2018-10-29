@@ -7,13 +7,13 @@ import org.springframework.beans.BeanUtils;
 
 import com.zyc.baselibs.aopv.Verifiable;
 import com.zyc.baselibs.commons.CollectionUtils;
-import com.zyc.baselibs.entities.Entityable;
+import com.zyc.baselibs.entities.EntityCopyable;
 import com.zyc.form.client.vo.DimensionVO;
 import com.zyc.form.entities.CtrlDimSource;
 import com.zyc.form.entities.FormDomain;
 
 @Verifiable
-public class FormDomainVO extends FormDomain implements Entityable<FormDomain> {
+public class FormDomainVO extends FormDomain implements EntityCopyable<FormDomain> {
 	
 	private static final long serialVersionUID = -7241150664326724541L;
 	
@@ -94,7 +94,7 @@ public class FormDomainVO extends FormDomain implements Entityable<FormDomain> {
 	}
 
 	@Override
-	public FormDomain toEntity() {
+	public FormDomain copyEntity() {
 		FormDomain domain = new FormDomain();
 		BeanUtils.copyProperties(this, domain);
 		return domain;
