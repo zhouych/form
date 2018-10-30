@@ -88,7 +88,7 @@
 			DELETED: { value: 'deleted', text: '已删除' }
 		},
     	emptyNodeType: {
-    		NONE: { value: 'none', text: '' },
+    		NONE: { value: 'none', text: '------' },
     		ALL: { value: 'all', text: '全部' },
     		OPTIONAL: { value: 'optional', text: '请选择' }
     	},

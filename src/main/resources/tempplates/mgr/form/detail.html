@@ -6,6 +6,8 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/pygments.css}" ></link>
+<link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/hierarchy-select.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-tree-expression-modal.css}"></link>
@@ -17,12 +19,44 @@
 			<input type="hidden" name="action" /> 
 			<input type="hidden" th:field="*{id}" />
 			<div class="container-fluid">
-				<div class="row">
-					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns">
-						<button type="button" class="btn btn-default return">Return</button>
-						<button type="submit" class="btn btn-primary save" th:attr="readonly=${readonly},disabled=${readonly}">Save</button>
-					</div>
+				<div class="row page-header">
+				  	<h3>basic info</h3>
 				</div>
+				<div class="row form-group">
+					<!-- *********** Form 'formname' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="domainname">Name</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				      	<input type="text" class="form-control" placeholder="Name" th:field="*{formname}" th:attr="readonly=${readonly}" />
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+					<!-- *********** Form Domain 'formcode' *********** -->
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formcode">Code</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				      	<input type="text" class="form-control" placeholder="Code" th:field="*{formcode}" th:attr="readonly=${readonly}" />
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row form-group">
+					<!-- *********** Form Domain 'datastatus' *********** -->
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="formdomainid">表单域</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				    	<div th:replace="/fragments/hierarchy-select :: hselect('hselect_domain',${hselectDomains},'none')" />
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+					<!-- *********** Form Domain 'version' *********** -->
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formtype">Form Type</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+						<select class="form-control" th:field="*{formtype}" th:attr="readonly=${readonly},disabled=${readonly}">
+							<option th:each="ft:${formTypes}" th:value="${ft.value}" th:text="${ft.text}"></option>
+						</select>
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div th:replace="/fragments/entity-common :: descriptionRow(${form},${readonly})" />
+				<div th:replace="/fragments/entity-common :: dataTagRow(null)" />
+				<div th:replace="/fragments/entity-common :: statusRow(${form},${allDataStatus},${readonly})" />
+				<div th:replace="/fragments/entity-common :: dateRow(${form},${readonly})" />
+				<div th:replace="/fragments/entity-common :: btnRow(${readonly})" />
 			</div>
 		</form>
 	</div>
@@ -32,13 +66,19 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/bootstrap-select.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
+<script type="text/javascript" th:src="@{/bs-plugins/hierarchy-select/js/hierarchy-select.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
-
+		/* var emptyValue = zyc.emptyNodeType.NONE.value;
+        var $hselectDomain = $('#hselect_domain').hierarchySelect({
+            width: 300,
+            emptyNodeValue: emptyValue
+        }).hierarchySelect('setValue', emptyValue); */
+        
 		$('.bottom-btns .btn.return').off('click').on('click', function(e) {
 			zyc.redirect('/mgr/form');
 		});

@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.zyc.baselibs.aopv.OverallVerificationRuler;
+import com.zyc.baselibs.aopv.ParamVerification;
 import com.zyc.baselibs.commons.StringUtils;
+import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.service.AbstractBaseService;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
+import com.zyc.form.dao.FormMapper;
 import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.service.FormService;
@@ -20,6 +27,9 @@ import com.zyc.form.vo.FormVO;
 public class FormServiceImpl extends AbstractBaseService implements FormService {
 
 	public static final List<FormVO> testData = new ArrayList<FormVO>();
+	
+	@Autowired
+	private FormMapper formMapper;
 	
 	static {
 		Form form = null;
@@ -79,9 +89,31 @@ public class FormServiceImpl extends AbstractBaseService implements FormService 
 	}
 
 	@Override
-	public FormVO create(FormVO form) throws Exception {
+	public FormVO selectByFormCode(String formdomainid, String formcode) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@ParamVerification(rules = { OverallVerificationRuler.class })
+	public FormVO create(FormVO vo) throws Exception {
+		Form form = vo.copyEntity();
+		//依据id、domain与code进行判重
+		if(this.formMapper.load(form.getId(), Form.class) != null || this.selectByFormCode(form.getFormdomainid(), form.getFormcode()) != null) {
+			throw new BussinessException("This form domain already exists. (id=" + form.getId() + ", domaincode=" + form.getFormcode() + ")");
+		}
+		
+		form.init();
+		int result = this.formMapper.insert(form);
+		Form _new =  result > 0 ? this.formMapper.load(form.getId(), Form.class) : null;
+		if(_new == null) {
+			throw new BussinessException("Created 'FormDomain' failed.");
+		}
+		
+		vo = new FormVO(_new);
+		
+		return vo;
 	}
 
 }

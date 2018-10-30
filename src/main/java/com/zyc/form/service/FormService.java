@@ -13,6 +13,8 @@ public interface FormService {
 	FormVO selectByFormid(String formid);
 
 	PaginationResult<FormVO> selectByPage(FormVO condition, String searchText, Pagination pagination);
-
+	
+	FormVO selectByFormCode(String formdomainid, String formcode); 
+	
 	FormVO create(FormVO form) throws Exception;
 }

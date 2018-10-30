@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.zyc.baselibs.vo.EntryBean;
+import com.zyc.baselibs.web.EmptyNodeType;
 
 public enum FormType {
 	
@@ -67,6 +68,19 @@ public enum FormType {
 		for (FormType type : FormType.values()) {
 			list.add(new EntryBean(type.getValue(), type.getText()));
 		}
+		return list;
+	}
+
+	public static List<EntryBean> toList(EmptyNodeType empty) {
+		List<EntryBean> list = new ArrayList<EntryBean>();
+		for (FormType type : FormType.values()) {
+			list.add(new EntryBean(type.getValue(), type.getText()));
+		}
+		
+		if(empty != null) {
+			list.add(0, new EntryBean(empty.getValue(), empty.getText()));
+		}
+		
 		return list;
 	}
 	

@@ -5,16 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.entities.BaseEntity;
 import com.zyc.baselibs.web.ClientAction;
+import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.BsTableQueryParameter;
+import com.zyc.form.data.FormType;
 import com.zyc.form.service.FormService;
+import com.zyc.form.serviceassist.FormDomainServiceAssistor;
 import com.zyc.form.serviceassist.FormServiceAssistor;
 import com.zyc.form.vo.FormVO;
 
@@ -26,6 +30,9 @@ public class FormMgrController extends BaseFormController {
 	private static final String commonPath = "/mgr/form";
 
 	@Autowired
+	private FormDomainServiceAssistor domainServiceAssistor;
+	
+	@Autowired
 	private FormService formService;
 	
 	@Autowired
@@ -34,6 +41,11 @@ public class FormMgrController extends BaseFormController {
 	//@Autowired
 	//private AreaFieldServiceAssistor areaFieldServiceAssistor;
 
+    @Override
+    protected String getCommonPath() {
+    	return commonPath;
+    }
+    
     @RequestMapping(value = commonPath, method = RequestMethod.GET)
 	public String index(Model model) throws Exception {
     	return commonPath + "/index";
@@ -41,7 +53,7 @@ public class FormMgrController extends BaseFormController {
 
     @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
-    	this.handleDetailRequest(model, ClientAction.ADD, null, false);
+    	this.requestDetail(model, ClientAction.ADD, null, false, null);
     	return commonPath + "/detail";
     }
 
@@ -51,27 +63,37 @@ public class FormMgrController extends BaseFormController {
     	return "redirect:" + commonPath + "/editpage/" + form.getId();
     }
     
-    private String handleDetailRequest(Model model, ClientAction action, String formid, boolean readonly) {
-    	model.addAttribute("action", action.getValue());
-    	model.addAttribute("actionText", action.getText());
-    	model.addAttribute("allDataStatus", DataStatus.toList());
-    	
-    	FormVO form = null;
-    	if(action == ClientAction.ADD) {
-    		form = FormVO.newInstance();
-    	} else if(action == ClientAction.EDIT) {
-    		if(model.containsAttribute("domain")) {
-    			form = (FormVO) model.asMap().get("form");
-    		}
-    		if(form == null) {
-        		form = this.formService.selectByFormid(formid);
-    		}
-    	}
-    	
-    	model.addAttribute("form", form);
-    	model.addAttribute("readonly", readonly || !DataStatus.ENABLED.getValue().equals(form.getDatastatus()));
-    	
+    @RequestMapping(value = commonPath + "/editpage/{formid}", method = RequestMethod.GET)
+    public String editpage(Model model, @PathVariable(name = "formid") String formid) {
+    	this.requestDetail(model, ClientAction.EDIT, formid, false, null);
     	return commonPath + "/detail";
+    }
+
+    @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
+    public String edit(FormVO form) throws Exception {
+    	//form = this.formService.modify(form);
+    	return "redirect:" + commonPath + "/editpage/" + form.getId();
+    }
+    
+    @Override
+    protected <T extends BaseEntity> String requestDetail(Model model, ClientAction action, String formid, boolean readonly, T entity) {
+    	FormVO form = (FormVO) entity;
+    	if(form == null) {
+        	if(action == ClientAction.ADD) {
+        		form = FormVO.newInstance();
+        	} else if(action == ClientAction.EDIT) {
+        		if(model.containsAttribute("domain")) {
+        			form = (FormVO) model.asMap().get("form");
+        		}
+        		if(form == null) {
+            		form = this.formService.selectByFormid(formid);
+        		}
+        	}
+    	}
+    	model.addAttribute("form", form);
+    	model.addAttribute("hselectDomains", this.domainServiceAssistor.composeDomains(EmptyNodeType.NONE));
+    	model.addAttribute("formTypes", FormType.toList(EmptyNodeType.NONE));
+    	return super.requestDetail(model, action, formid, readonly, form);
     }
 
     @RequestMapping(value = commonPath + "/forms", method = RequestMethod.POST)

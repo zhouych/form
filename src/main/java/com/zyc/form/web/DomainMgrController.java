@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.entities.BaseEntity;
 import com.zyc.baselibs.web.ClientAction;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.vo.FormDomainVO;
@@ -16,61 +16,64 @@ import com.zyc.form.vo.FormDomainVO;
 @Controller
 public class DomainMgrController extends BaseFormController {
 	
-	private static final String mgrPath = "/mgr/domain";
+	private static final String commonPath = "/mgr/domain";
 	
 	@Autowired
 	private FormDomainService formDomainService;
 	
-    @RequestMapping(value = mgrPath, method = RequestMethod.GET)
+	@Override
+	protected String getCommonPath() {
+		return commonPath;
+	}
+	
+    @RequestMapping(value = commonPath, method = RequestMethod.GET)
 	public String index(Model model) {
-		return mgrPath + "/index";
+		return commonPath + "/index";
 	}
 
-    @RequestMapping(value = mgrPath + "/addpage", method = RequestMethod.GET)
+    @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
-    	this.handleDetailRequest(model, ClientAction.ADD, null, false);
-    	return mgrPath + "/detail";
+    	this.requestDetail(model, ClientAction.ADD, null, false, null);
+    	return commonPath + "/detail";
     }
 
-    @RequestMapping(value = mgrPath + "/add", method = RequestMethod.POST)
+    @RequestMapping(value = commonPath + "/add", method = RequestMethod.POST)
     public String add(Model model, @ModelAttribute("domain") FormDomainVO domain) throws Exception {
     	domain = this.formDomainService.create(domain);
-    	return "redirect:" + mgrPath + "/editpage/" + domain.getId();
+    	return "redirect:" + commonPath + "/editpage/" + domain.getId();
     }
 
-    @RequestMapping(value = mgrPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
+    @RequestMapping(value = commonPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
-    	this.handleDetailRequest(model, ClientAction.EDIT, formdomainid, false);
-    	return mgrPath + "/detail";
+    	this.requestDetail(model, ClientAction.EDIT, formdomainid, false, null);
+    	return commonPath + "/detail";
     }
 
-    @RequestMapping(value = mgrPath + "/edit", method = RequestMethod.POST)
+    @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
     public String edit(FormDomainVO domain) throws Exception {
     	domain = this.formDomainService.modify(domain);
-    	return "redirect:" + mgrPath + "/editpage/" + domain.getId();
+    	return "redirect:" + commonPath + "/editpage/" + domain.getId();
     }
     
-    private String handleDetailRequest(Model model, ClientAction action, String formdomainid, boolean readonly) {
-    	model.addAttribute("action", action.getValue());
-    	model.addAttribute("actionText", action.getText());
-    	model.addAttribute("allDataStatus", DataStatus.toList());
-    	
-    	FormDomainVO domain = null;
-    	if(action == ClientAction.ADD) {
-    		domain = FormDomainVO.newInstance();
-    	} else if(action == ClientAction.EDIT) {
-    		if(model.containsAttribute("domain")) {
-    			domain = (FormDomainVO) model.asMap().get("domain");
-    		}
-    		if(domain == null) {
-        		domain = this.formDomainService.selectByFormDomainId(formdomainid);
-    		}
+    @Override
+    protected <T extends BaseEntity> String requestDetail(Model model, ClientAction action, String formdomainid, boolean readonly, T entity) {
+    	FormDomainVO domain = (FormDomainVO) entity;
+    	if(domain == null) {
+
+        	if(action == ClientAction.ADD) {
+        		domain = FormDomainVO.newInstance();
+        	} else if(action == ClientAction.EDIT) {
+        		if(model.containsAttribute("domain")) {
+        			domain = (FormDomainVO) model.asMap().get("domain");
+        		}
+        		if(domain == null) {
+            		domain = this.formDomainService.selectByFormDomainId(formdomainid);
+        		}
+        	}
+        	domain.addCtrlDimSourceOptions(this.mdataClient.budgetCtrlDimensions());
+        	
     	}
-    	domain.addCtrlDimSourceOptions(this.mdataClient.budgetCtrlDimensions());
-    	
     	model.addAttribute("domain", domain);
-    	model.addAttribute("readonly", readonly || !DataStatus.ENABLED.getValue().equals(domain.getDatastatus()));
-    	
-    	return mgrPath + "/detail";
+    	return super.requestDetail(model, action, formdomainid, readonly, domain);
     }
 }

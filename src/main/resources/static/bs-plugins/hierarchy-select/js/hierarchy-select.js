@@ -140,6 +140,10 @@
                 }
                 var selected = that.$menuInner.find('.active');
                 selected && setTimeout(function() {
+                	if(!selected.length) {
+                		return;
+                	}
+                	
                     var el = selected[0];
                     var p = selected[0].parentNode;
                     if (!(p.scrollTop <= el.offsetTop && (p.scrollTop + p.clientHeight) > el.offsetTop + el.clientHeight)) {

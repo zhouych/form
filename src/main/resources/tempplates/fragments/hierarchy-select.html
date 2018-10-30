@@ -1,0 +1,40 @@
+<!-- Js Plugin 'hierarchy-select' Template -->
+<div th:fragment="hselect(id,nodes,value)" class="btn-group hierarchy-select" data-resize="auto" th:attr="id=${id}">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+       	<span class="selected-label pull-left"></span>
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <div class="dropdown-menu open">
+        <div class="hs-searchbox">
+            <input type="text" class="form-control" autocomplete="off">
+        </div>
+        <ul class="dropdown-menu inner" role="menu">
+        	<li th:each="node:${nodes}" th:attr="data-value=${node.value},data-level=${node.level}">
+                <a th:value="${node.value}" th:text="${node.text}"></a>
+        	</li>
+        </ul>
+    </div>
+	<input class="hidden hidden-field" th:attr="name=${id}" readonly="readonly" aria-hidden="true" type="text"/>
+	<script type="text/javascript" th:src="@{/zyc/js/zyc-interval.js}" ></script>
+	<script th:inline="javascript" type="text/javascript">
+		(function() {
+			//取thymeleaf中th:fragment="hselect(id,nodes,value)"的参数值
+			var id = [[${id}]]
+				, value = [[${value}]];
+		
+			var handle = function() {
+				var $hselectDomain = $('#' + id).hierarchySelect({
+		            width: 300,
+		            emptyNodeValue: value
+		        }).hierarchySelect('setValue', value);
+			}
+			
+			var unexecutable = function() {
+				return typeof $ === 'undefined';
+			}
+			
+			var interval = new ZycInterval(this, handle, unexecutable).start(300);
+		})();
+	</script>
+</div>

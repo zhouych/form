@@ -21,6 +21,7 @@ import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.ex.IllegalValueException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
 import com.zyc.baselibs.vo.DeleteMode;
+import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.dao.CtrlDimSourceMapper;
 import com.zyc.form.dao.FormDomainMapper;
@@ -68,6 +69,19 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 			
 			testData.add(vo);
 		}
+	}
+
+	@Override
+	public List<EntryBean> allDomainEntryBeans() {
+		List<EntryBean> entryBeans = null; 
+		List<FormDomain> domains = this.formDomainMapper.select(new FormDomain().clean());
+		if(CollectionUtils.hasElement(domains)) {
+			entryBeans = new ArrayList<EntryBean>();
+			for (FormDomain domain : domains) {
+				entryBeans.add(new EntryBean(domain.getId(), domain.label()));
+			}
+		}
+		return entryBeans;
 	}
 	
 	@Override
