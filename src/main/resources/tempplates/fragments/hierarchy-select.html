@@ -21,13 +21,16 @@
 		(function() {
 			//取thymeleaf中th:fragment="hselect(id,nodes,value)"的参数值
 			var id = [[${id}]]
-				, value = [[${value}]];
+				, value = [[${value}]]
+				, $hselect;
 		
 			var handle = function() {
-				var $hselectDomain = $('#' + id).hierarchySelect({
-		            width: 300,
-		            emptyNodeValue: value
-		        }).hierarchySelect('setValue', value);
+				if(!$hselect) {
+					$hselect = $('#' + id).hierarchySelect({
+			            width: 300,
+			            emptyNodeValue: value
+			        }).hierarchySelect('setValue', value);
+				}
 			}
 			
 			var unexecutable = function() {

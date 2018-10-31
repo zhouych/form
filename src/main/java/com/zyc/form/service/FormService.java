@@ -12,7 +12,7 @@ public interface FormService {
 	
 	FormVO selectByFormid(String formid);
 
-	PaginationResult<FormVO> selectByPage(FormVO condition, String searchText, Pagination pagination);
+	PaginationResult<FormVO> selectByPage(FormVO condition, String keyword, Pagination pagination);
 	
 	FormVO selectByFormCode(String formdomainid, String formcode); 
 	

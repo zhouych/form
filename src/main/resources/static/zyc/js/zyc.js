@@ -92,6 +92,22 @@
     		ALL: { value: 'all', text: '全部' },
     		OPTIONAL: { value: 'optional', text: '请选择' }
     	},
+    	/**
+    	 * 判断指定节点值是否指向的是无效的业务节点
+    	 * @param nodeValue 待判断节点的节点值
+    	 * @returns 布尔值：true-无效节点；false-有效节点。
+    	 */
+    	invalidBusNode: function(nodeValue) {
+    		if(typeof nodeValue !== 'string') {
+    			return true;
+    		}
+    		for(var key in zyc.emptyNodeType) {
+    			if(nodeValue === zyc.emptyNodeType[key].value) {
+    				return true;
+    			}
+    		}
+    		return false;
+    	},
     	inexOperate: {
     		include: { value: 'include', text: '包含' },
     		exclude: { value: 'exclude', text: '排除' }
