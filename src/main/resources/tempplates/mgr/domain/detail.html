@@ -75,7 +75,7 @@
 				<div th:replace="/fragments/entity-common :: dataTagRow(null)" />
 				<div th:replace="/fragments/entity-common :: statusRow(${domain},${allDataStatus},${readonly})" />
 				<div th:replace="/fragments/entity-common :: dateRow(${domain},${readonly})" />
-				<div th:replace="/fragments/entity-common :: btnRow(${readonly})" />
+				<div th:replace="/fragments/entity-common :: btnRow(${readonly},${returnUrl})" />
 			</div>
 		</form>
 	</div>
@@ -156,9 +156,6 @@
 			}
 		});
 		
-		$('.bottom-btns .btn.return').off('click').on('click', function(e) {
-			zyc.redirect('/mgr/domain');
-		});
 	});
 </script>
 </html>

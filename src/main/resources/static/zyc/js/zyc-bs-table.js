@@ -34,6 +34,14 @@
 	    		$(this).tooltip({ html: true, title: titles.join(''), placement: 'bottom' });
     		}
     	});
+    	
+    	that.$elmt.find('.link-tooltip').each(function(index) {
+    		$(this).tooltip({ 
+    			html: true, 
+    			title: '<span class="label label-none">' + ($(this).attr('data-bind-title') || '单击进入详情') + '</span>', 
+    			placement: 'bottom' 
+    		});
+    	});
     }
 	
 	var bstable = window['bstable'] = {
@@ -60,6 +68,10 @@
 			}
 			
 			$element.bootstrapTable(currentOptions);
+		},
+		tooltipLinkColumn: function(value, item, i, func) {
+			var data = func(value, item, i);
+			return zyc.sprintf('<a class="link-tooltip" href="%s" data-bind-title="%s">%s</a>', data.url, data.title, data.text);
 		},
 		tooltipArrayColumn: function(enabledLoop, func, value, item, i) {
 			if(!enabledLoop) {

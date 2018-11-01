@@ -1,6 +1,6 @@
 <!-- Js Plugin 'hierarchy-select' Template -->
-<div th:fragment="hselect(id,nodes,value)" class="btn-group hierarchy-select" data-resize="auto" th:attr="id=${id}">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+<div th:fragment="hselect(id,nodes,value,readonly)" class="btn-group hierarchy-select" data-resize="auto" th:attr="id=${id}">
+    <button type="button" class="btn btn-default dropdown-toggle hselect-button" data-toggle="dropdown" th:attr="readonly=${readonly},disabled=${readonly}">
        	<span class="selected-label pull-left"></span>
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>
@@ -19,7 +19,7 @@
 	<script type="text/javascript" th:src="@{/zyc/js/zyc-interval.js}" ></script>
 	<script th:inline="javascript" type="text/javascript">
 		(function() {
-			//取thymeleaf中th:fragment="hselect(id,nodes,value)"的参数值
+			
 			var id = [[${id}]]
 				, value = [[${value}]]
 				, $hselect;

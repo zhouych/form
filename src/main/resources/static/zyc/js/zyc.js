@@ -48,6 +48,9 @@
     
 	var zyc = window['zyc'] = {
     	comWebsite: 'www.zyc.com',
+    	getUrl: function(relativeOriginPath) {
+    		return window.location.origin + relativeOriginPath;
+    	},
     	redirect: function(relativeOriginPath) {
     		window.location = window.location.origin + relativeOriginPath;
     	},

@@ -16,7 +16,7 @@
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<form id="form-detail" class="form form-horizontal" method="post" th:action="@{/mgr/form/} + ${action}" th:object="${form}">
-			<input type="hidden" name="action" /> 
+			<input type="hidden" name="action" th:value="${action}" />
 			<input type="hidden" th:field="*{id}" />
 			<div class="container-fluid">
 				<div class="row page-header">
@@ -40,14 +40,14 @@
 					<!-- *********** Form Domain 'datastatus' *********** -->
 				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="formdomainid">表单域</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				    	<div th:replace="/fragments/hierarchy-select :: hselect('hselect_domain',${hselectDomains},${form.formdomainid})" />
+				    	<div th:replace="/fragments/hierarchy-select :: hselect('hselect_domain',${hselectDomains},${form.formdomainid},${readonly} or ${whether_edit})" />
 				      	<input type="hidden" th:field="*{formdomainid}" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 					<!-- *********** Form Domain 'version' *********** -->
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formtype">Form Type</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<select class="form-control" th:field="*{formtype}" th:attr="readonly=${readonly},disabled=${readonly}">
+						<select class="form-control" th:field="*{formtype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
 							<option th:each="ft:${formTypes}" th:value="${ft.value}" th:text="${ft.text}"></option>
 						</select>
 					</div>
@@ -57,7 +57,7 @@
 				<div th:replace="/fragments/entity-common :: dataTagRow(null)" />
 				<div th:replace="/fragments/entity-common :: statusRow(${form},${allDataStatus},${readonly})" />
 				<div th:replace="/fragments/entity-common :: dateRow(${form},${readonly})" />
-				<div th:replace="/fragments/entity-common :: btnRow(${readonly})" />
+				<div th:replace="/fragments/entity-common :: btnRow(${readonly},${returnUrl})" />
 			</div>
 		</form>
 	</div>
@@ -74,18 +74,15 @@
 <script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
+		
 		var $form = $('#form-detail');
 		
-		$('#hselect_domain').hierarchySelect({
+		var $hselect = $('#hselect_domain').hierarchySelect({
 			afterNodeClick: function(e) {
 				var val = $(this).attr('value')
 					, invalid = zyc.invalidBusNode(val);
 				$form.find('input[name="formdomainid"]').val(invalid ? '' : val);
 			}
-		});
-        
-		$('.bottom-btns .btn.return').off('click').on('click', function(e) {
-			zyc.redirect('/mgr/form');
 		});
 		
 	});

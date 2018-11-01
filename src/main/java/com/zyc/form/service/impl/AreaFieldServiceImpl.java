@@ -99,4 +99,16 @@ public class AreaFieldServiceImpl extends AbstractBaseService implements AreaFie
 		return null;
 	}
 
+	@Override
+	public boolean deleteOnLogic(String entityId) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteOnPhysical(String entityId) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

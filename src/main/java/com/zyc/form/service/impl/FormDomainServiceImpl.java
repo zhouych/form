@@ -20,7 +20,6 @@ import com.zyc.baselibs.entities.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.ex.IllegalValueException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
-import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.dao.CtrlDimSourceMapper;
@@ -272,19 +271,6 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 		FormDomainVO _new = new FormDomainVO(old);
 		_new.addCtrlDimSources(this.createCtrlDimSource(vo.getCtrlDimSources(), _new.getId()), true);
 		return _new;
-	}
-
-	@Override
-	public boolean delete(String formdomainid, DeleteMode mode) throws Exception {
-		AssertThrowNonRuntime.notNull(mode, "This parameter 'mode' is null or empty. (mode=" + mode.toString() + ")");
-
-		if(mode.equals(DeleteMode.LOGIC)) {
-			return this.deleteOnLogic(formdomainid);
-		} else if(mode.equals(DeleteMode.PHYSICAL)) {
-			return this.deleteOnPhysical(formdomainid);
-		} else {
-			throw new BussinessException("This deletion mode is not supported. (mode=" + mode.toString() + ")");
-		}
 	}
 
 	/**

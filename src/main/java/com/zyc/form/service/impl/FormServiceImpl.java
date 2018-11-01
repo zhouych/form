@@ -106,7 +106,7 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 					boolean matched = false;
 					for (FormVO row : rows) {
 						if(domain.getId().equals(row.getFormdomainid())) {
-							row.setFormdomainname(row.label());
+							row.setFormdomainname(domain.label());
 							matched = true;
 						}
 					}
@@ -192,4 +192,21 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 		return vo;
 	}
 
+	@Override
+	public FormVO modify(FormVO form) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean deleteOnLogic(String formid) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteOnPhysical(String formid) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

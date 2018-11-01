@@ -30,6 +30,14 @@ public class DomainMgrController extends BaseFormController {
 	public String index(Model model) {
 		return commonPath + "/index";
 	}
+    
+    
+
+    @RequestMapping(value = commonPath + "/view/{formdomainid}", method = RequestMethod.GET)
+    public String view(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
+    	this.requestDetail(model, ClientAction.VIEW, formdomainid, false, null);
+    	return commonPath + "/detail";
+    }
 
     @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
@@ -58,11 +66,11 @@ public class DomainMgrController extends BaseFormController {
     @Override
     protected <T extends BaseEntity> String requestDetail(Model model, ClientAction action, String formdomainid, boolean readonly, T entity) {
     	FormDomainVO domain = (FormDomainVO) entity;
+    	boolean whetherView = action == ClientAction.VIEW;
     	if(domain == null) {
-
-        	if(action == ClientAction.ADD) {
+    		if(action == ClientAction.ADD) {
         		domain = FormDomainVO.newInstance();
-        	} else if(action == ClientAction.EDIT) {
+        	} else if(action == ClientAction.EDIT || whetherView) {
         		if(model.containsAttribute("domain")) {
         			domain = (FormDomainVO) model.asMap().get("domain");
         		}
@@ -72,8 +80,8 @@ public class DomainMgrController extends BaseFormController {
         	}
         	domain.addCtrlDimSourceOptions(this.mdataClient.budgetCtrlDimensions());
         	
-    	}
+    	} 
     	model.addAttribute("domain", domain);
-    	return super.requestDetail(model, action, formdomainid, readonly, domain);
+    	return super.requestDetail(model, action, formdomainid, readonly || whetherView, domain);
     }
 }

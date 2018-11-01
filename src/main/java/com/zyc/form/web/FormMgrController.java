@@ -71,18 +71,19 @@ public class FormMgrController extends BaseFormController {
 
     @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
     public String edit(FormVO form) throws Exception {
-    	//form = this.formService.modify(form);
+    	form = this.formService.modify(form);
     	return "redirect:" + commonPath + "/editpage/" + form.getId();
     }
     
     @Override
     protected <T extends BaseEntity> String requestDetail(Model model, ClientAction action, String formid, boolean readonly, T entity) {
     	FormVO form = (FormVO) entity;
+    	boolean whetherView = action == ClientAction.VIEW;
     	if(form == null) {
         	if(action == ClientAction.ADD) {
         		form = FormVO.newInstance();
-        	} else if(action == ClientAction.EDIT) {
-        		if(model.containsAttribute("domain")) {
+        	} else if(action == ClientAction.EDIT || whetherView) {
+        		if(model.containsAttribute("form")) {
         			form = (FormVO) model.asMap().get("form");
         		}
         		if(form == null) {

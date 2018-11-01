@@ -76,6 +76,16 @@
 		
 		var $table;
 		
+		var formatDomain = function(value, item, index) {
+			return bstable.tooltipLinkColumn(value, item, index, function(v, it, i) {
+				return { 
+					url: zyc.getUrl('/mgr/domain/view/' + item.formdomainid) + '?returnUrl=/mgr/form',
+					title: '单击查看表单域[' + value + ']详情', 
+					text: value 
+				};
+			});
+		}
+		
 		bstable.init($table = $('#table-forms'), {
 			toolbar: '#toolbar-forms',
 			url: '/mgr/form/forms',
@@ -83,10 +93,12 @@
 			columns: [
             	{ checkbox: true, visible: true } 
             	, { field: 'id', title: 'id', sortable: true, visible: false }
-            	, { field: 'formdomainid', title: '表单域ID', sortable: true, halign: 'center', align: 'center' }
-            	, { field: 'formcode', title: '编码', sortable: true }
-            	, { field: 'formname', title: '名称', sortable: true }
-            	, { field: 'formtype', title: '表单类型', sortable: false, halign: 'center', align: 'center' }
+            	, { field: 'formdomainid', title: '表单域ID', visible: false }
+            	, { field: 'formdomainname', title: '表单域', sortable: true, halign: 'center', align: 'left', formatter: formatDomain, cellStyle: bstable.cellDisableRowTooltip }
+            	, { field: 'formcode', title: '编码', sortable: true, halign: 'center', align: 'left' }
+            	, { field: 'formname', title: '名称', sortable: true, halign: 'center', align: 'left' }
+            	, { field: 'formtype', title: 'formtype', sortable: false, visible: false }
+            	, { field: 'formtypename', title: '表单类型', sortable: false, halign: 'center', align: 'center' }
             	, { field: 'datastatus', title: '状态', sortable: true, halign: 'center', align: 'center', formatter: zyc.textDataStatus }
             	, { field: 'createdat', title: '创建日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
             	, { field: 'updatedat', title: '更新日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
@@ -110,7 +122,11 @@
 	            return false;
 	        }
 		}, function(params) {
+			var sort = params.sort === 'formdomainname' ? 'formdomainid' : params.sort; 
 			return {
+	    		pagination: {
+		    		order: sort
+	    		},
 				condition: {},
 				searchText: params.search
 			};
