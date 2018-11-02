@@ -6,18 +6,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.FieldRuleUtils;
 import com.zyc.baselibs.aopv.OverallVerificationRuler;
 import com.zyc.baselibs.aopv.ParamVerification;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
+import com.zyc.baselibs.entities.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
+import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormDomainMapper;
@@ -193,20 +198,46 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 	}
 
 	@Override
-	public FormVO modify(FormVO form) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@ParamVerification(rules = { FieldRule.class })
+	public FormVO modify(FormVO vo) throws Exception {
+		Form form = vo.copyEntity();
+		
+		Form old = this.formMapper.load(form.getId(), Form.class);
+		if(old == null || !form.businessEquals(old)) {
+			throw new BussinessException("This form does not exist or data does not matchs. (formdomainid=" + form.getFormdomainid() + "; formcode=" + form.getFormcode() + ")");
+		}
+
+		BeanUtils.copyProperties(form, old, FieldRuleUtils.uneditableFields(old));
+		this.update(this.formMapper, old, ACTION_UPDATE);
+		
+		FormVO _new = new FormVO(old);
+		FormDomain domain = this.domainMapper.load(old.getFormdomainid(), FormDomain.class);
+		_new.setFormdomainname(domain.label());
+		
+		return _new;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public boolean deleteOnLogic(String formid) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		Form form = this.loadDeletableEntity(formid, Form.class, this.formMapper, DeleteMode.LOGIC);
+		form.setDatastatus(DataStatus.DELETED.getValue());
+		int result = this.update(this.formMapper, form, ACTION_DELETE);
+		return result > 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public boolean deleteOnPhysical(String formid) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		Form form = this.loadDeletableEntity(formid, Form.class, this.formMapper, DeleteMode.PHYSICAL);
+		int result = this.formMapper.deleteById(form.getId(), form.getVersion(), Form.class);
+		return result > 0;
 	}
 }

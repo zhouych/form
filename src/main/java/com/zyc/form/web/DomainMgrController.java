@@ -48,7 +48,7 @@ public class DomainMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/add", method = RequestMethod.POST)
     public String add(Model model, @ModelAttribute("domain") FormDomainVO domain) throws Exception {
     	domain = this.formDomainService.create(domain);
-    	return "redirect:" + commonPath + "/editpage/" + domain.getId();
+    	return this.getRedirectEditpageUrl(domain.getId());
     }
 
     @RequestMapping(value = commonPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
@@ -60,7 +60,7 @@ public class DomainMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
     public String edit(FormDomainVO domain) throws Exception {
     	domain = this.formDomainService.modify(domain);
-    	return "redirect:" + commonPath + "/editpage/" + domain.getId();
+    	return this.getRedirectEditpageUrl(domain.getId());
     }
     
     @Override

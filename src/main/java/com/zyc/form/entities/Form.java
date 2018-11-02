@@ -6,6 +6,8 @@ import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.commons.StringUtils;
+import com.zyc.baselibs.entities.Businessable;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 import com.zyc.baselibs.entities.Labelable;
 import com.zyc.form.data.FormType;
@@ -16,7 +18,7 @@ import com.zyc.form.data.FormType;
  *
  */
 @DatabaseTable(name = "forms")
-public class Form extends DescriptionBaseEntity implements java.io.Serializable, Labelable {
+public class Form extends DescriptionBaseEntity implements java.io.Serializable, Labelable, Businessable<Form> {
 
 	private static final long serialVersionUID = -1527160855494247508L;
 
@@ -82,5 +84,16 @@ public class Form extends DescriptionBaseEntity implements java.io.Serializable,
 	@Override
 	public String label() {
 		return this.getFormcode() + " - " + this.getFormname();
+	}
+
+	@Override
+	public boolean businessEquals(Form obj) {
+		if(obj == null) {
+			return false;
+		}
+		
+		return  StringUtils.equals(this.getFormdomainid(), obj.getFormdomainid())
+				&& StringUtils.equals(this.getId(), obj.getId())
+				&& StringUtils.equals(this.getFormcode(), obj.getFormcode());
 	}
 }

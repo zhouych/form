@@ -54,25 +54,25 @@ public class FormMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
     	this.requestDetail(model, ClientAction.ADD, null, false, null);
-    	return commonPath + "/detail";
+    	return this.getDetailViewUrl();
     }
 
     @RequestMapping(value = commonPath + "/add", method = RequestMethod.POST)
     public String add(Model model, @ModelAttribute("form") FormVO form) throws Exception {
     	form = this.formService.create(form);
-    	return "redirect:" + commonPath + "/editpage/" + form.getId();
+    	return this.getRedirectEditpageUrl(form.getId());
     }
     
     @RequestMapping(value = commonPath + "/editpage/{formid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formid") String formid) {
     	this.requestDetail(model, ClientAction.EDIT, formid, false, null);
-    	return commonPath + "/detail";
+    	return this.getDetailViewUrl();
     }
 
     @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
     public String edit(FormVO form) throws Exception {
     	form = this.formService.modify(form);
-    	return "redirect:" + commonPath + "/editpage/" + form.getId();
+    	return this.getRedirectEditpageUrl(form.getId());
     }
     
     @Override
@@ -82,6 +82,7 @@ public class FormMgrController extends BaseFormController {
     	if(form == null) {
         	if(action == ClientAction.ADD) {
         		form = FormVO.newInstance();
+        		form.setFormdomainid(this.getRequest().getParameter("formdomainid")); //针对在指定表单域下新增表单
         	} else if(action == ClientAction.EDIT || whetherView) {
         		if(model.containsAttribute("form")) {
         			form = (FormVO) model.asMap().get("form");

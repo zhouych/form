@@ -79,7 +79,7 @@
 		var $btnAddForm = $('.btn.btn-add-form').off('click').on('click', function(e) {
 			limitOperate.apply(this, [ e, '新增表单', 
 				function(e, id) {
-					zyc.redirect($(this).attr('data-bind-href') + '?formdomainid=' + id);
+					zyc.redirect($(this).attr('data-bind-href') + '?formdomainid=' + id + '&returnUrl=/mgr/domain');
 				} 
 			]);
 		});

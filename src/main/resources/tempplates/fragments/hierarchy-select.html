@@ -1,6 +1,7 @@
 <!-- Js Plugin 'hierarchy-select' Template -->
 <div th:fragment="hselect(id,nodes,value,readonly)" class="btn-group hierarchy-select" data-resize="auto" th:attr="id=${id}">
-    <button type="button" class="btn btn-default dropdown-toggle hselect-button" data-toggle="dropdown" th:attr="readonly=${readonly},disabled=${readonly}">
+    <button type="button" class="btn btn-default dropdown-toggle hselect-button" data-toggle="dropdown" 
+    	th:attr="readonly=${readonly} or (${value} != null and ${value} != ''),disabled=${readonly} or (${value} != null and ${value} != '')">
        	<span class="selected-label pull-left"></span>
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>

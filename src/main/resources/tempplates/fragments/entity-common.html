@@ -44,7 +44,8 @@
 	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 </div>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 bottom-btns" th:fragment="btnRow(readonly,returnUrl)">
-	<button type="button" class="btn btn-default return" th:attr="data-bind-returnUrl=${returnUrl}">Return</button>
+	<input type="hidden" name="returnUrl" th:value="${returnUrl}" />
+	<button type="button" class="btn btn-default return">Return</button>
 	<button type="submit" class="btn btn-primary save" th:attr="readonly=${readonly},disabled=${readonly},style='display: ' + (${readonly} ? 'none' : '')">Save</button>
 	<script type="text/javascript" th:src="@{/zyc/js/zyc-interval.js}" ></script>
 	<script th:inline="javascript" type="text/javascript">
@@ -55,7 +56,7 @@
 					if(typeof clickEvent === 'function') {
 						clickEvent.apply(this, [e]);
 					} else {
-						var path = $(this).data('returnUrl') || $(this).attr('data-bind-returnUrl');
+						var path = $(this).data('returnUrl') || $('.bottom-btns input[name="returnUrl"]').val();
 						if(path) {
 							zyc.redirect(path);
 						} else {

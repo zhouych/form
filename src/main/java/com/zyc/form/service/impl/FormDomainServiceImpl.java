@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.annotation.FieldRuleUtils;
 import com.zyc.baselibs.aopv.ParamVerification;
-import com.zyc.baselibs.asserts.AssertThrowNonRuntime;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.entities.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.ex.IllegalValueException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
+import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.dao.CtrlDimSourceMapper;
@@ -279,24 +279,21 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public boolean deleteOnLogic(String formdomainid) throws Exception {
-		AssertThrowNonRuntime.hasText(formdomainid, "This parameter 'formdomainid' is null or empty. (formdomainid=" + formdomainid + ")");
-		
-		FormDomainVO domain = this.selectByFormDomainId(formdomainid);
-		AssertThrowNonRuntime.notNull(domain, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
-		if(domain.getDatastatus().equals(DataStatus.DELETED.getValue()) || domain.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
-			throw new BussinessException("The user was " + domain.getDatastatus().toLowerCase() + ". (domainname=" + domain.getDomainname() + ")");
-		}
-		
+		FormDomain domain = this.loadDeletableEntity(formdomainid, FormDomain.class, this.formDomainMapper, DeleteMode.LOGIC);
 		domain.setDatastatus(DataStatus.DELETED.getValue());
-		int result = this.update(this.formDomainMapper, domain.copyEntity(), ACTION_DELETE);
-		if(result > 0) {
-			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
-				cdso.setDatastatus(DataStatus.DELETED.getValue());
-				this.update(this.ctrlDimSourceMapper, cdso.copyEntity(), ACTION_DELETE);
+		boolean success = this.update(this.formDomainMapper, domain, ACTION_DELETE) > 0;
+		if(success && domain.getEnabledbudgetctrl()) {
+			CtrlDimSource cds = new CtrlDimSource().clean();
+			cds.setFormdomainid(domain.getId());
+			List<CtrlDimSource> cdss = this.ctrlDimSourceMapper.select(cds);
+			if(CollectionUtils.hasElement(cdss)) {
+				for (CtrlDimSource source : cdss) {
+					source.setDatastatus(DataStatus.DELETED.getValue());
+					this.update(this.ctrlDimSourceMapper, source, ACTION_DELETE);
+				}
 			}
 		}
-		
-		return result > 0;
+		return success;
 	}
 
 	/**
@@ -305,29 +302,13 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public boolean deleteOnPhysical(String formdomainid) throws Exception {
-		AssertThrowNonRuntime.hasText(formdomainid, "This parameter 'formdomainid' is null or empty. (formdomainid=" + formdomainid + ")");
-
-		FormDomainVO domain = this.selectByFormDomainId(formdomainid);
-		AssertThrowNonRuntime.notNull(domain, "This form domain does not exist. (formdomainid=" + formdomainid + ")");
-		if(domain.getDatastatus().equals(DataStatus.LOCKED.getValue())) {
-			throw new BussinessException("The user was " + domain.getDatastatus().toLowerCase() + ". (domainname=" + domain.getDomainname() + ")");
+		FormDomain domain = this.loadDeletableEntity(formdomainid, FormDomain.class, this.formDomainMapper, DeleteMode.PHYSICAL);
+		boolean success = this.formDomainMapper.deleteById(domain.getId(), domain.getVersion(), FormDomain.class) > 0;
+		if(success && domain.getEnabledbudgetctrl()) {
+			CtrlDimSource cds = new CtrlDimSource().clean();
+			cds.setFormdomainid(domain.getId());
+			this.ctrlDimSourceMapper.delete(cds);
 		}
-		
-		FormDomain target = new FormDomain().clean();
-		target.setId(domain.getId());
-		target.setVersion(domain.getVersion());
-		int result = this.formDomainMapper.delete(target);
-		if(result > 0) {
-			Integer version;
-			for (CtrlDimSourceOptionVO cdso : domain.getCtrlDimSources()) {
-				version = cdso.getVersion();
-				cdso.copyEntity().clean();
-				cdso.setVersion(version);
-				cdso.setFormdomainid(formdomainid);
-				this.ctrlDimSourceMapper.delete(cdso.copyEntity());
-			}
-		}
-		
-		return result > 0;
+		return success;
 	}
 }
