@@ -10,23 +10,23 @@ import com.zyc.baselibs.vo.EntryBean;
 
 public enum FormArea {
 	
-	MAIN("main", "主表区"),
+	MAIN("Main", "主表区"),
 	
-	DETAIL("detail", "明细区"),
+	DETAIL("Detail", "明细区"), 
 	
-	REVERSAL("reversal", "冲销区"),
+	REVERSAL("Reversal", "冲销区"),
 	
-	PAYMENT("payment", "付款区"),
+	PAYMENT("Payment", "付款区"),
 	
-	REPAYMENT("repayment", "还款区"),
+	REPAYMENT("Repayment", "还款区"),
 	
-	BACKUP01("backup01", "备用区一"),
+	BACKUP01("Backup01", "备用区一"),
 	
-	BACKUP02("backup02", "备用区二"),
+	BACKUP02("Backup02", "备用区二"),
 	
-	BACKUP03("backup03", "备用区三"),
+	BACKUP03("Backup03", "备用区三"),
 	
-	BACKUP04("backup04", "备用区四");
+	BACKUP04("Backup04", "备用区四");
 	
 	private String value;
 	private String text;

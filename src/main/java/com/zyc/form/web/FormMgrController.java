@@ -54,7 +54,7 @@ public class FormMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
     	this.requestDetail(model, ClientAction.ADD, null, false, null);
-    	return this.getDetailViewUrl();
+    	return this.getDetailUrl();
     }
 
     @RequestMapping(value = commonPath + "/add", method = RequestMethod.POST)
@@ -66,7 +66,7 @@ public class FormMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/editpage/{formid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formid") String formid) {
     	this.requestDetail(model, ClientAction.EDIT, formid, false, null);
-    	return this.getDetailViewUrl();
+    	return this.getDetailUrl();
     }
 
     @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)

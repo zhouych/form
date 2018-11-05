@@ -30,19 +30,17 @@ public class DomainMgrController extends BaseFormController {
 	public String index(Model model) {
 		return commonPath + "/index";
 	}
-    
-    
 
     @RequestMapping(value = commonPath + "/view/{formdomainid}", method = RequestMethod.GET)
     public String view(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
     	this.requestDetail(model, ClientAction.VIEW, formdomainid, false, null);
-    	return commonPath + "/detail";
+    	return this.getDetailUrl();
     }
 
     @RequestMapping(value = commonPath + "/addpage", method = RequestMethod.GET)
     public String addpage(Model model) {
     	this.requestDetail(model, ClientAction.ADD, null, false, null);
-    	return commonPath + "/detail";
+    	return this.getDetailUrl();
     }
 
     @RequestMapping(value = commonPath + "/add", method = RequestMethod.POST)
@@ -54,7 +52,7 @@ public class DomainMgrController extends BaseFormController {
     @RequestMapping(value = commonPath + "/editpage/{formdomainid}", method = RequestMethod.GET)
     public String editpage(Model model, @PathVariable(name = "formdomainid") String formdomainid) {
     	this.requestDetail(model, ClientAction.EDIT, formdomainid, false, null);
-    	return commonPath + "/detail";
+    	return this.getDetailUrl();
     }
 
     @RequestMapping(value = commonPath + "/edit", method = RequestMethod.POST)
