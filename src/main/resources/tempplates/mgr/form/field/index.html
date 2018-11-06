@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title>表单定义</title>
+<title>表单字段</title>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/table/bootstrap-table.css}" ></link>
@@ -12,14 +12,10 @@
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
-		<div id="toolbar-forms">
-			<button type="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}">新增</button>
-			<button type="button" id="btn_edit_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/editpage}">编辑</button>
-			<button type="button" id="btn_del_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/}">删除</button>
-			<button type="button" id="btn_field_list" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/field}">字段列表</button>
-			<button type="button" id="btn_form_design" class="btn btn-default limit-operate">格式设计</button>
+		<div id="toolbar-fields">
+			<button type="button" id="btn_refresh_fields" class="btn btn-default">刷新</button>
 		</div>
-		<table id="table-forms"></table>
+		<table id="table-fields"></table>
 	</div>
 	<div th:replace="/fragments/layout::footer" />
 </body>
@@ -32,68 +28,38 @@
 <script type="text/javascript" th:src="@{/zyc/js/zyc-bs-table.js}" ></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
-		
-		var redirectByFormid = function(e, id) {
-			zyc.redirect($(this).attr('data-bind-href') + '/formid=' + id + '?returnUrl=/mgr/form');
-		}
-		
+		var formid = [[${formid}]];
 		//事件列表
 		var events = {
-			'btn_edit_form': function(e, id) {
-				zyc.redirect($(this).attr('data-bind-href') + '/' + id);
-			},
-			'btn_del_form': function(e, id) {
-				if(confirm('您确认要删除当前选择的表单吗？')) {
-					$.ajax({
-						url : $(this).attr('data-bind-href') + '/' + id,
-						data: {},
-						type: 'delete',
-						dataType: 'json',
-						async: true,
-						success: function(resp) {
-							if(resp.status === '0') {
-								zyc.alert(resp.message || '删除成功！');
-								$table.bootstrapTable('refresh');
-							} else {
-						    	zyc.alert(resp.message, 'error');
-							};
-						},
-					    error: function(err) {
-					    	zyc.alert(null, 'error');
-					    }
-					});	
-				}
-			},
-			'btn_form_design': redirectByFormid,
-			'btn_field_list': redirectByFormid
+			'btn_refresh_fields': function(e) {
+				alert('s');
+			}
 		};
 		
-		$('.btn.limit-operate').off('click').on('click', function(e) {
-			if(!$(this).attr('disabled')) {
-				var formid = $(this).data('formid');
-				if(!formid) {
-					alert('请选择需要' + $(this).text() + '的表单！');	
+		$('#toolbar-fields .btn').off('click').on('click', function(e) {
+			var $this = $(this);
+			if(!$this.attr('disabled')) {
+				var ename = $this.attr('id');
+				if($this.hasClass('limit-operate')) {
+					var formfieldid = $this.data('formfieldid');
+					if(!formfieldid) {
+						alert('请选择需要' + $this.text() + '的字段！');	
+					} else {
+						events[ename].apply(this, [ e, formfieldid ]);
+					}
 				} else {
-					events[$(this).attr('id')].apply(this, [e, formid]);
+					events[ename].apply(this, [ e ]);
 				}
 			}
-		}).attr('disabled', true);
+		});
 		
-		var $table;
+		$('.btn.limit-operate').attr('disabled', true);
 		
-		var formatDomain = function(value, item, index) {
-			return bstable.tooltipLinkColumn(value, item, index, function(v, it, i) {
-				return { 
-					url: zyc.getUrl('/mgr/domain/view/' + item.formdomainid) + '?returnUrl=/mgr/form',
-					title: '单击查看表单域[' + value + ']详情', 
-					text: value 
-				};
-			});
-		}
+		/* var $table;
 		
 		bstable.init($table = $('#table-forms'), {
 			toolbar: '#toolbar-forms',
-			url: '/mgr/form/forms',
+			url: '/mgr/form/field/fields',
 			method: 'post',
 			columns: [
             	{ checkbox: true, visible: true } 
@@ -135,7 +101,7 @@
 				condition: {},
 				searchText: params.search
 			};
-		});
+		}); */
 	});
 </script>
 </html>

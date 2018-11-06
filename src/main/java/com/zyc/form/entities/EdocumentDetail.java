@@ -6,6 +6,8 @@ import java.sql.JDBCType;
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.Mainfield;
+import com.zyc.baselibs.annotation.Subfield;
 
 @DatabaseTable(name = "edocumentdetails")
 public class EdocumentDetail extends AbstractEdocumentMoneyArea<EdocumentDetail> {
@@ -14,90 +16,112 @@ public class EdocumentDetail extends AbstractEdocumentMoneyArea<EdocumentDetail>
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dimorganizationlabel" })
 	private String dimorganization;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dimorganization")
 	private String dimorganizationlabel;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dimexpenseaccountlabel" })
 	private String dimexpenseaccount;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dimexpenseaccount")
 	private String dimexpenseaccountlabel;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dimprojectlabel" })
 	private String dimproject;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dimproject")
 	private String dimprojectlabel;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dimyearlabel" })
 	private String dimyear;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dimyear")
 	private String dimyearlabel;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dim01label" })
 	private String dim01;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dim01")
 	private String dim01label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dim02label" })
 	private String dim02;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dim02")
 	private String dim02label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dim03label" })
 	private String dim03;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dim03")
 	private String dim03label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dim04label" })
 	private String dim04;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dim04")
 	private String dim04label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "dim05label" })
 	private String dim05;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "dim05")
 	private String dim05label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "originalcurrencylabel" })
 	private String originalcurrency;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "originalcurrency")
 	private String originalcurrencylabel;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "naturalcurrencylabel" })
 	private String naturalcurrency;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "naturalcurrency")
 	private String naturalcurrencylabel;
 
 	@FieldRule(required = true, externalUneditable = false)

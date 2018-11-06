@@ -5,6 +5,8 @@ import java.sql.JDBCType;
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.Mainfield;
+import com.zyc.baselibs.annotation.Subfield;
 
 @DatabaseTable(name = "edocumentpayments")
 public class EdocumentPayment extends AbstractEdocumentMoneyArea<EdocumentPayment> {
@@ -13,10 +15,12 @@ public class EdocumentPayment extends AbstractEdocumentMoneyArea<EdocumentPaymen
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String receiver;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String receiverlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
@@ -33,18 +37,22 @@ public class EdocumentPayment extends AbstractEdocumentMoneyArea<EdocumentPaymen
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String paymethod;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String paymethodlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String payer;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String payerlabel;
 
 	@FieldRule(required = true, externalUneditable = false)

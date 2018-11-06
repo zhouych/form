@@ -4,6 +4,8 @@ import java.sql.JDBCType;
 
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.Mainfield;
+import com.zyc.baselibs.annotation.Subfield;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.entities.Businessable;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
@@ -27,162 +29,202 @@ public abstract class AbstractEdocumentScrollArea<T extends AbstractEdocumentScr
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item01;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item01label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item02;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item02label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item03;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item03label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item04;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item04label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item05;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item05label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item06;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item06label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item07;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item07label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item08;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item08label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item09;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item09label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item10;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item10label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item11;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item11label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item12;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item12label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item13;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item13label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item14;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item14label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item15;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item15label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item16;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item16label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item17;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item17label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item18;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item18label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item19;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item19label;
 
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield
 	private String item20;
 	
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield
 	private String item20label;
 	
 	public String getEdocumentid() {

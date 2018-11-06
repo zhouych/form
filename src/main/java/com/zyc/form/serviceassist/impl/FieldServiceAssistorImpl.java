@@ -11,25 +11,28 @@ import com.zyc.baselibs.commons.ReflectUtils;
 import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.vo.EntryBean;
+import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.web.EmptyNodeType;
+import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.TreeViewNode;
 import com.zyc.baselibs.web.bootstrap.TreeViewNodeState;
 import com.zyc.form.data.FieldTreeNodeType;
+import com.zyc.form.data.FormArea;
 import com.zyc.form.data.FormType;
-import com.zyc.form.service.AreaFieldService;
+import com.zyc.form.service.FormFieldService;
 import com.zyc.form.service.FormService;
-import com.zyc.form.serviceassist.AreaFieldServiceAssistor;
+import com.zyc.form.serviceassist.FieldServiceAssistor;
 import com.zyc.form.vo.FormFieldVO;
 import com.zyc.form.vo.FormVO;
 
 @Service
-public class AreaFieldServiceAssistorImpl implements AreaFieldServiceAssistor {
+public class FieldServiceAssistorImpl implements FieldServiceAssistor {
 	
 	@Autowired
 	private FormService formService;
 
 	@Autowired
-	private AreaFieldService areaFieldService;
+	private FormFieldService formFieldService;
 	
 	@Override
 	public List<TreeViewNode> composeAreaFieldTree(String formid, EmptyNodeType emptyNodeType) throws BussinessException {
@@ -41,9 +44,8 @@ public class AreaFieldServiceAssistorImpl implements AreaFieldServiceAssistor {
 		FormType formtype = FormType.from(formvo.getFormtype());
 		
 		List<TreeViewNode> nodes = new ArrayList<TreeViewNode>();
-		List<EntryBean> areas = this.areaFieldService.selectAreaByFormtype(formtype);
 		TreeViewNode areaNode = null;
-		for (EntryBean area : areas) {
+		for (EntryBean area : FormArea.toList(formtype)) {
 			areaNode = new TreeViewNode();
 			areaNode.setText(area.label());
 			areaNode.getAttrs().put("value", area.getValue());
@@ -52,7 +54,7 @@ public class AreaFieldServiceAssistorImpl implements AreaFieldServiceAssistor {
 			nodes.add(areaNode);
 		}
 
-		List<FormFieldVO> fieldvos = this.areaFieldService.selectFormFieldByFormid(formid);
+		List<FormFieldVO> fieldvos = this.formFieldService.selectFormFieldByFormid(formid);
 		if(fieldvos == null || fieldvos.isEmpty()) {
 			throw new BussinessException("找不到表单[formid=" + formid + "]对应的字段。");
 		}
@@ -95,6 +97,12 @@ public class AreaFieldServiceAssistorImpl implements AreaFieldServiceAssistor {
 		}
 		
 		return nodes;
+	}
+
+	@Override
+	public BsTableDataSource<FormFieldVO> composeFormFieldBsTableDataSource(FormFieldVO condition, String searchText, Pagination pagination) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

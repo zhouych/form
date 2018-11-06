@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +25,18 @@ import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormDomainMapper;
+import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.FormMapper;
-import com.zyc.form.data.FormType;
+import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormDomain;
+import com.zyc.form.entities.FormField;
+import com.zyc.form.entities.MetaField;
 import com.zyc.form.service.FormService;
-import com.zyc.form.vo.FormDomainVO;
 import com.zyc.form.vo.FormVO;
 
 @Service
 public class FormServiceImpl extends AbstractSelectByPageService implements FormService {
-
-	public static final List<FormVO> testData = new ArrayList<FormVO>();
 	
 	@Autowired
 	private FormMapper formMapper;
@@ -45,23 +44,11 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 	@Autowired
 	private FormDomainMapper domainMapper;
 	
-	static {
-		Form form = null;
-		FormVO vo = null;
-		for (FormDomainVO domain : FormDomainServiceImpl.testData) {
-			for (FormType type : FormType.values()) {
-				form = new Form();
-				form.init();
-				form.setId(UUID.randomUUID().toString());
-				form.setFormdomainid(domain.getId());
-				form.setFormcode(StringUtils.randomAlphabets(10));
-				form.setFormname(form.getFormcode());
-				form.setFormtype(type.getValue());
-				vo = new FormVO(form);
-				testData.add(vo);
-			}
-		}
-	}
+	@Autowired
+	private FormFieldMapper formFieldMapper;
+	
+	@Autowired
+	private MetaFieldMapper metaFieldMapper;
 	
 	@Override
 	public List<FormVO> selectAll() {
@@ -192,9 +179,32 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 			throw new BussinessException("Created 'FormDomain' failed.");
 		}
 		
+		this.createFormFields(_new);
+		
 		vo = new FormVO(_new);
 		
 		return vo;
+	}
+
+	private List<FormField> createFormFields(Form form) throws Exception {
+		List<FormField> fields = null;
+		MetaField condition = new MetaField().clean();
+		List<MetaField> mfs = this.metaFieldMapper.select(condition);
+		if(CollectionUtils.hasElement(mfs)) {
+			fields = new ArrayList<FormField>();
+			FormField ff = null;
+			for (MetaField mf : mfs) {
+				ff = new FormField(mf);
+				ff.init();
+				ff.createIdWhenNot();
+				ff.setMetafieldid(mf.getId());
+				ff.setFormid(form.getId());
+				if(this.formFieldMapper.insert(ff) > 0) {
+					fields.add(this.formFieldMapper.load(ff.getId(), FormField.class));
+				}
+			}
+		}
+		return fields;
 	}
 
 	@Override
@@ -208,7 +218,7 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 			throw new BussinessException("This form does not exist or data does not matchs. (formdomainid=" + form.getFormdomainid() + "; formcode=" + form.getFormcode() + ")");
 		}
 
-		BeanUtils.copyProperties(form, old, FieldRuleUtils.uneditableFields(old));
+		BeanUtils.copyProperties(form, old, FieldRuleUtils.externalUneditableFields(old));
 		this.update(this.formMapper, old, ACTION_UPDATE);
 		
 		FormVO _new = new FormVO(old);

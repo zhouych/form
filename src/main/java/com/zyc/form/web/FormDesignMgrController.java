@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.web.EmptyNodeType;
-import com.zyc.form.serviceassist.AreaFieldServiceAssistor;
+import com.zyc.form.serviceassist.FieldServiceAssistor;
 import com.zyc.form.serviceassist.FormServiceAssistor;
 
 @Controller
@@ -21,7 +21,7 @@ public class FormDesignMgrController {
 	private FormServiceAssistor formServiceAssistor;
 	
 	@Autowired
-	private AreaFieldServiceAssistor areaFieldServiceAssistor;
+	private FieldServiceAssistor fieldServiceAssistor;
 
     @RequestMapping(value = commonPath, method = RequestMethod.GET)
 	public String index(Model model) throws Exception {
@@ -39,7 +39,7 @@ public class FormDesignMgrController {
     	boolean hasFormid = StringUtils.isNotBlank(formid);
     	model.addAttribute("currentFormid", hasFormid ? formid : "");
     	model.addAttribute("formTree", this.formServiceAssistor.composeFormTree(EmptyNodeType.OPTIONAL));
-    	model.addAttribute("areaFieldTree", hasFormid ? this.areaFieldServiceAssistor.composeAreaFieldTree(formid, null) : null);
+    	model.addAttribute("areaFieldTree", hasFormid ? this.fieldServiceAssistor.composeAreaFieldTree(formid, null) : null);
     }
 
     @RequestMapping(value = commonPath + "/spreadtest", method = RequestMethod.GET)

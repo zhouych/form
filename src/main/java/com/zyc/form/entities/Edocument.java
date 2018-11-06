@@ -8,10 +8,14 @@ import org.apache.commons.codec.binary.StringUtils;
 
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
+import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.Mainfield;
+import com.zyc.baselibs.annotation.Subfield;
 import com.zyc.baselibs.entities.Businessable;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 import com.zyc.baselibs.entities.Labelable;
+import com.zyc.form.data.EdocumentBusinessStatus;
 
 /**
  * 电子文档
@@ -25,10 +29,12 @@ public class Edocument extends DescriptionBaseEntity implements java.io.Serializ
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "formidlabel" })
 	private String formid;
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "formid")
 	private String formidlabel;
 	
 	@FieldRule(required = true, externalUneditable = false)
@@ -44,64 +50,89 @@ public class Edocument extends DescriptionBaseEntity implements java.io.Serializ
 	private Date occurdate;
 
 	@FieldRule(required = true, externalUneditable = true)
+	@EnumMapping(enumClazz = EdocumentBusinessStatus.class)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
+	private String businessstatus;
+
+	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "creatorlabel" })
 	private String creator;
 	
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "creator")
 	private String creatorlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "creatordeptlabel" })
 	private String creatordept;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "creatordept")
 	private String creatordeptlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "creatorcompanylabel" })
 	private String creatorcompany;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "creatorcompany")
 	private String creatorcompanylabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "applicantlabel" })
 	private String applicant;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "applicant")
 	private String applicantlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "applicantdeptlabel" })
 	private String applicantdept;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "applicantdept")
 	private String applicantdeptlabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "applicantcompanylabel" })
 	private String applicantcompany;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "applicantcompany")
 	private String applicantcompanylabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "originalcurrencylabel" })
 	private String originalcurrency;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "originalcurrency")
 	private String originalcurrencylabel;
 	
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
+	@Mainfield(subfields = { "naturalcurrencylabel" })
 	private String naturalcurrency;
+	
+	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	@Subfield(mainfield = "naturalcurrency")
+	private String naturalcurrencylabel;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.DECIMAL)
@@ -281,6 +312,14 @@ public class Edocument extends DescriptionBaseEntity implements java.io.Serializ
 
 	public void setNaturalcurrency(String naturalcurrency) {
 		this.naturalcurrency = naturalcurrency;
+	}
+
+	public String getNaturalcurrencylabel() {
+		return naturalcurrencylabel;
+	}
+
+	public void setNaturalcurrencylabel(String naturalcurrencylabel) {
+		this.naturalcurrencylabel = naturalcurrencylabel;
 	}
 
 	public BigDecimal getExchangerate() {

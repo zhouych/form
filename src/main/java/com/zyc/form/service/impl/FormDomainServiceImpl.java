@@ -2,7 +2,6 @@ package com.zyc.form.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,36 +39,6 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 	@Autowired
 	private CtrlDimSourceMapper ctrlDimSourceMapper;
 	
-	public static final List<FormDomainVO> testData = new ArrayList<FormDomainVO>();
-	
-	static {
-		FormDomainVO vo;
-		FormDomain fd;
-		CtrlDimSource cds;
-		for (int i = 0; i < 10; i++) {
-			fd = new FormDomain();
-			fd.init();
-			fd.setId(UUID.randomUUID().toString());
-			fd.setDomaincode(StringUtils.randomAlphabets(10));
-			fd.setDomainname(fd.getDomaincode());
-			vo = new FormDomainVO(fd);
-			
-			cds = new CtrlDimSource();
-			cds.init();
-			cds.setId(UUID.randomUUID().toString());
-			cds.setFormdomainid(fd.getId());
-			cds.setDimid(UUID.randomUUID().toString());
-			cds.setDimcode(StringUtils.randomAlphabets(10));
-			cds.setDimname(cds.getDimcode());
-			cds.setExpression("+@2(" + cds.getDimid() + ");");
-			cds.setExpressiontext("包含@成员及后代（" + cds.getDimcode() + "）");
-			
-			vo.addCtrlDimSource(cds, true);
-			
-			testData.add(vo);
-		}
-	}
-
 	@Override
 	public List<EntryBean> allDomainEntryBeans() {
 		List<EntryBean> entryBeans = null; 
@@ -211,7 +180,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 				if(old == null) {
 					newCtrlDimSource = this.createCtrlDimSource(ctrlDimSource, formdomainid); //当前待保存数据没有被保存过，则创建。
 				} else {
-					BeanUtils.copyProperties(ctrlDimSource, old, FieldRuleUtils.uneditableFields(old));
+					BeanUtils.copyProperties(ctrlDimSource, old, FieldRuleUtils.externalUneditableFields(old));
 					this.update(this.ctrlDimSourceMapper, old, ACTION_UPDATE); //当前待保存数据已经被保存过，则更新。
 					newCtrlDimSource = old;
 					olds.remove(old);
@@ -265,7 +234,7 @@ public class FormDomainServiceImpl extends AbstractSelectByPageService implement
 			throw new BussinessException("This form domain does not exist or data does not matchs. (domain code=" + domain.getDomaincode() + ")");
 		}
 
-		BeanUtils.copyProperties(domain, old, FieldRuleUtils.uneditableFields(old));
+		BeanUtils.copyProperties(domain, old, FieldRuleUtils.externalUneditableFields(old));
 		this.update(this.formDomainMapper, old, ACTION_UPDATE);
 		
 		FormDomainVO _new = new FormDomainVO(old);

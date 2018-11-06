@@ -3,6 +3,7 @@ package com.zyc.form.data;
 public enum FieldDataType {
 	STRING("String", "文本型"),
 	INTEGER("Integer", "整数型"),
+	BIGDECIMAL("BigDecimal", "高精度型"),
 	DOUBLE("Double", "金额型"),
 	DATE("Date", "日期型");
 	
@@ -11,7 +12,7 @@ public enum FieldDataType {
 
 	private FieldDataType(String value, String text) {
 		this.value = value;
-		this.text = text;
+		this.text = text; 
 	}
 
 	public String getValue() {

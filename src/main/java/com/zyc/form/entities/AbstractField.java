@@ -37,7 +37,7 @@ public abstract class AbstractField extends DescriptionBaseEntity {
 
 	@FieldRule(required = true)
 	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
-	private boolean editable;
+	private Boolean editable;
 
 	public String getFormarea() {
 		return formarea;
@@ -79,12 +79,24 @@ public abstract class AbstractField extends DescriptionBaseEntity {
 		this.displaytype = displaytype;
 	}
 
-	public boolean isEditable() {
+	public Boolean getEditable() {
 		return editable;
 	}
-
-	public void setEditable(boolean editable) {
+	
+	public void setEditable(Boolean editable) {
 		this.editable = editable;
+	}
+	
+	@Override
+	public AbstractField clean() {
+		super.clean();
+		this.formarea = null;
+		this.fieldvalue = null;
+		this.fieldname = null;
+		this.datatype = null;
+		this.displaytype = null;
+		this.editable = null;
+		return this;
 	}
 
 }

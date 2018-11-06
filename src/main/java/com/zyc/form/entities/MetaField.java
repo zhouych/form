@@ -15,7 +15,14 @@ public class MetaField extends AbstractField implements java.io.Serializable, La
 
 	@Override
 	public String label() {
+		return this.getFieldvalue() + " - " + this.getFieldname();
+	}
+	
+	@Override
+	public MetaField clean() {
 		// TODO Auto-generated method stub
-		return null;
+		super.clean();
+		
+		return this;
 	}
 }
