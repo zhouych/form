@@ -10,7 +10,7 @@ import com.zyc.form.data.FieldDataType;
 import com.zyc.form.data.FieldDisplayType;
 import com.zyc.form.data.FormArea;
 
-public abstract class AbstractField extends DescriptionBaseEntity {
+public abstract class AbstractField extends DescriptionBaseEntity implements AbstractFieldLabelable {
 
 	@FieldRule(required = true, externalUneditable = true)
 	@EnumMapping(enumClazz = FormArea.class)
@@ -99,4 +99,23 @@ public abstract class AbstractField extends DescriptionBaseEntity {
 		return this;
 	}
 
+	@Override
+	public String getDatatypelabel() {
+		return this.getDatatype() == null ? null : Enum.valueOf(FieldDataType.class, this.getDatatype().toUpperCase()).getText();
+	}
+	
+	@Override
+	public String getDisplaytypelabel() {
+		return this.getDisplaytype() == null ? null :Enum.valueOf(FieldDisplayType.class, this.getDisplaytype().toUpperCase()).getText();
+	}
+	
+	@Override
+	public String getFormarealabel() {
+		return this.getFormarea() == null ? null : Enum.valueOf(FormArea.class, this.getFormarea().toUpperCase()).getText();
+	}
+	
+	@Override
+	public String getEditablelabel() {
+		return this.getEditable() != null && this.getEditable() ? "是" : "否";
+	}
 }

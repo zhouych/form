@@ -12,6 +12,7 @@ import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
+import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.TreeViewNode;
@@ -101,8 +102,11 @@ public class FieldServiceAssistorImpl implements FieldServiceAssistor {
 
 	@Override
 	public BsTableDataSource<FormFieldVO> composeFormFieldBsTableDataSource(FormFieldVO condition, String searchText, Pagination pagination) {
-		// TODO Auto-generated method stub
-		return null;
+		PaginationResult<FormFieldVO> result = this.formFieldService.selectByPage(condition, searchText, pagination);
+		BsTableDataSource<FormFieldVO> dataSource = new BsTableDataSource<FormFieldVO>();
+		dataSource.setRows(result.getRows());
+		dataSource.setTotal(result.getTotal());
+		return dataSource;
 	}
 
 }

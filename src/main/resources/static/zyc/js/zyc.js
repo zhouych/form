@@ -66,6 +66,9 @@
     		
     		alert(msg || defaultMessage);
     	},
+    	confirm: function(message) {
+    		return confirm(message);
+    	},
     	sprintf: _sprintf,
 		timestampToDate: function(timestamp) {
 			return !timestamp ? null : new Date(timestamp);

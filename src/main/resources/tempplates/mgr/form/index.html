@@ -34,7 +34,7 @@
 	$(document).ready(function() {
 		
 		var redirectByFormid = function(e, id) {
-			zyc.redirect($(this).attr('data-bind-href') + '/formid=' + id + '?returnUrl=/mgr/form');
+			zyc.redirect($(this).attr('data-bind-href') + '/' + id + '?returnUrl=/mgr/form');
 		}
 		
 		//事件列表

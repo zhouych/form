@@ -56,7 +56,24 @@
 			
 			if(typeof queryParamsExtension === 'function') {
 				currentOptions.queryParams = function(params) {
-					return _extendQueryParams(params, DEFAULTS.queryParams, queryParamsExtension);
+					params = _extendQueryParams(params, DEFAULTS.queryParams, queryParamsExtension);
+					//排序字段：需要处理仅用于显示的以label结尾的字段，将这些字段替换成其对应的数据字段
+					var order = params && params.pagination && params.pagination.order || null
+						index = order.lastIndexOf('label'); 
+					if(order && index === (order.length - 'label'.length)) {
+						var ingore = false;
+						for(var i = 0; i < this.nonLabelFields.length; i++) {
+							if(order === this.nonLabelFields[i]) {
+								ignore = true; //如果该字段被指定为非label字段，则需要忽略它（即不进行替换处理）。
+								break;
+							}
+						}
+						if(!ingore) {
+							params.pagination.order = order.substr(0, index);
+						}
+					}
+					
+					return params;
 				}
 			}
 			
@@ -140,7 +157,7 @@
 	    sidePagination: 'server', //分页方式：client客户端分页，server服务端分页
 	    pageNumber: 1, //初始化加载第一页，默认第一页
 	    pageSize: 10, //每页的记录行数（*）
-	    pageList: [10, 25, 50, 100], //可供选择的每页的行数
+	    pageList: [10, 20, 50, 100], //可供选择的每页的行数
 	    paginationPreText: '上一页', //指定分页条中上一页按钮的图标或文字
 	    paginationNextText: '下一页', //指定分页条中下一页按钮的图标或文字
 	    paginationHAlign: 'right', //指定 分页条 在水平方向的位置。'left' 或 'right'。
@@ -205,7 +222,8 @@
 	    },
 		onDblClickRow: function (item, $element) {
 	        return false;
-	    }
+	    },
+	    nonLabelFields: [ ]
 	};
 	
 })();
