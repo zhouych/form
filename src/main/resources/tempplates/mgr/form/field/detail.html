@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title th:text="${actionText} + '表单'"></title>
+<title th:text="${actionText} + '表单字段'"></title>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
@@ -15,7 +15,7 @@
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
-		<form id="form-detail" class="form form-horizontal" method="post" th:action="@{/mgr/form/} + ${action}" th:object="${form}">
+		<form id="form-field-detail" class="form form-horizontal" method="post" th:action="@{/mgr/form/field/} + ${action}" th:object="${field}">
 			<input type="hidden" name="action" th:value="${action}" />
 			<input type="hidden" th:field="*{id}" />
 			<div class="container-fluid">
@@ -23,37 +23,59 @@
 				  	<h3>basic info</h3>
 				</div>
 				<div class="row form-group">
-					<!-- *********** Form 'formname' *********** -->
-				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="domainname">Name</label>
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="fieldname">Name</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Name" th:field="*{formname}" th:attr="readonly=${readonly}" />
+				      	<input type="text" class="form-control" placeholder="Name" th:field="*{fieldname}" th:attr="readonly=${readonly}" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
-					<!-- *********** Form Domain 'formcode' *********** -->
-				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formcode">Code</label>
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="fieldvalue">Value</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				      	<input type="text" class="form-control" placeholder="Code" th:field="*{formcode}" th:attr="readonly=${readonly}" />
+				      	<input type="text" class="form-control" placeholder="Value" th:field="*{fieldvalue}" th:attr="readonly=true" />
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
 				<div class="row form-group">
-					<!-- *********** Form Domain 'datastatus' *********** -->
-				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="formdomainid">表单域</label>
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="datatype">Data Type</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				    	<div th:replace="/fragments/hierarchy-select :: hselect('hselect_domain',${hselectDomains},${form.formdomainid},${readonly} or ${whether_edit})" />
-				      	<input type="hidden" th:field="*{formdomainid}" />
+				    	<select class="form-control" th:field="*{datatype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="dt:${dataTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
+						</select>
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
-					<!-- *********** Form Domain 'version' *********** -->
-				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formtype">Form Type</label>
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="displaytype">Display Type</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<select class="form-control" th:field="*{formtype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
-							<option th:each="ft:${formTypes}" th:value="${ft.value}" th:text="${ft.text}"></option>
+				    	<select class="form-control" th:field="*{displaytype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="dt:${displayTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
 						</select>
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
+				<div class="row form-group">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="formarea">Form Area</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				    	<select class="form-control" th:field="*{formarea}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="fa:${formAreas}" th:value="${fa.value}" th:text="${fa.text}"></option>
+						</select>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="expression">Data Source</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+						<input type="hidden" th:field="${expression}" />
+			        	<input type="text" class="form-control" th:field="${expressiontext}" readonly="readonly" />
+			        	<span class="input-group-addon hand" th:attr="title='设置字段数据源'">@</span>
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
 				<div th:replace="/fragments/entity-common :: descriptionRow(${form},${readonly})" />
+				<div class="row form-group">
+					<div class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-10 col-lg-10">
+				      	<div class="checkbox">
+				        	<label>
+				          		<input type="checkbox" th:field="*{editable}" th:attr="readonly=${readonly},disabled=${readonly}" /> 可编辑
+				        	</label>
+				      	</div>
+				    </div>
+				</div>
 				<div th:replace="/fragments/entity-common :: dataTagRow(null)" />
 				<div th:replace="/fragments/entity-common :: statusRow(${form},${allDataStatus},${readonly})" />
 				<div th:replace="/fragments/entity-common :: dateRow(${form},${readonly})" />
@@ -69,21 +91,14 @@
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/hierarchy-select/js/hierarchy-select.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-jquery-utils.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		
-		var $form = $('#form-detail');
-		
-		var $hselect = $('#hselect_domain').hierarchySelect({
-			afterNodeClick: function(e) {
-				var val = $(this).attr('value')
-					, invalid = zyc.invalidBusNode(val);
-				$form.find('input[name="formdomainid"]').val(invalid ? '' : val);
-			}
-		});
+		var $form = $('#form-field-detail');
 		
 	});
 </script>

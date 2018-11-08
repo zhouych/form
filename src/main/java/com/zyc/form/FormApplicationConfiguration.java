@@ -89,10 +89,13 @@ public class FormApplicationConfiguration {
     				sql = sql.replace("values(", "\n\tvalues(");
     				sql = sql.replace("@id", "'" + UUID.randomUUID().toString() + "'");
     				sql = sql.replace("@formarea", "'" + area.getValue() + "'");
+    				sql = sql.replace("@sysfield", field.getName().startsWith("item") ? "0" : "1");
     				sql = sql.replace("@fieldvalue", "'" + field.getName() + "'");
     				sql = sql.replace("@fieldname", "'" + field.getName() + "'");
     				sql = sql.replace("@datatype", "'" + dataType.getValue() + "'");
     				sql = sql.replace("@displaytype", "'" + displayType.getValue() + "'");
+    				sql = sql.replace("@expressiontext", "null");
+    				sql = sql.replace("@expression", "null");
     				sql = sql.replace("@editable", editable ? "1" : "0");
     				sql = sql.replace("@description", "null");
     				sql = sql.replace("@datastatus", "'" + DataStatus.ENABLED.getValue() + "'");

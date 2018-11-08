@@ -11,8 +11,10 @@ import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.commons.ReflectUtils;
+import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.entities.BaseEntity;
+import com.zyc.baselibs.entities.Businessable;
 import com.zyc.baselibs.entities.Labelable;
 
 /**
@@ -21,7 +23,7 @@ import com.zyc.baselibs.entities.Labelable;
  *
  */
 @DatabaseTable(name = "formfields")
-public class FormField extends AbstractField implements java.io.Serializable, Labelable {
+public class FormField extends AbstractField implements java.io.Serializable, Labelable, Businessable<FormField> {
 	
 	private static final long serialVersionUID = -433929870224425673L;
 
@@ -77,5 +79,17 @@ public class FormField extends AbstractField implements java.io.Serializable, La
 		this.formid = null;
 		this.metafieldid = null;
 		return this;
+	}
+
+	@Override
+	public boolean businessEquals(FormField obj) {
+		if(obj == null) {
+			return false;
+		}
+		
+		return StringUtils.equals(this.getId(), obj.getId())
+				&& StringUtils.equals(this.getFormid(), obj.getFormid())
+				&& StringUtils.equals(this.getFormarea(), obj.getFormarea())
+				&& StringUtils.equals(this.getFieldvalue(), obj.getFieldvalue());
 	}
 }

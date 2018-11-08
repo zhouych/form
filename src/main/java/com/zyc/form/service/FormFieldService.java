@@ -5,6 +5,7 @@ import java.util.List;
 import com.zyc.baselibs.service.EntityDeleteService;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
+import com.zyc.form.entities.FormField;
 import com.zyc.form.vo.FormFieldVO;
 
 public interface FormFieldService extends EntityDeleteService {
@@ -19,5 +20,15 @@ public interface FormFieldService extends EntityDeleteService {
 	 * @return
 	 */
 	boolean refresh(String formid) throws Exception;
+
+	FormFieldVO selectByFormfieldid(String formfieldid);
+	
+	FormFieldVO selectByFieldvalue(String formid, String formarea, String fieldvalue);
+	
+	FormField loadFormField(String formid, String formarea, String fieldvalue);
+
+	FormFieldVO create(FormFieldVO vo) throws Exception;
+
+	FormFieldVO modify(FormFieldVO vo) throws Exception;
 
 }

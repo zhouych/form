@@ -1,5 +1,11 @@
 package com.zyc.form.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.zyc.baselibs.vo.EntryBean;
+import com.zyc.baselibs.web.EmptyNodeType;
+
 public enum FieldDisplayType {
 	TEXTBOX("textbox", "文本框"),
 	TEXTAREA("textarea", "文本域"),
@@ -23,5 +29,18 @@ public enum FieldDisplayType {
 
 	public String getText() {
 		return text;
+	}
+
+	public static List<EntryBean> toList(EmptyNodeType empty) {
+		List<EntryBean> list = new ArrayList<EntryBean>();
+		for (FieldDisplayType type : FieldDisplayType.values()) {
+			list.add(new EntryBean(type.getValue(), type.getText()));
+		}
+		
+		if(empty != null) {
+			list.add(0, new EntryBean(empty.getValue(), empty.getText()));
+		}
+		
+		return list;
 	}
 }

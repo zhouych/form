@@ -13,7 +13,7 @@
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<div id="toolbar-forms">
-			<button type="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}">新增</button>
+			<a type="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}">新增</a>
 			<button type="button" id="btn_edit_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/editpage}">编辑</button>
 			<button type="button" id="btn_del_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/}">删除</button>
 			<button type="button" id="btn_field_list" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/field}">字段列表</button>

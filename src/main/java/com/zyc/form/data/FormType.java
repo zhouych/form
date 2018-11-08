@@ -1,9 +1,11 @@
 package com.zyc.form.data;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.web.EmptyNodeType;
 
@@ -86,5 +88,34 @@ public enum FormType {
 	
 	public static FormType from(String value) {
 		return Enum.valueOf(FormType.class, value.toUpperCase());
+	}
+	
+	public AreaExcludes getAreaExcludes() {
+		Class<?> clazz = this.getClass();
+		Field field = null;
+		try {
+			field = clazz.getField(this.name());
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return field.isAnnotationPresent(AreaExcludes.class) ? null : field.getAnnotation(AreaExcludes.class);
+	}
+	
+	/**
+	 * 指定的表单区域是否被当前表单类型排除（即当前表单是否不包括指定的表单区域）。
+	 * @param area 指定的表单区域
+	 * @return Boolean: true-不包括; false-包括
+	 */
+	public boolean isExclude(FormArea area) {
+		AreaExcludes areaExcludes = this.getAreaExcludes();
+		if(areaExcludes != null && areaExcludes.values() != null && areaExcludes.values().length > 0) {
+			for (FormArea excludeArea : areaExcludes.values()) {
+				if(area.equals(excludeArea)) {
+					return true;
+				}
+			}
+		}		
+		return false;
 	}
 }

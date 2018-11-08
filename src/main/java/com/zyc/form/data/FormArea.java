@@ -1,6 +1,5 @@
 package com.zyc.form.data;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,39 +56,22 @@ public enum FormArea {
 	}
 	
 	public static List<EntryBean> toList(FormType formtype) {
-		AreaExcludes areaExcludes = null;
-		if(formtype != null) {
-			Class<?> clazz = formtype.getClass();
-			Field field = null;
-			try {
-				field = clazz.getField(formtype.name());
-			} catch (NoSuchFieldException | SecurityException e) {
-				throw new RuntimeException(e);
-			}
-			
-			if(field.isAnnotationPresent(AreaExcludes.class)) {
-				areaExcludes = field.getAnnotation(AreaExcludes.class);
-			}
-		}
-		
 		List<EntryBean> list = new ArrayList<EntryBean>();
-		
 		for (FormArea area : FormArea.values()) {
-			boolean exclude = false;
-			if(areaExcludes != null && areaExcludes.values() != null && areaExcludes.values().length > 0) {
-				for (FormArea excludeArea : areaExcludes.values()) {
-					if(area.equals(excludeArea)) {
-						exclude = true;
-						break;
-					}
-				}
-			}
-			
-			if(!exclude) {
+			if(formtype == null || !formtype.isExclude(area)) {
 				list.add(new EntryBean(area.getValue(), area.getText()));
 			}
 		}
-		
+		return list;
+	}
+	
+	public static List<String> values(FormType formtype) {
+		List<String> list = new ArrayList<String>();
+		for (FormArea area : FormArea.values()) {
+			if(formtype == null || !formtype.isExclude(area)) {
+				list.add(area.getValue());
+			}
+		}
 		return list;
 	}
 }

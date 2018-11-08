@@ -16,6 +16,10 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@EnumMapping(enumClazz = FormArea.class)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
 	private String formarea;
+
+	@FieldRule(required = true)
+	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
+	private Boolean sysfield;
 	
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 32)
@@ -35,6 +39,14 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
 	private String displaytype;
 
+	@FieldRule(required = false, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 1024)
+	private String expression;
+	
+	@FieldRule(required = false, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 2048)
+	private String expressiontext;
+
 	@FieldRule(required = true)
 	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
 	private Boolean editable;
@@ -45,6 +57,14 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 
 	public void setFormarea(String formarea) {
 		this.formarea = formarea;
+	}
+
+	public Boolean getSysfield() {
+		return sysfield;
+	}
+
+	public void setSysfield(Boolean sysfield) {
+		this.sysfield = sysfield;
 	}
 
 	public String getFieldvalue() {
@@ -79,6 +99,22 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 		this.displaytype = displaytype;
 	}
 
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
+	public String getExpressiontext() {
+		return expressiontext;
+	}
+
+	public void setExpressiontext(String expressiontext) {
+		this.expressiontext = expressiontext;
+	}
+
 	public Boolean getEditable() {
 		return editable;
 	}
@@ -91,10 +127,13 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	public AbstractField clean() {
 		super.clean();
 		this.formarea = null;
+		this.sysfield = null;
 		this.fieldvalue = null;
 		this.fieldname = null;
 		this.datatype = null;
 		this.displaytype = null;
+		this.expression = null;
+		this.expressiontext = null;
 		this.editable = null;
 		return this;
 	}

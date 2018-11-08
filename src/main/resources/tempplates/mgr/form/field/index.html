@@ -12,9 +12,14 @@
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
-		<input type="hidden" name="formid" th:value="${formid}" />
+		<input type="hidden" name="formid" th:value="${form.id}" />
+		<input type="hidden" name="formname" th:value="${form.formname}" />
 		<div id="toolbar-fields">
+			<button type="button" id="btn_form_list" class="btn btn-default" th:attr="data-bind-href=@{/mgr/form}">表单列表</button>
 			<button type="button" id="btn_refresh_fields" class="btn btn-default" th:attr="data-bind-href=@{/api/form/field/refresh}">刷新</button>
+			<a type="button" id="btn_add_field" class="btn btn-default" th:href="@{/mgr/form/field/addpage} + '?formid=' + ${form.id}">新增</a>
+			<button type="button" id="btn_edit_field" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/field/editpage}">编辑</button>
+			<button type="button" id="btn_del_field" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/field/}">删除</button>
 		</div>
 		<table id="table-fields"></table>
 	</div>
@@ -24,20 +29,25 @@
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/bootstrap-table.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-plugins/table/locale/bootstrap-table-zh-CN.js}" ></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-jquery-utils.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-bs-table.js}" ></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
-		var formid = $('input[name="formid"]').val() || null;
+		var formid = $('input[name="formid"]').val() || null
+			, formname = $('input[name="formname"]').val() || null;
 		
 		//事件列表
 		var events = {
+			'btn_form_list': function(e) {
+				zyc.redirect($(this).bindHref());
+			},
 			'btn_refresh_fields': function(e) {
 				if(zyc.confirm('刷新字段涉及到数据同步，可能需要一定时间。继续刷新吗？')) {
-					alert($(this).attr('data-bind-href') + '/' + formid);
+					alert($(this).bindHref() + '/' + formid);
 					$.ajax({
-						url : $(this).attr('data-bind-href') + '/' + formid,
+						url : $(this).bindHref() + '/' + formid,
 						data: {},
 						type: 'post',
 						dataType: 'json',
@@ -54,10 +64,35 @@
 					    }
 					});	
 				}
+			},
+			'btn_edit_field': function(e, id) {
+				zyc.redirect($(this).attr('data-bind-href') + '/' + id);
+			},
+			'btn_del_field': function(e, id) {
+				if(confirm('您确认要删除当前选择的表单吗？')) {
+					$.ajax({
+						url : $(this).attr('data-bind-href') + '/' + id,
+						data: {},
+						type: 'delete',
+						dataType: 'json',
+						async: true,
+						success: function(resp) {
+							if(resp.status === '0') {
+								zyc.alert(resp.message || '删除成功！');
+								$table.bootstrapTable('refresh');
+							} else {
+						    	zyc.alert(resp.message, 'error');
+							};
+						},
+					    error: function(err) {
+					    	zyc.alert(null, 'error');
+					    }
+					});	
+				}
 			}
 		};
 		
-		$('#toolbar-fields .btn').off('click').on('click', function(e) {
+		$('#toolbar-fields button.btn').off('click').on('click', function(e) {
 			var $this = $(this);
 			if(!$this.attr('disabled')) {
 				var ename = $this.attr('id');
@@ -105,7 +140,7 @@
             	, { field: 'updatedat', title: 'updatedat', sortable: true, visible: false }
             	, { field: 'updatedatlabel', title: '更新日期', sortable: true, halign: 'center', align: 'right' }
             	, { field: 'version', title: '版本号', sortable: true, halign: 'center', align: 'right' }
-            ],
+        	],
             sortName: 'formid',
             rowTooltipable: true,
             rowTooltipTitle: '单击选中当前行，双击进入详情页。',

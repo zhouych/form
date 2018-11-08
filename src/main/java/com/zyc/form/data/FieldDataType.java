@@ -1,5 +1,11 @@
 package com.zyc.form.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.zyc.baselibs.vo.EntryBean;
+import com.zyc.baselibs.web.EmptyNodeType;
+
 public enum FieldDataType {
 	STRING("String", "文本型"),
 	INTEGER("Integer", "整数型"),
@@ -21,5 +27,18 @@ public enum FieldDataType {
 
 	public String getText() {
 		return text;
+	}
+
+	public static List<EntryBean> toList(EmptyNodeType empty) {
+		List<EntryBean> list = new ArrayList<EntryBean>();
+		for (FieldDataType type : FieldDataType.values()) {
+			list.add(new EntryBean(type.getValue(), type.getText()));
+		}
+		
+		if(empty != null) {
+			list.add(0, new EntryBean(empty.getValue(), empty.getText()));
+		}
+		
+		return list;
 	}
 }

@@ -5,17 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.annotation.FieldRuleUtils;
+import com.zyc.baselibs.aopv.OverallVerificationRuler;
+import com.zyc.baselibs.aopv.ParamVerification;
 import com.zyc.baselibs.asserts.AssertThrowNonRuntime;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
 import com.zyc.baselibs.service.ValueObjectableUtils;
 import com.zyc.baselibs.vo.DeleteMode;
@@ -23,26 +29,25 @@ import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.FormMapper;
-import com.zyc.form.dao.MetaFieldMapper;
+import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormField;
-import com.zyc.form.entities.MetaField;
 import com.zyc.form.service.FormFieldService;
 import com.zyc.form.vo.FormFieldVO;
 
 @Service
 public class FormFieldServiceImpl extends AbstractSelectByPageService implements FormFieldService {
 	
-	private static final Logger logger = Logger.getLogger(FormFieldServiceImpl.class);
+	//private static final Logger logger = Logger.getLogger(FormFieldServiceImpl.class);
 	
 	@Autowired
 	private FormFieldMapper formFieldMapper;
-
-	@Autowired
-	private MetaFieldMapper metaFieldMapper;
 	
 	@Autowired
 	private FormMapper formMapper;
+
+	@Autowired
+	private ServiceCentral central;
 	
 	@Override
 	public List<FormFieldVO> selectFormFieldByFormid(String formid) {
@@ -92,6 +97,104 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 		return result;
 	}
 
+	@Override
+	public FormFieldVO selectByFormfieldid(String formfieldid) {
+		if(StringUtils.isBlank(formfieldid)) {
+			return null;
+		}
+		
+		FormField form = this.formFieldMapper.load(formfieldid, FormField.class);
+		if(form == null) {
+			return null;
+		}
+		
+		FormFieldVO vo = new FormFieldVO(form);
+		return vo;
+	}
+
+	public FormFieldVO selectByFieldvalue(String formid, String formarea, String fieldvalue) {
+		if(StringUtils.isBlank(formid) || StringUtils.isBlank(formid) || StringUtils.isBlank(fieldvalue)) {
+			return null;
+		}
+		
+		Form form = this.formMapper.load(formid, Form.class);
+		if(form == null) {
+			return null;
+		}
+		
+		FormField field = this.loadFormField(formid, formarea, fieldvalue);
+		FormFieldVO vo = new FormFieldVO(field);
+		vo.setFormname(form.label());		
+		return vo;
+	}
+	
+	public FormField loadFormField(String formid, String formarea, String fieldvalue) {
+		Assert.hasText(formid, "The parameter 'formid' is a null or empty.");
+		Assert.hasText(formarea, "The parameter 'formarea' is a null or empty.");
+		Assert.hasText(fieldvalue, "The parameter 'fieldvalue' is a null or empty.");
+		
+		FormField condition = new FormField().clean();
+		condition.setFormid(formid);
+		condition.setFormarea(formarea);
+		condition.setFieldvalue(fieldvalue);
+		
+		List<FormField> fields = this.formFieldMapper.select(condition);
+		if(!CollectionUtils.hasElement(fields)) {
+			return null;
+		}
+
+		if(fields.size() > 1) {
+			throw new RuntimeException("Data error: The field is not unique. (formid=" + formid + "; formarea=" + formarea + "; fieldvalue=" + fieldvalue + ")");
+		}
+		
+		return fields.get(0);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@ParamVerification(rules = { OverallVerificationRuler.class })
+	public FormFieldVO create(FormFieldVO vo) throws Exception {
+		FormField form = vo.copyEntity();
+		//依据id、domain与code进行判重
+		if(this.formFieldMapper.load(form.getId(), FormField.class) != null || this.loadFormField(form.getFormid(), form.getFormarea(), form.getFieldvalue()) != null) {
+			throw new BussinessException("This form already exists. (formfieldid=" + form.getId() + "; formid=" + form.getFormid() + "; fieldvalue=" + form.getFieldvalue() + ")");
+		}
+		
+		form.init();
+		int result = this.formFieldMapper.insert(form);
+		
+		FormField newest =  result > 0 ? this.formFieldMapper.load(form.getId(), FormField.class) : null;
+		if(newest == null) {
+			throw new BussinessException("Form field creation failed.");
+		}
+		
+		vo = new FormFieldVO(newest);
+		
+		return vo;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@ParamVerification(rules = { FieldRule.class })
+	public FormFieldVO modify(FormFieldVO vo) throws Exception {
+		FormField field = vo.copyEntity();
+		
+		FormField old = this.formFieldMapper.load(field.getId(), FormField.class);
+		if(old == null || !field.businessEquals(old)) {
+			throw new BussinessException("This form field does not exist or data does not matchs. (formid=" + field.getFormid() + "; formarea=" + field.getFormarea() + "; fieldvalue=" + field.getFieldvalue() + ")");
+		}
+
+
+		BeanUtils.copyProperties(field, old, FieldRuleUtils.externalUneditableFields(old));
+		this.update(this.formFieldMapper, old, ACTION_UPDATE);
+
+		Form form = this.formMapper.load(vo.getFormid(), Form.class);
+		
+		FormFieldVO newest = new FormFieldVO(old);
+		newest.setFormname(form.label());
+		return newest;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * @param formid 表单id，如果传入空值，将抛出异常
@@ -100,37 +203,10 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public boolean refresh(String formid) throws Exception {
 		AssertThrowNonRuntime.hasText(formid, "This parameter 'formid' is null or empty.");
-		
-		MetaField mfc = new MetaField().clean();
-		List<MetaField> mfs = this.metaFieldMapper.select(mfc);
-		if(CollectionUtils.hasElement(mfs)) {
-			FormField ffc = new FormField().clean();
-			ffc.setFormid(formid);
-			List<FormField> ffs = this.formFieldMapper.select(ffc);
-			
-			FormField ins;
-			for (MetaField mf : mfs) {
-				boolean exists = false;
-				for (FormField ff : ffs) {
-					if(mf.getId().equals(ff.getMetafieldid())) {
-						exists = true;
-						break;
-					}
-				}
-				
-				if(!exists) {
-					ins = new FormField(mf);
-					ins.init();
-					ins.createIdWhenNot();
-					ins.setMetafieldid(mf.getId());
-					ins.setFormid(formid);
-					if(this.formFieldMapper.insert(ins) > 0) {
-						logger.warn("The current form field failed to refresh. (field = " + StringUtils.instanceDetail(ins) + ")");
-					}
-				}
-			}
-		}
-		
+		Form form = this.formMapper.load(formid, Form.class);
+		AssertThrowNonRuntime.notNull(form, "The form does not exist. (formid=" + formid + ")");
+		FormType formtype = StringUtils.toEnumIgnoreCase(FormType.class, form.getFormtype());
+		this.central.refreshFormFields(formid, formtype, null);
 		return true;
 	}
 

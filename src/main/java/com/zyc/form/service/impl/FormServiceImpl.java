@@ -25,13 +25,11 @@ import com.zyc.baselibs.vo.DeleteMode;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormDomainMapper;
-import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.FormMapper;
-import com.zyc.form.dao.MetaFieldMapper;
+import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormDomain;
 import com.zyc.form.entities.FormField;
-import com.zyc.form.entities.MetaField;
 import com.zyc.form.service.FormService;
 import com.zyc.form.vo.FormVO;
 
@@ -44,11 +42,11 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 	@Autowired
 	private FormDomainMapper domainMapper;
 	
-	@Autowired
-	private FormFieldMapper formFieldMapper;
+	//@Autowired
+	//private FormFieldMapper formFieldMapper;
 	
 	@Autowired
-	private MetaFieldMapper metaFieldMapper;
+	private ServiceCentral central;
 	
 	@Override
 	public List<FormVO> selectAll() {
@@ -174,36 +172,26 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 		
 		form.init();
 		int result = this.formMapper.insert(form);
-		Form _new =  result > 0 ? this.formMapper.load(form.getId(), Form.class) : null;
-		if(_new == null) {
-			throw new BussinessException("Created 'FormDomain' failed.");
+		Form newest =  result > 0 ? this.formMapper.load(form.getId(), Form.class) : null;
+		if(newest == null) {
+			throw new BussinessException("Form creation failed.");
 		}
 		
-		this.createFormFields(_new);
-		
-		vo = new FormVO(_new);
-		
+		this.createFormFields(newest);
+		vo = new FormVO(newest);
 		return vo;
 	}
 
 	private List<FormField> createFormFields(Form form) throws Exception {
-		List<FormField> fields = null;
-		MetaField condition = new MetaField().clean();
-		List<MetaField> mfs = this.metaFieldMapper.select(condition);
-		if(CollectionUtils.hasElement(mfs)) {
-			fields = new ArrayList<FormField>();
-			FormField ff = null;
-			for (MetaField mf : mfs) {
-				ff = new FormField(mf);
-				ff.init();
-				ff.createIdWhenNot();
-				ff.setMetafieldid(mf.getId());
-				ff.setFormid(form.getId());
-				if(this.formFieldMapper.insert(ff) > 0) {
-					fields.add(this.formFieldMapper.load(ff.getId(), FormField.class));
-				}
+		final List<FormField> fields = new ArrayList<FormField>();
+		FormType formtype = StringUtils.toEnumIgnoreCase(FormType.class, form.getFormtype());
+		this.central.refreshFormFields(form.getId(), formtype, new Visitor<FormField, Boolean>() {
+			@Override
+			public Boolean visit(FormField o) {
+				fields.add(o);
+				return false;
 			}
-		}
+		});
 		return fields;
 	}
 
