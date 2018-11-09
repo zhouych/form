@@ -119,29 +119,29 @@
 			method: 'post',
 			columns: [
             	{ checkbox: true, visible: true } 
-            	, { field: 'id', title: 'id', sortable: true, visible: false }
-            	, { field: 'formid', title: 'formid', sortable: true, visible: false }
+            	//, { field: 'id', title: 'id', sortable: true, visible: false }
+            	//, { field: 'formid', title: 'formid', sortable: true, visible: false }
             	, { field: 'formname', title: '表单名称', sortable: true, halign: 'center', align: 'left' }
-            	, { field: 'formarea', title: 'formarea', sortable: true, visible: false }
+            	//, { field: 'formarea', title: 'formarea', sortable: true, visible: false }
             	, { field: 'formarealabel', title: '表单区域', sortable: true, halign: 'center', align: 'left' }
             	, { field: 'fieldvalue', title: '表单字段', sortable: true, halign: 'center', align: 'left' }
             	, { field: 'fieldname', title: '表单字段名称', sortable: true, halign: 'center', align: 'left' }
-            	, { field: 'datatype', title: 'datatype', sortable: true, visible: false }
+            	//, { field: 'datatype', title: 'datatype', sortable: true, visible: false }
             	, { field: 'datatypelabel', title: '数据类型', sortable: true, halign: 'center', align: 'center' }
-            	, { field: 'displaytype', title: 'displaytype', sortable: true, visible: false }
+            	//, { field: 'displaytype', title: 'displaytype', sortable: true, visible: false }
             	, { field: 'displaytypelabel', title: '显示类型', sortable: true, halign: 'center', align: 'center' }
-            	, { field: 'editable', title: 'editable', sortable: true, visible: false }
+            	//, { field: 'editable', title: 'editable', sortable: true, visible: false }
             	, { field: 'editablelabel', title: '是否可编辑', sortable: true, halign: 'center', align: 'center' }
             	, { field: 'description', title: '备注说明', sortable: true, halign: 'center', align: 'left' }
-            	, { field: 'datastatus', title: 'datastatus', sortable: true, visible: false  }
+            	//, { field: 'datastatus', title: 'datastatus', sortable: true, visible: false  }
             	, { field: 'datastatuslabel', title: '状态', sortable: true, halign: 'center', align: 'center' }
-            	, { field: 'createdat', title: 'createdat', sortable: true, visible: false }
+            	//, { field: 'createdat', title: 'createdat', sortable: true, visible: false }
             	, { field: 'createdatlabel', title: '创建日期', sortable: true, halign: 'center', align: 'right' }
-            	, { field: 'updatedat', title: 'updatedat', sortable: true, visible: false }
+            	//, { field: 'updatedat', title: 'updatedat', sortable: true, visible: false }
             	, { field: 'updatedatlabel', title: '更新日期', sortable: true, halign: 'center', align: 'right' }
             	, { field: 'version', title: '版本号', sortable: true, halign: 'center', align: 'right' }
         	],
-            sortName: 'formid',
+            sortName: 'formarea',
             rowTooltipable: true,
             rowTooltipTitle: '单击选中当前行，双击进入详情页。',
             onLoadSuccess: function(data) {

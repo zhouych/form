@@ -29,9 +29,11 @@ import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.FormMapper;
+import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormField;
+import com.zyc.form.entities.MetaField;
 import com.zyc.form.service.FormFieldService;
 import com.zyc.form.vo.FormFieldVO;
 
@@ -42,6 +44,9 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 	
 	@Autowired
 	private FormFieldMapper formFieldMapper;
+
+	@Autowired
+	private MetaFieldMapper metaFieldMapper;
 	
 	@Autowired
 	private FormMapper formMapper;
@@ -74,6 +79,9 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 		FormField field = condition.copyEntity();
 
 		Map<String, Form> formCache = new HashMap<String, Form>();
+		
+		//固定按formid与formarea进行最优先排序，来自其他指定排序规则均在此基础下再进行排序。
+		this.central.adjustSortStrategy(pagination, new String[] { FormField.FIELD_FORMID, FormField.FIELD_FORMAREA });
 		
 		List<FormField> fields = this.selectByPage(this.formFieldMapper, field, keyword, pagination);
 		List<FormFieldVO> rows = ValueObjectableUtils.fromEntities(fields, FormFieldVO.class, FormField.class, new Visitor<Map<String, FormField>, FormFieldVO>() {
@@ -184,7 +192,6 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 			throw new BussinessException("This form field does not exist or data does not matchs. (formid=" + field.getFormid() + "; formarea=" + field.getFormarea() + "; fieldvalue=" + field.getFieldvalue() + ")");
 		}
 
-
 		BeanUtils.copyProperties(field, old, FieldRuleUtils.externalUneditableFields(old));
 		this.update(this.formFieldMapper, old, ACTION_UPDATE);
 
@@ -195,6 +202,50 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 		return newest;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public FormFieldVO applyItemField(String formid) throws Exception {
+		Assert.hasText(formid, "The parameter 'formid' is null or empty.");
+		Form form = this.formMapper.load(formid, Form.class);
+		Assert.notNull(form, "The form does not exist. (formid=" + formid + ")");
+		
+		FormField ffc = new FormField().clean();
+		ffc.setFormid(formid);
+		ffc.setSysfield(false);
+		List<FormField> ffs = this.formFieldMapper.select(ffc);
+		int usedMax = 0;
+		if(CollectionUtils.hasElement(ffs)) {
+			int tmpMax;
+			String tmp;
+			for (FormField ff : ffs) {
+				tmp = ff.getFieldvalue().replace("item0", "").replace("item", "");
+				if(StringUtils.isNumeric(tmp)) {
+					tmpMax = Integer.valueOf(tmp);
+					if(tmpMax > usedMax) {
+						usedMax = tmpMax;
+					}
+				}
+			}
+		}
+		
+		String item = "item" + (usedMax >= 9 ? "" : "0") + (usedMax + 1);
+
+		MetaField mfc = new MetaField().clean();
+		mfc.setFieldvalue(item);
+		mfc.setSysfield(false);
+		List<MetaField> mfs = this.metaFieldMapper.select(mfc);
+		if(!CollectionUtils.hasElement(mfs)) {
+			throw new BussinessException("This custom field is not supported by the system. (fieldvalue=" + item + ")");
+		}
+		
+		FormFieldVO vo = FormFieldVO.newInstance();
+		vo.setFormid(formid);
+		vo.setFieldvalue(item);
+		return vo;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 * @param formid 表单id，如果传入空值，将抛出异常

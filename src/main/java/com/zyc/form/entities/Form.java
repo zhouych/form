@@ -21,23 +21,27 @@ import com.zyc.form.data.FormType;
 public class Form extends DescriptionBaseEntity implements java.io.Serializable, Labelable, Businessable<Form> {
 
 	private static final long serialVersionUID = -1527160855494247508L;
+	
+	public static final String FIELD_FORMDOMAINID = "formdomainid";
+	public static final String FIELD_FORMTYPE = "formtype";
+	public static final String FIELD_FORMCODE = "formcode";
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
 	private String formdomainid;
-	
-	@FieldRule(required = true)
-	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
-	private String formname;
-	
-	@FieldRule(required = true, externalUneditable = true)
-	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 32)
-	private String formcode;
 
 	@FieldRule(required = true, externalUneditable = true)
 	@EnumMapping(enumClazz = FormType.class)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
 	private String formtype;
+	
+	@FieldRule(required = true, externalUneditable = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 32)
+	private String formcode;
+	
+	@FieldRule(required = true)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
+	private String formname;
 
 	public String getFormdomainid() {
 		return formdomainid;

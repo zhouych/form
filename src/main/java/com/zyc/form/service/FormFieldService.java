@@ -31,4 +31,11 @@ public interface FormFieldService extends EntityDeleteService {
 
 	FormFieldVO modify(FormFieldVO vo) throws Exception;
 
+	/**
+	 * 为表单申请一个自定义字段
+	 * @param formid 必选参数，代申请自定义字段的表单ID。
+	 * @return
+	 */
+	FormFieldVO applyItemField(String formid) throws Exception;
+
 }

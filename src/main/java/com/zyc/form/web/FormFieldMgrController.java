@@ -114,6 +114,11 @@ public class FormFieldMgrController extends BaseFormController {
         	if(action == ClientAction.ADD) {
         		field = FormFieldVO.newInstance();
         		field.setFormid(this.getRequest().getParameter(FORMID)); //针对在指定表单下新增字段
+        		try {
+					field = this.formFieldService.applyItemField(this.getRequest().getParameter(FORMID));
+				} catch (Exception e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
         	} else if(action == ClientAction.EDIT || whetherView) {
         		if(model.containsAttribute(FIELD)) {
         			field = (FormFieldVO) model.asMap().get(FORM);

@@ -95,6 +95,7 @@ public class FormApplicationConfiguration {
     				sql = sql.replace("@datatype", "'" + dataType.getValue() + "'");
     				sql = sql.replace("@displaytype", "'" + displayType.getValue() + "'");
     				sql = sql.replace("@expressiontext", "null");
+    				sql = sql.replace("@expressiondefault", "null");
     				sql = sql.replace("@expression", "null");
     				sql = sql.replace("@editable", editable ? "1" : "0");
     				sql = sql.replace("@description", "null");

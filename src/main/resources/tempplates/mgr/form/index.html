@@ -13,11 +13,12 @@
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<div id="toolbar-forms">
-			<a type="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}">新增</a>
-			<button type="button" id="btn_edit_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/editpage}">编辑</button>
-			<button type="button" id="btn_del_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/}">删除</button>
-			<button type="button" id="btn_field_list" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/field}">字段列表</button>
-			<button type="button" id="btn_form_design" class="btn btn-default limit-operate">格式设计</button>
+			<a type="button" id="btn_form_domain" class="btn btn-default" th:href="@{/mgr/domain}" title="表单域列表">表单域列表</a>
+			<a type="button" id="btn_add_form" class="btn btn-default" th:href="@{/mgr/form/addpage}" title="新增表单">新增</a>
+			<button type="button" id="btn_edit_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/editpage}" title="编辑表单">编辑</button>
+			<button type="button" id="btn_del_form" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/api/form/}" title="删除表单">删除</button>
+			<button type="button" id="btn_field_list" class="btn btn-default limit-operate" th:attr="data-bind-href=@{/mgr/form/field}" title="表单字段">表单字段</button>
+			<button type="button" id="btn_form_design" class="btn btn-default limit-operate" title="表单格式设计">格式设计</button>
 		</div>
 		<table id="table-forms"></table>
 	</div>
@@ -97,19 +98,19 @@
 			method: 'post',
 			columns: [
             	{ checkbox: true, visible: true } 
-            	, { field: 'id', title: 'id', sortable: true, visible: false }
-            	, { field: 'formdomainid', title: '表单域ID', visible: false }
+            	//, { field: 'id', title: 'id', sortable: true, visible: false }
+            	//, { field: 'formdomainid', title: '表单域ID', visible: false }
             	, { field: 'formdomainname', title: '表单域', sortable: true, halign: 'center', align: 'left', formatter: formatDomain, cellStyle: bstable.cellDisableRowTooltip }
+            	//, { field: 'formtype', title: 'formtype', sortable: false, visible: false }
+            	, { field: 'formtypename', title: '表单类型', sortable: false, halign: 'center', align: 'center' }
             	, { field: 'formcode', title: '编码', sortable: true, halign: 'center', align: 'left' }
             	, { field: 'formname', title: '名称', sortable: true, halign: 'center', align: 'left' }
-            	, { field: 'formtype', title: 'formtype', sortable: false, visible: false }
-            	, { field: 'formtypename', title: '表单类型', sortable: false, halign: 'center', align: 'center' }
             	, { field: 'datastatus', title: '状态', sortable: true, halign: 'center', align: 'center', formatter: zyc.textDataStatus }
             	, { field: 'createdat', title: '创建日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
             	, { field: 'updatedat', title: '更新日期', sortable: true, halign: 'center', align: 'right', formatter: zyc.formatTimestamp }
             	, { field: 'version', title: '版本号', sortable: true, halign: 'center', align: 'right' }
             ],
-            sortName: 'formdomainid',
+            sortName: 'formcode',
             rowTooltipable: true,
             rowTooltipTitle: '单击选中当前行，双击进入详情页。',
             onLoadSuccess: function(data) {

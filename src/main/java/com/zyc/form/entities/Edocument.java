@@ -12,9 +12,6 @@ import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.annotation.Mainfield;
 import com.zyc.baselibs.annotation.Subfield;
-import com.zyc.baselibs.entities.Businessable;
-import com.zyc.baselibs.entities.DescriptionBaseEntity;
-import com.zyc.baselibs.entities.Labelable;
 import com.zyc.form.data.EdocumentBusinessStatus;
 
 /**
@@ -23,7 +20,7 @@ import com.zyc.form.data.EdocumentBusinessStatus;
  *
  */
 @DatabaseTable(name = "edocuments")
-public class Edocument extends DescriptionBaseEntity implements java.io.Serializable, Labelable, Businessable<Edocument> {
+public class Edocument extends AbstractEdocumentItem<Edocument> {
 	
 	private static final long serialVersionUID = 5016561878123160022L;
 
@@ -367,7 +364,8 @@ public class Edocument extends DescriptionBaseEntity implements java.io.Serializ
 		if(obj == null) {
 			return false;
 		}
-		return StringUtils.equals(this.getId(), obj.getId());
+		return StringUtils.equals(this.getId(), obj.getId())
+				&& StringUtils.equals(this.getEdocumentnumber(), obj.getEdocumentnumber());
 	}
 
 	@Override

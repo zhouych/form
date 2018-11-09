@@ -73,8 +73,11 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 	public PaginationResult<FormVO> selectByPage(FormVO condition, String keyword, Pagination pagination) {
 		Form form = condition.copyEntity();
 		
-		List<String> ids = new ArrayList<String>();
+		//固定按formdomainid/formtype/formcode进行最优先排序，来自其他指定排序规则均在此基础下再进行排序。
+		this.central.adjustSortStrategy(pagination, new String[] { Form.FIELD_FORMDOMAINID, Form.FIELD_FORMTYPE, Form.FIELD_FORMCODE });
+		
 		List<Form> forms = this.selectByPage(this.formMapper, form, keyword, pagination);
+		List<String> ids = new ArrayList<String>();
 		List<FormVO> rows = this.fromEntities(forms, new Visitor<FormVO, FormVO>() {
 			@Override
 			public FormVO visit(FormVO vo) {

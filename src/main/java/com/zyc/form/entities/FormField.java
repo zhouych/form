@@ -26,6 +26,8 @@ import com.zyc.baselibs.entities.Labelable;
 public class FormField extends AbstractField implements java.io.Serializable, Labelable, Businessable<FormField> {
 	
 	private static final long serialVersionUID = -433929870224425673L;
+	
+	public static final String FIELD_FORMID = "formid";
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)

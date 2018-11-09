@@ -12,10 +12,10 @@
 	<div th:replace="/fragments/layout::header('login') " />
 	<div class="container-fluid">
 		<div id="toolbar-domains">
-			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}">新增表单域</a>
-			<a role="button" class="btn btn-default btn-edit-domain limit-operate" th:attr="data-bind-href=@{/mgr/domain/editpage}">编辑表单域</a>
-			<a role="button" class="btn btn-default btn-delete-domain limit-operate" th:attr="data-bind-href=@{/api/domain/}">删除表单域</a>
-			<a role="button" class="btn btn-default btn-add-form limit-operate" th:attr="data-bind-href=@{/mgr/form/addpage}">新增表单</a>
+			<a role="button" class="btn btn-default btn-add-domain" th:href="@{/mgr/domain/addpage}" title="新增表单域">新增</a>
+			<a role="button" class="btn btn-default btn-edit-domain limit-operate" th:attr="data-bind-href=@{/mgr/domain/editpage}" title="编辑表单域">编辑</a>
+			<a role="button" class="btn btn-default btn-delete-domain limit-operate" th:attr="data-bind-href=@{/api/domain/}" title="删除表单域">删除</a>
+			<a role="button" class="btn btn-default btn-add-form limit-operate" th:attr="data-bind-href=@{/mgr/form/addpage}" title="新增表单">新增表单</a>
 		</div>
 		<table id="table-domains"></table>
 	</div>

@@ -1,5 +1,6 @@
 package com.zyc.form.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import com.zyc.baselibs.asserts.AssertThrowNonRuntime;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
+import com.zyc.baselibs.vo.Pagination;
+import com.zyc.baselibs.vo.SortField;
 import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.data.FormArea;
@@ -106,6 +109,43 @@ class ServiceCentral {
 						break;
 					}
 				}
+			}
+		}
+	}
+	
+	/**
+	 * 调整字段的排序策略
+	 * @param pagination 必选参数。分页参数对象实例。
+	 * @param strategies 必选参数。排序策略，固定的排序优先级，据此对<code>pagination</code>中的排序策略进行调整。
+	 * <p>该<code>strategies</code>的元素取实体的字段名，例如：<code>new String[] { "field1", "field2" }</code>。</p>
+	 */
+	public void adjustSortStrategy(Pagination pagination, String[] strategies) {
+		String name; 
+		boolean stopPrev = false;
+		List<SortField> sorts;
+		for (int i = 0; i < strategies.length; i++) {
+			name = strategies[i];
+			
+			if(name.equals(pagination.getOrder())) {
+				stopPrev = true;
+				continue;
+			}
+			
+			if(stopPrev) {
+				if(pagination.getNextSorts() == null) {
+					pagination.setNextSorts(new ArrayList<SortField>());
+				}
+				sorts = pagination.getNextSorts();
+			} else {
+				if(pagination.getPrevSorts() == null) {
+					pagination.setPrevSorts(new ArrayList<SortField>());
+				}
+				sorts = pagination.getPrevSorts();
+			}
+			
+			if((pagination.getPrevSorts() == null || !pagination.getPrevSorts().contains(name)) 
+					&& (pagination.getNextSorts() == null || !pagination.getNextSorts().contains(name))) {
+				sorts.add(new SortField(name, true));
 			}
 		}
 	}

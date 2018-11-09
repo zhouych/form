@@ -59,9 +59,9 @@
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="expression">Data Source</label>
-				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<input type="hidden" th:field="${expression}" />
-			        	<input type="text" class="form-control" th:field="${expressiontext}" readonly="readonly" />
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 input-group p-l">
+						<input type="hidden" th:field="*{expression}" />
+			        	<input type="text" class="form-control" th:field="*{expressiontext}" readonly="readonly" />
 			        	<span class="input-group-addon hand" th:attr="title='设置字段数据源'">@</span>
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>

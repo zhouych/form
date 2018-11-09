@@ -91,15 +91,14 @@ public enum FormType {
 	}
 	
 	public AreaExcludes getAreaExcludes() {
-		Class<?> clazz = this.getClass();
 		Field field = null;
 		try {
-			field = clazz.getField(this.name());
+			field = this.getClass().getField(this.name());
 		} catch (NoSuchFieldException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 		
-		return field.isAnnotationPresent(AreaExcludes.class) ? null : field.getAnnotation(AreaExcludes.class);
+		return field.isAnnotationPresent(AreaExcludes.class) ? field.getAnnotation(AreaExcludes.class) : null;
 	}
 	
 	/**

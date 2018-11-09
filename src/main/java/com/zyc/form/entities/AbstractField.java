@@ -12,6 +12,9 @@ import com.zyc.form.data.FormArea;
 
 public abstract class AbstractField extends DescriptionBaseEntity implements AbstractFieldLabelable {
 
+	public static final String FIELD_FORMAREA = "formarea";
+	public static final String FIELD_FIELDVALUE = "fieldvalue";
+
 	@FieldRule(required = true, externalUneditable = true)
 	@EnumMapping(enumClazz = FormArea.class)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
@@ -46,6 +49,10 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 2048)
 	private String expressiontext;
+
+	@FieldRule(required = false, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	private String expressiondefault;
 
 	@FieldRule(required = true)
 	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
@@ -113,6 +120,14 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 
 	public void setExpressiontext(String expressiontext) {
 		this.expressiontext = expressiontext;
+	}
+
+	public String getExpressiondefault() {
+		return expressiondefault;
+	}
+
+	public void setExpressiondefault(String expressiondefault) {
+		this.expressiondefault = expressiondefault;
 	}
 
 	public Boolean getEditable() {
