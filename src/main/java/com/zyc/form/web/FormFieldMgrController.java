@@ -112,8 +112,6 @@ public class FormFieldMgrController extends BaseFormController {
     	boolean whetherView = action == ClientAction.VIEW;
     	if(field == null) {
         	if(action == ClientAction.ADD) {
-        		field = FormFieldVO.newInstance();
-        		field.setFormid(this.getRequest().getParameter(FORMID)); //针对在指定表单下新增字段
         		try {
 					field = this.formFieldService.applyItemField(this.getRequest().getParameter(FORMID));
 				} catch (Exception e) {

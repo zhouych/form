@@ -131,6 +131,18 @@
     			beans.push({ value: temp.value, text: temp.text });
     		}
     		return beans;
+    	},
+    	joinArray: function(array, symbol) {
+    		symbol = typeof symbol !== 'udnefined' && symbol != null ? (symbol + '') : '';
+    		var result = {}, tmp, valid;
+    		for(var i = 0, l = array.length; i < l; i++) {
+    			for (var key in array[i]) {
+    				tmp = array[i][key];
+    				valid = typeof tmp !== 'udnefined' && tmp != null;
+					result[key] +=  (valid ? tmp : '') + (i = l - 1 ? '' : symbol);
+				}
+    		}
+    		return result;
     	}
     };
 	

@@ -154,17 +154,17 @@
 			}
 		}
 	}
-		
-	// TreeExpressionModal Class Definition
-	var TreeExpressionModal = function (container, options) {
+	
+	// ExpressModal Class Definition
+	var ExpressModal = function (container, options) {
 		this.options = options;
 		this.$container = $(container || document.body);
 		this.init();
 	}
 
-	TreeExpressionModal.VERSION  = '1.0';
+	ExpressModal.VERSION  = '1.0';
 	  
-	TreeExpressionModal.DEFAULTS = {
+	ExpressModal.DEFAULTS = {
 		id: 'tree_expression_modal',
 		title: 'Tree Expression Modal Title',
 		button: {
@@ -179,9 +179,11 @@
 		leftTitle: '数据源',
 		middleTitle: '操作',
 		rightTitle: '结果集',
+		sourceRootOptional: null,
+		sourceRootDefault: null,
 		sourceLoadingIcon: 'fa fa-hourglass',
 		sourceLoadDataUrl: null,
-		sourceLoadDataParam: function(node) {
+		sourceLoadDataParam: function(node, root) {
 			return {};
 		},
 		sourceGetNodeBoundValue: function(node) {
@@ -203,7 +205,7 @@
 		}
 	}
 	
-	TreeExpressionModal.prototype.init = function () {
+	ExpressModal.prototype.init = function () {
 		var that = this, temp;
 		
 		var modal = 
@@ -220,6 +222,8 @@
 				      		  	'<h5>' + this.options.leftTitle + '</h5>' +
 				      		'</div>' +
 			      			'<div class="tree-source-wrap">' +
+		      		  			'<select class="selectpicker root-optional">' +
+		      		  			'</select>' +
 			      		  		'<div class="tree-source" />' +
 				      		'</div>' +
 		      			'</div>' +
@@ -263,14 +267,14 @@
 		
 		this.$modal = $(modal).appendTo(this.$container);
 		
-		var _loadData = function(node, func, async) {
+		var loadTreeSourceDataFunc = function(node, func, async) {
 			var _async = 'undefined' === typeof async ? true : async
 				, result = null;
 			
 			$.ajax({
 			    type: 'get',
 			    url: that.options.sourceLoadDataUrl,
-			    data: that.options.sourceLoadDataParam(node),
+			    data: that.options.sourceLoadDataParam(node, that.$rootOptional.val()),
 				async: _async,
 				dataType: 'json',
 			    success: function(response) {
@@ -292,25 +296,68 @@
 				return result;
 			}
 		}
-		
-		this.$treeSource = this.$modal.find('.left .tree-source').treeview({
-			data: _loadData(null, null, false),
-			loadingIcon: that.options.sourceLoadingIcon,
-			levels: 2,
-			lazyLoad: _loadData,
-			showCheckbox: false, 
-			emptyIcon: 'glyphicon', 
-			onNodeExpanded: function(ctx, node) {
-				//code ...
-			},
-			onNodeSelected: function(ctx, node) {
-				//code ...
-			},
-			onNodeUnselected: function(ctx, node) {
-				//code ...
-			}
-		});  
 
+		this.$rootOptional = this.$modal.find('.left .root-optional');
+		
+		//绑定root选项的change事件
+		this.$rootOptional.off('change').on('change', function(e) {
+			//根据选择root加初始化其成员树
+			that.$treeSource = that.$modal.find('.left .tree-source').treeview({
+				data: loadTreeSourceDataFunc(null, null, false),
+				loadingIcon: that.options.sourceLoadingIcon,
+				levels: 2,
+				lazyLoad: loadTreeSourceDataFunc,
+				showCheckbox: false, 
+				emptyIcon: 'glyphicon', 
+				onNodeExpanded: function(ctx, node) {
+					//code ...
+				},
+				onNodeSelected: function(ctx, node) {
+					//code ...
+				},
+				onNodeUnselected: function(ctx, node) {
+					//code ...
+				}
+			});
+		});
+		
+		var rootOptional = that.options.sourceRootOptional
+			, rootDefault = typeof that.options.sourceRootDefault === 'string' && that.options.sourceRootDefault || null;
+		
+		//sourceRootOptional支持通过url同步加载，也可以传数组，如：[ { value: 'a', text: 'a' } ]
+		if(typeof rootOptional === 'string') {
+			//url ...
+			$.ajax({
+			    type: 'get',
+			    url: rootOptional,
+			    data: {},
+				async: false,
+				dataType: 'json',
+			    success: function(response) {
+			    	rootOptional = response;
+			    },
+			    error: function(err) {
+			    	alert('error');
+			    }
+			});
+		} else {
+			//如果没有rootOptional，就取默认值（如果有默认值的话）构建rootOptional
+			if(!$.isArray(rootOptional) && rootDefault) {
+				rootOptional = [ { value: rootDefault, text: rootDefault } ];
+			}
+		}
+
+		var onlyOne = rootOptional.length === 1
+		this.$rootOptional.html(buildSelectOptionHtmls(rootOptional).join(''));
+		if(onlyOne || rootDefault) {
+			this.$rootOptional.val(rootOptional[0].value);
+			this.$rootOptional.trigger('change');
+		}
+		this.$rootOptional.selectpicker({ });
+		if(onlyOne) {
+			this.$rootOptional.selectpicker('hide');
+		}
+		
 		this.$operate = this.$modal.find('.middle .selectpicker.operate').selectpicker({ width: '120' });
 		this.$relation = this.$modal.find('.middle .selectpicker.relation').selectpicker({ width: '120' });
 		this.$setup = this.$modal.find('.middle .btn.setup').off('click').on('click', $.proxy(_setup, this));
@@ -334,32 +381,44 @@
 			}
 		}
 		
-		var modalOptions = $.extend({}, TreeExpressionModal.DEFAULTS.modalOptions, typeof this.options.modalOptions == 'object' && this.options.modalOptions);
+		var modalOptions = $.extend({}, ExpressModal.DEFAULTS.modalOptions, typeof this.options.modalOptions == 'object' && this.options.modalOptions);
 		modalOptions.show = this.options.show;
 		this.$modal.modal(modalOptions);
 	}
 	
-	TreeExpressionModal.prototype.show = function(_relatedTarget) {
+	ExpressModal.prototype.show = function(_relatedTarget) {
 		this.$modal.modal('show');
 	}
 	
-	TreeExpressionModal.prototype.hide = function(_relatedTarget) {
+	ExpressModal.prototype.hide = function(_relatedTarget) {
 		this.$modal.modal('hide');
 	}
+	
+	ExpressModal.prototype.destroy = function(id) {
+		if(typeof id !== 'string') {
+			throw new Error('The parameter "id" only accepts strings.');
+		}
+		this.$container.find('#' + id).remove();
+		this.$container.removeData(getDataKey(id));
+	}
+	
+	var getDataKey = function(id) {
+		return 'bs.ExpressModal.' + id;
+	}
 
-	// TreeExpressionModal Plugin Definition
+	// ExpressModal Plugin Definition
 	function Plugin(option, _relatedTarget) {
 		return this.each(function() {
 			var $this = $(this)
 				//深度拷贝
-				, options = $.extend(true, {}, TreeExpressionModal.DEFAULTS, typeof option == 'object' && option)
+				, options = $.extend(true, {}, ExpressModal.DEFAULTS, typeof option == 'object' && option)
 				//$this.data()不做深度拷贝
 				, options = $.extend(options, $this.data())
-				, dataKey = 'bs.TreeExpressionModal.' + options.id
+				, dataKey = getDataKey(options.id)
 			 	, data = $this.data(dataKey);
 
 			if (!data) {
-				$this.data(dataKey, (data = new TreeExpressionModal(this, options)))
+				$this.data(dataKey, (data = new ExpressModal(this, options)))
 			}
 			
 			if (typeof option == 'string') {
@@ -370,12 +429,12 @@
 		});
 	}
 
-	var old = $.fn.TreeExpressionModal;
-	$.fn.treeexpressionmodal = Plugin;
-	$.fn.treeexpressionmodal.Constructor = TreeExpressionModal;
+	var old = $.fn.ExpressModal;
+	$.fn.expressmodal = Plugin;
+	$.fn.expressmodal.Constructor = ExpressModal;
 	
-	$.fn.treeexpressionmodal.noConflict = function () {
-		$.fn.treeexpressionmodal = old
+	$.fn.expressmodal.noConflict = function () {
+		$.fn.expressmodal = old
 		return this
 	}
 	

@@ -10,7 +10,7 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/hierarchy-select/css/hierarchy-select.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
-<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-tree-expression-modal.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-express-modal.css}"></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
@@ -42,19 +42,19 @@
 						</select>
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
-				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="displaytype">Display Type</label>
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formarea">Form Area</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				    	<select class="form-control" th:field="*{displaytype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
-							<option th:each="dt:${displayTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
+				    	<select class="form-control" th:field="*{formarea}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="fa:${formAreas}" th:value="${fa.value}" th:text="${fa.text}"></option>
 						</select>
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
 				<div class="row form-group">
-				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="formarea">Form Area</label>
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="displaytype">Display Type</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				    	<select class="form-control" th:field="*{formarea}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
-							<option th:each="fa:${formAreas}" th:value="${fa.value}" th:text="${fa.text}"></option>
+				    	<select class="form-control" th:field="*{displaytype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="dt:${displayTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
 						</select>
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
@@ -62,7 +62,7 @@
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 input-group p-l">
 						<input type="hidden" th:field="*{expression}" />
 			        	<input type="text" class="form-control" th:field="*{expressiontext}" readonly="readonly" />
-			        	<span class="input-group-addon hand" th:attr="title='设置字段数据源'">@</span>
+			        	<span class="input-group-addon hand field-expression-set" th:attr="title='设置字段数据源'">@</span>
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
@@ -94,12 +94,47 @@
 <script type="text/javascript" th:src="@{/zyc/js/zyc-jquery-utils.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
-<script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-express-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
+		var $form = $('#form-field-detail')
+			, field_expression_set_modal = 'field_expression_set_modal'
+			, $emodal;
 		
-		var $form = $('#form-field-detail');
+		$form.find('select[name="displaytype"]').off('change').on('click', function(e) {
+			if($emodal) {
+				$emodal.expressmodal('destroy', field_expression_set_modal);
+			}
+		});
 		
+		var _operateOptions = []
+			, _relationOptions = []
+			, currResult = [];
+		
+		$('span.hand.field-expression-set').off('click').on('click', function(e) {
+			if(!$(this).attr('disabled')) {
+				$(document.body).expressmodal({
+					id: 'field_expression_set_modal',
+					title: '字段[' + dimtext + ']数据源公式设置',
+					operateOptions: _operateOptions,
+					relationOptions: _relationOptions,
+					sourceLoadDataUrl: '/mdata/api/dimensionMembers',
+					sourceLoadDataParam: function(node) {
+						return {
+							dimensionCode: dimcode,
+							//绑定到当前节点的主键id即其子节点的parentid
+							parentId: node && node.attrs.id || ''
+						};
+					},
+					expressionResult: currResult,
+					onSaveExpressionResult: function(result) {
+						result = zyc.joinArray(result, '');
+						$form.find('input[name="expression"]').val(result.value);
+						$form.find('input[name="expressiontext"]').val(result.text);
+					}
+				});
+			}
+		});
 	});
 </script>
 </html>

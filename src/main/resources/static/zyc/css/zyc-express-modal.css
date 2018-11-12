@@ -44,6 +44,10 @@
  	overflow: auto;
  }
  
+ .root-optional {
+ 	margin-bottom: 10px;
+ }
+ 
  .expression > a.list-group-item {
  	cursor: pointer;
  }

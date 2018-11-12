@@ -8,7 +8,7 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/bootstrap-select/css/bootstrap-select.css}"></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-plugins/treeview/css/bootstrap-treeview.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc.css}"></link>
-<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-tree-expression-modal.css}"></link>
+<link type="text/css" rel="stylesheet" th:href="@{/zyc/css/zyc-express-modal.css}"></link>
 </head>
 <body>
 	<div th:replace="/fragments/layout::header('login') " />
@@ -88,7 +88,7 @@
 <script type="text/javascript" th:src="@{/bs-plugins/treeview/js/bootstrap-treeview.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc.js}" ></script>
 <script type="text/javascript" th:src="@{/zyc/js/zyc-form.js}" ></script>
-<script type="text/javascript" th:src="@{/zyc/js/zyc-tree-expression-modal.js}"></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-express-modal.js}"></script>
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		
@@ -112,19 +112,21 @@
 				, currExpressionResult = [];
 			
 			if(!$(this).attr('disabled')) {
-				$(document.body).treeexpressionmodal({
+				$(document.body).expressmodal({
 					id: 'dim_source_set_modal_' + index,
 					title: '预算控制维度[' + dimtext + ']数据源设置',
-					operateOptions: _operateOptions,
-					relationOptions: _relationOptions,
+					sourceRootOptional: null,
+					sourceRootDefault: dimcode,
 					sourceLoadDataUrl: '/mdata/api/dimensionMembers',
-					sourceLoadDataParam: function(node) {
+					sourceLoadDataParam: function(node, root) {
 						return {
-							dimensionCode: dimcode,
+							dimensionCode: root,
 							//绑定到当前节点的主键id即其子节点的parentid
 							parentId: node && node.attrs.id || ''
 						};
 					},
+					operateOptions: _operateOptions,
+					relationOptions: _relationOptions,
 					expressionResult: currExpressionResult,
 					onSaveExpressionResult: function(expressionResult) {
 						var value = '', text = '';
