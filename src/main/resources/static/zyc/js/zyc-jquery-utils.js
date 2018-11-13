@@ -1,4 +1,7 @@
 (function() {
+
+	'use strict';
+	  
 	var DATA_BIND_HREF = 'data-bind-href';
 	var ATTR_KEYS = [ DATA_BIND_HREF ];
 
@@ -14,4 +17,16 @@
 		}
 	});
 	
+	jQuery.fn.extend({
+		onUndisabled: function(event, fn) {
+			this.off(event).on(event, function(e) {
+				if($(this).attr('disabled')) {
+					return;
+				}
+				
+				fn.apply(this, [ e ]);
+			});
+		}
+	});
+
 })();

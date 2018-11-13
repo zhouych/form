@@ -2,6 +2,7 @@ package com.zyc.form.client;
 
 import java.util.List;
 
+import com.zyc.baselibs.vo.EntryBeanPK;
 import com.zyc.baselibs.web.bootstrap.TreeViewNodeForLazyLoad;
 import com.zyc.form.client.vo.DimensionVO;
 
@@ -15,4 +16,6 @@ public interface MdataClient {
 	List<DimensionVO> budgetCtrlDimensions();
 
 	List<TreeViewNodeForLazyLoad> dimensionMembers(String dimensionCode, String parentId);
+
+	List<EntryBeanPK> dimensions();
 }

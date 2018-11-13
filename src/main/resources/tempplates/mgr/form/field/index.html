@@ -45,7 +45,7 @@
 			},
 			'btn_refresh_fields': function(e) {
 				if(zyc.confirm('刷新字段涉及到数据同步，可能需要一定时间。继续刷新吗？')) {
-					alert($(this).bindHref() + '/' + formid);
+					
 					$.ajax({
 						url : $(this).bindHref() + '/' + formid,
 						data: {},

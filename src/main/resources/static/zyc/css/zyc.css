@@ -63,3 +63,11 @@
 .input-group.p-l {
 	padding-left: 15px;
 }
+
+form div.checkbox label {
+	margin-left: 40px;
+}
+
+form div.checkbox label:FIRST-CHILD {
+	margin-left: 0px;	
+}

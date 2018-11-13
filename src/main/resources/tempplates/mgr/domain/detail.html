@@ -106,14 +106,18 @@
 			, _relationOptions = zyc.entryBeans(zyc.memberRelation);
 		
 		$('span.dim-source-set.hand').off('click').on('click', function(e) {
-			var index = $(this).attr('data-bind-index')
-				, dimcode = $(this).attr('data-bind-code')
-				, dimtext = $('label.control-label.label[data-bind-index="' + index + '"]').text()
-				, currExpressionResult = [];
-			
-			if(!$(this).attr('disabled')) {
-				$(document.body).expressmodal({
-					id: 'dim_source_set_modal_' + index,
+			var $this = $(this);
+			if(!$this.attr('disabled')) {
+				var index = $this.attr('data-bind-index')
+					, dimcode = $this.attr('data-bind-code')
+					, dimtext = $('label.control-label.label[data-bind-index="' + index + '"]').text()
+					, currExpressionResult = []
+					, id = 'dim_source_set_modal_' + index
+					, wrapSelector = '#' + id + '_wrap'
+					, $wrap = $(wrapSelector).length && $(wrapSelector) || $('<div id="' + id + '_wrap"></div>').appendTo($(document.body));
+				
+				$wrap.expressmodal({
+					id: id,
 					title: '预算控制维度[' + dimtext + ']数据源设置',
 					sourceRootOptional: null,
 					sourceRootDefault: dimcode,

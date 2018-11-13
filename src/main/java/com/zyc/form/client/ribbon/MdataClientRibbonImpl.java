@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.zyc.baselibs.commons.ReflectUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
+import com.zyc.baselibs.vo.EntryBeanPK;
 import com.zyc.baselibs.web.bootstrap.TreeViewNodeForLazyLoad;
 import com.zyc.baselibs.web.bootstrap.TreeViewNodeState;
 import com.zyc.form.client.MdataClient;
@@ -108,5 +109,14 @@ public class MdataClientRibbonImpl implements MdataClient {
 		}
 		return nodes;
 		// code ...
+	}
+
+	@Override
+	public List<EntryBeanPK> dimensions() {
+		List<EntryBeanPK> beans = new ArrayList<EntryBeanPK>();
+		for (DimensionVO dim : budget_ctrl_dims) {
+			beans.add(new EntryBeanPK(dim.getDimid(), dim.getDimcode(), dim.getDimcode() + " - " + dim.getDimname()));
+		}
+		return beans;
 	}
 }

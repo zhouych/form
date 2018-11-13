@@ -71,7 +71,10 @@
 					<div class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-10 col-lg-10">
 				      	<div class="checkbox">
 				        	<label>
-				          		<input type="checkbox" th:field="*{editable}" th:attr="readonly=${readonly},disabled=${readonly}" /> 可编辑
+				          		<input type="checkbox" th:field="*{editable}" th:attr="readonly=${readonly},disabled=${readonly}" />可编辑
+				        	</label>
+				        	<label>
+				          		<input type="checkbox" th:field="*{sysfield}" th:attr="readonly=true,disabled=true" />系统字段
 				        	</label>
 				      	</div>
 				    </div>
@@ -81,11 +84,13 @@
 				<div th:replace="/fragments/entity-common :: dateRow(${form},${readonly})" />
 				<div th:replace="/fragments/entity-common :: btnRow(${readonly},${returnUrl})" />
 			</div>
+			<div id="field_emodal_wrap"></div>
 		</form>
 	</div>
 	<div th:replace="/fragments/layout::footer" />
 </body>
 <script type="text/javascript" th:src="@{/jquery/jquery-1.12.1.js}"></script>
+<script type="text/javascript" th:src="@{/zyc/js/zyc-jquery-utils.js}" ></script>
 <script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/bootstrap-select.js}"></script>
 <script type="text/javascript" th:src="@{/bs-plugins/bootstrap-select/js/i18n/defaults-zh_CN.js}"></script>
@@ -98,42 +103,44 @@
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		var $form = $('#form-field-detail')
-			, field_expression_set_modal = 'field_expression_set_modal'
-			, $emodal;
+			, field = $form.find('input[name="fieldvalue"]').val()
+			, $emodal
+			, _operateOptions = []
+			, _relationOptions = []
+			, _expressionResult = [];
 		
-		$form.find('select[name="displaytype"]').off('change').on('click', function(e) {
+		$form.find('select[name="displaytype"]').off('change').on('change', function(e) {
 			if($emodal) {
-				$emodal.expressmodal('destroy', field_expression_set_modal);
+				$emodal.expressmodal('destroy');
+				$emodal = null;
 			}
 		});
 		
-		var _operateOptions = []
-			, _relationOptions = []
-			, currResult = [];
-		
-		$('span.hand.field-expression-set').off('click').on('click', function(e) {
-			if(!$(this).attr('disabled')) {
-				$(document.body).expressmodal({
-					id: 'field_expression_set_modal',
-					title: '字段[' + dimtext + ']数据源公式设置',
-					operateOptions: _operateOptions,
-					relationOptions: _relationOptions,
-					sourceLoadDataUrl: '/mdata/api/dimensionMembers',
-					sourceLoadDataParam: function(node) {
-						return {
-							dimensionCode: dimcode,
-							//绑定到当前节点的主键id即其子节点的parentid
-							parentId: node && node.attrs.id || ''
-						};
-					},
-					expressionResult: currResult,
-					onSaveExpressionResult: function(result) {
-						result = zyc.joinArray(result, '');
-						$form.find('input[name="expression"]').val(result.value);
-						$form.find('input[name="expressiontext"]').val(result.text);
-					}
-				});
-			}
+		$('span.hand.field-expression-set').onUndisabled('click', function(e) {
+			$emodal = $('#field_emodal_wrap').expressmodal({
+				id: 'field_emodal',
+				title: '字段[' + field + ']数据源公式设置',
+				operateOptions: _operateOptions,
+				relationOptions: _relationOptions,
+				sourceRootOptional: '/mdata/api/dimensions',
+				sourceRootDefault: null,
+				sourceLoadDataUrl: '/mdata/api/dimensionMembers',
+				sourceLoadDataParam: function(node, root) {
+					return {
+						dimensionCode: root,
+						//绑定到当前节点的主键id即其子节点的parentid
+						parentId: node && node.attrs.id || ''
+					};
+				},
+				enabledExpressionDefaultValue: true,
+				expressionResult: _expressionResult,
+				onSaveExpressionResult: function(result) {
+					_expressionResult = result;
+					result = zyc.joinArray(result, '');
+					$form.find('input[name="expression"]').val(result.value);
+					$form.find('input[name="expressiontext"]').val(result.text);
+				}
+			});
 		});
 	});
 </script>

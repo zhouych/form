@@ -31,6 +31,10 @@
  	margin: 10px 0px;
  }
  
+ .isolate-bottom {
+ 	margin-bottom: 10px;
+ }
+ 
  .middle {
  	text-align: center;
  }
@@ -66,4 +70,11 @@
  
  code.value {
  	background-color: #D5E4F7;
+ }
+
+ .btn.setup,
+ .btn.setdft,
+ .btn.remove,
+ .btn.removeall {
+ 	width: 100%;
  }
