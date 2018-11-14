@@ -18,6 +18,8 @@
 		<form id="form-field-detail" class="form form-horizontal" method="post" th:action="@{/mgr/form/field/} + ${action}" th:object="${field}">
 			<input type="hidden" name="action" th:value="${action}" />
 			<input type="hidden" th:field="*{id}" />
+			<input type="hidden" th:field="*{formid}" />
+			<input type="hidden" th:field="*{metafieldid}" />
 			<div class="container-fluid">
 				<div class="row page-header">
 				  	<h3>basic info</h3>
@@ -104,12 +106,61 @@
 	$(document).ready(function() {
 		var $form = $('#form-field-detail')
 			, field = $form.find('input[name="fieldvalue"]').val()
-			, $emodal
-			, _operateOptions = []
-			, _relationOptions = []
-			, _expressionResult = [];
+			, _operateOptions = zyc.getIncludeOrExclude()
+			, _relationOptions = zyc.getTreeRelationships()
+			, _expressionResult = []
+			, $emodal;
 		
-		$form.find('select[name="displaytype"]').off('change').on('change', function(e) {
+		var emodalOptions = {
+			id: 'field_emodal',
+			title: '字段[' + field + ']数据源公式设置',
+			operateOptions: _operateOptions,
+			relationOptions: _relationOptions,
+			sourceRootOptional: '/mdata/api/dimensions',
+			sourceRootDefault: null,
+			sourceLoadDataUrl: '/mdata/api/dimensionMembers',
+			sourceLoadDataParam: function(node, root) {
+				return {
+					dimensionCode: root,
+					//绑定到当前节点的主键id即其子节点的parentid
+					parentId: node && node.attrs.id || ''
+				};
+			},
+			enabledExpressionDefaultValue: true,
+			expressionResult: _expressionResult,
+			onSaveExpressionResult: function(result) {
+				_expressionResult = result;
+				result = zyc.joinArray(result, '');
+				$form.find('input[name="expression"]').val(result.value);
+				$form.find('input[name="expressiontext"]').val(result.text);
+			}
+		};
+		
+		var getInputValue = function(name) {
+			return $form.find('select[name="' + name + '"], input[name="' + name + '"]').val();
+		}
+		
+		$form.find('select[name="formarea"]').onUndisabled('change', function(e) {
+			$.ajax({
+				url : '/api/form/field/apply',
+				data: { 'formid': getInputValue('formid'), 'formarea': getInputValue('formarea') },
+				type: 'get',
+				dataType: 'json',
+				async: true,
+				success: function(resp) {
+					if(resp.status === '0') {
+						alert(resp.data.fieldvalue);
+					} else {
+						alert(resp.message);
+					}
+				},
+			    error: function(err) {
+			    	zyc.alert(null, 'error');
+			    }
+			});
+		});
+		
+		$form.find('select[name="displaytype"]').onUndisabled('change', function(e) {
 			if($emodal) {
 				$emodal.expressmodal('destroy');
 				$emodal = null;
@@ -117,30 +168,11 @@
 		});
 		
 		$('span.hand.field-expression-set').onUndisabled('click', function(e) {
-			$emodal = $('#field_emodal_wrap').expressmodal({
-				id: 'field_emodal',
-				title: '字段[' + field + ']数据源公式设置',
-				operateOptions: _operateOptions,
-				relationOptions: _relationOptions,
-				sourceRootOptional: '/mdata/api/dimensions',
-				sourceRootDefault: null,
-				sourceLoadDataUrl: '/mdata/api/dimensionMembers',
-				sourceLoadDataParam: function(node, root) {
-					return {
-						dimensionCode: root,
-						//绑定到当前节点的主键id即其子节点的parentid
-						parentId: node && node.attrs.id || ''
-					};
-				},
-				enabledExpressionDefaultValue: true,
-				expressionResult: _expressionResult,
-				onSaveExpressionResult: function(result) {
-					_expressionResult = result;
-					result = zyc.joinArray(result, '');
-					$form.find('input[name="expression"]').val(result.value);
-					$form.find('input[name="expressiontext"]').val(result.text);
-				}
-			});
+			if(!$emodal) {
+				$emodal = $('#field_emodal_wrap').expressmodal(emodalOptions);
+			} else {
+				$emodal.expressmodal('show');
+			}
 		});
 	});
 </script>

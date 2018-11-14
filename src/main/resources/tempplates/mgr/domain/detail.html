@@ -102,8 +102,8 @@
 		
 		setBudgetctrldimVisiable($enabledbudgetctrl.is(':checked'));
 		
-		var _operateOptions = zyc.entryBeans(zyc.inexOperate)
-			, _relationOptions = zyc.entryBeans(zyc.memberRelation);
+		var _operateOptions = zyc.getIncludeOrExclude()
+			, _relationOptions = zyc.getTreeRelationships();
 		
 		$('span.dim-source-set.hand').off('click').on('click', function(e) {
 			var $this = $(this);

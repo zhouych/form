@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
@@ -38,4 +39,15 @@ public class FormFieldRestController extends BaseFormController {
 		}
     	return JSON.toJSONString(result);
 	}
+
+    @RequestMapping(value = commonPath + "/apply", method = RequestMethod.GET)
+    public String apply(@RequestParam("formid") String formid, @RequestParam("formarea") String formarea) {
+    	ResponseResult result = new ResponseResult();
+    	try {
+    		result.setData(formFieldService.applyItemField(formid, formarea));
+		} catch (Exception e) {
+			this.handleException(result, e, logger);
+		}
+    	return JSON.toJSONString(result);
+    }
 }

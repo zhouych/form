@@ -2,8 +2,8 @@ package com.zyc.form.serviceassist;
 
 import java.util.List;
 
+import com.zyc.baselibs.data.EmptyNodeType;
 import com.zyc.baselibs.vo.EntryBean;
-import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
 
 public interface FormDomainServiceAssistor {

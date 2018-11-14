@@ -3,10 +3,11 @@ package com.zyc.form.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zyc.baselibs.data.EmptyNodeType;
 import com.zyc.baselibs.vo.EntryBean;
-import com.zyc.baselibs.web.EmptyNodeType;
+import com.zyc.baselibs.vo.EntryBeanable;
 
-public enum FieldDataType {
+public enum FieldDataType implements EntryBeanable {
 	STRING("String", "文本型"),
 	INTEGER("Integer", "整数型"),
 	BIGDECIMAL("BigDecimal", "高精度型"),

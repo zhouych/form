@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.zyc.baselibs.vo.EntryBean;
+import com.zyc.baselibs.vo.EntryBeanable;
 
-public enum FormArea {
+public enum FormArea implements EntryBeanable {
 	
 	MAIN("Main", "主表区"),
 	

@@ -17,7 +17,7 @@
 		return htmls;
 	}
 	
-	var expressionHtml = function(expressionText) {
+	var _generateExpressionHtml = function(expressionText) {
 		var index = expressionText.indexOf('@')
 			, operateText = expressionText.substr(0, index)
 			, right = operateText.substr(index + 1)
@@ -25,8 +25,8 @@
 			, memberText = ''
 			, tmp;
 		
-		for(var key in zyc.memberRelation) {
-			tmp = zyc.memberRelation[key];
+		for(var i = 0, l = this.options.relationOptions.length; i < l; i++) {
+			tmp = this.options.relationOptions[i];
 			if(right.indexOf(tmp.text) === 0) {
 				relationText = tmp.text;
 				memberText = right.substr(tmp.text.length + 1);
@@ -68,9 +68,28 @@
 		}
 	}
 	
+	var _initExpressionResult = function() {
+		this.$expression.html('');
+		var er = this.options.expressionResult, tmp;
+		for(var i = 0, l = er && er.length || 0; i < l; i++) {
+			tmp = er[i];
+			_apendExpression.apply(this, [ tmp.value, tmp.text, _generateExpressionHtml.apply(this, [ tmp.text ]) ]);	
+		}
+	}
+	
 	var _apendExpressionDefaultValue = function(expression, expressionText) {
 		this.$default.html('');
 		_generateListGroupItem.apply(this, [ expression, expressionText, '@默认值(' + expressionText + ')' ]).appendTo(this.$default).trigger('click');
+	}
+	
+	var _initExpressionDefaultValue = function() {
+		if(this.options.enabledExpressionDefaultValue === true) {
+			this.$default.html('');
+			var dftv = this.options.expressionDefaultValue;
+			if(dftv) {
+				_apendExpressionDefaultValue.apply(this, [ dftv.value, dftv.text ]);
+			}
+		}
 	}
 
 	var _generateExpression = function(values, texts) {
@@ -113,6 +132,7 @@
 		
 		if(!this.options.onCheckExpressionDefaultValue(nodes)) {
 			alert('请在左侧数据源中选择一个数据叶子节点作为默认值！');
+			return;
 		}
 		
 		var value = this.options.sourceGetNodeBoundValue(nodes[0])
@@ -167,6 +187,8 @@
 	var _cancel = function(e) {
 		if(_hasChanges.apply(this, [])) {
 			if(confirm("数据发生了更改，是否取消这些更改？")) {
+				_initExpressionDefaultValue.apply(this, []);
+				_initExpressionResult.apply(this, []);
 				this.hide();
 			}
 		} else {
@@ -438,20 +460,11 @@
 		if(this.options.enabledExpressionDefaultValue === true) {
 			this.$setdft = this.$modal.find('.middle .btn.setdft').off('click').on('click', $.proxy(_setdft, this));	
 			this.$default = this.$modal.find('.right div.default');
-			this.$default.html('');
-			var dftv = this.options.expressionDefaultValue;
-			if(dftv) {
-				_apendExpressionDefaultValue.apply(this, [ dftv.value, dftv.text ]);
-			}
+			_initExpressionDefaultValue.apply(this, []);
 		}
 		
 		this.$expression = this.$modal.find('.right div.expression');
-		this.$expression.html('');
-		var tmp;
-		for(var i = 0; i < this.options.expressionResult.length; i++) {
-			tmp = this.options.expressionResult[i];
-			_apendExpression.apply(this, [ tmp.value, tmp.text, expressionHtml(tmp.text) ]);	
-		}
+		_initExpressionResult.apply(this, []);
 		
 		this.$cancel = this.$modal.find('.modal-footer .btn.cancel').off('click').on('click', $.proxy(_cancel, this));
 		this.$save = this.$modal.find('.modal-footer .btn.save').off('click').on('click', $.proxy(_save, this));

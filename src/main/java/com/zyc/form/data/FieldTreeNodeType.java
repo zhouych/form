@@ -1,6 +1,8 @@
 package com.zyc.form.data;
 
-public enum FieldTreeNodeType {
+import com.zyc.baselibs.vo.EntryBeanable;
+
+public enum FieldTreeNodeType implements EntryBeanable {
 	/**
 	 * 表单区域
 	 */

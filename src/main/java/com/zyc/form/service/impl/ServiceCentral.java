@@ -37,6 +37,17 @@ class ServiceCentral {
 
 	@Autowired
 	private FormFieldMapper formFieldMapper;
+	
+	public MetaField loadFormMetaField(String formarea, String fieldvalue) {
+		MetaField mf = new MetaField().clean();
+		mf.setFormarea(formarea);
+		mf.setFieldvalue(fieldvalue);
+		List<MetaField> mfs = this.metaFieldMapper.select(mf);
+		if(mfs != null && mfs.size() > 1) {
+			throw new RuntimeException("Data error: The meta field is not unique. (formarea=" + formarea + "; fieldvalue=" + fieldvalue + ")");
+		}
+		return CollectionUtils.hasElement(mfs) ? mfs.get(0) : null;
+	}
 
 	public List<MetaField> selectFormMetaFields(String formtype) {
 		return this.selectFormMetaFields(StringUtils.toEnumIgnoreCase(FormType.class, formtype));

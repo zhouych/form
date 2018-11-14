@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.zyc.baselibs.commons.StringUtils;
+import com.zyc.baselibs.data.EmptyNodeType;
 import com.zyc.baselibs.entities.BaseEntity;
 import com.zyc.baselibs.web.ClientAction;
-import com.zyc.baselibs.web.EmptyNodeType;
 import com.zyc.baselibs.web.bootstrap.BsTableQueryParameter;
 import com.zyc.form.data.FieldDataType;
 import com.zyc.form.data.FieldDisplayType;
@@ -113,13 +113,13 @@ public class FormFieldMgrController extends BaseFormController {
     	if(field == null) {
         	if(action == ClientAction.ADD) {
         		try {
-					field = this.formFieldService.applyItemField(this.getRequest().getParameter(FORMID));
+					field = this.formFieldService.applyItemField(this.getRequest().getParameter(FORMID), this.getParamFormarea());
 				} catch (Exception e) {
 					throw new RuntimeException(e.getMessage(), e);
 				}
         	} else if(action == ClientAction.EDIT || whetherView) {
         		if(model.containsAttribute(FIELD)) {
-        			field = (FormFieldVO) model.asMap().get(FORM);
+        			field = (FormFieldVO) model.asMap().get(FIELD);
         		}
         		if(field == null) {
             		field = this.formFieldService.selectByFormfieldid(formfieldid);
@@ -141,6 +141,14 @@ public class FormFieldMgrController extends BaseFormController {
         	formtype = StringUtils.toEnumIgnoreCase(FormType.class, form.getFormtype());
     	}
     	model.addAttribute("formAreas", FormArea.toList(formtype));
+    }
+
+    private String getParamFormarea() {
+    	String formarea = this.getRequest().getParameter("formarea");
+		if(StringUtils.isBlank(formarea)) {
+			formarea = FormArea.MAIN.getValue();
+		}
+		return formarea;
     }
     
     private void attributeFieldAbouts(Model model) {

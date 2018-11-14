@@ -3,12 +3,13 @@ package com.zyc.form.service;
 import java.util.List;
 
 import com.zyc.baselibs.service.EntityDeleteService;
+import com.zyc.baselibs.service.EnumService;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.entities.FormField;
 import com.zyc.form.vo.FormFieldVO;
 
-public interface FormFieldService extends EntityDeleteService {
+public interface FormFieldService extends EntityDeleteService, EnumService {
 
 	List<FormFieldVO> selectFormFieldByFormid(String formid);
 
@@ -34,8 +35,9 @@ public interface FormFieldService extends EntityDeleteService {
 	/**
 	 * 为表单申请一个自定义字段
 	 * @param formid 必选参数，代申请自定义字段的表单ID。
+	 * @param formarea 必选参数，代申请自定义字段的表单区域。
 	 * @return
 	 */
-	FormFieldVO applyItemField(String formid) throws Exception;
+	FormFieldVO applyItemField(String formid, String formarea) throws Exception;
 
 }

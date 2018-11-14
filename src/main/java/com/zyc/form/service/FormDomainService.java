@@ -4,6 +4,7 @@ package com.zyc.form.service;
 import java.util.List;
 
 import com.zyc.baselibs.service.EntityDeleteService;
+import com.zyc.baselibs.service.EnumService;
 import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.form.entities.CtrlDimSource;
@@ -11,7 +12,7 @@ import com.zyc.form.vo.CtrlDimSourceOptionVO;
 import com.zyc.form.vo.FormDomainQueryVO;
 import com.zyc.form.vo.FormDomainVO;
 
-public interface FormDomainService extends EntityDeleteService {
+public interface FormDomainService extends EntityDeleteService, EnumService {
 
 	List<EntryBean> allDomainEntryBeans();
 	

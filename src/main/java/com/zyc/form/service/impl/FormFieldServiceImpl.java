@@ -20,7 +20,7 @@ import com.zyc.baselibs.asserts.AssertThrowNonRuntime;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.data.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
 import com.zyc.baselibs.service.ValueObjectableUtils;
@@ -29,7 +29,6 @@ import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.form.dao.FormFieldMapper;
 import com.zyc.form.dao.FormMapper;
-import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.data.FormType;
 import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormField;
@@ -44,9 +43,6 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 	
 	@Autowired
 	private FormFieldMapper formFieldMapper;
-
-	@Autowired
-	private MetaFieldMapper metaFieldMapper;
 	
 	@Autowired
 	private FormMapper formMapper;
@@ -206,7 +202,7 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	public FormFieldVO applyItemField(String formid) throws Exception {
+	public FormFieldVO applyItemField(String formid, String formarea) throws Exception {
 		Assert.hasText(formid, "The parameter 'formid' is null or empty.");
 		Form form = this.formMapper.load(formid, Form.class);
 		Assert.notNull(form, "The form does not exist. (formid=" + formid + ")");
@@ -231,16 +227,13 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 		}
 		
 		String item = "item" + (usedMax >= 9 ? "" : "0") + (usedMax + 1);
-
-		MetaField mfc = new MetaField().clean();
-		mfc.setFieldvalue(item);
-		mfc.setSysfield(false);
-		List<MetaField> mfs = this.metaFieldMapper.select(mfc);
-		if(!CollectionUtils.hasElement(mfs)) {
+		MetaField mf = this.central.loadFormMetaField(formarea, item);
+		if(mf == null || true == mf.getSysfield()) {
 			throw new BussinessException("This custom field is not supported by the system. (fieldvalue=" + item + ")");
 		}
 		
 		FormFieldVO vo = FormFieldVO.newInstance();
+		vo.setMetafieldid(mf.getId());
 		vo.setFormid(formid);
 		vo.setFieldvalue(item);
 		return vo;

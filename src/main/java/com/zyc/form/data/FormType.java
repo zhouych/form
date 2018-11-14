@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zyc.baselibs.data.EmptyNodeType;
 import com.zyc.baselibs.vo.EntryBean;
-import com.zyc.baselibs.web.EmptyNodeType;
+import com.zyc.baselibs.vo.EntryBeanable;
 
-public enum FormType {
+public enum FormType implements EntryBeanable {
 	
 	/**
 	 * 普通单：用于一般性事项，与费用无直接关系的单据。例如，会议室申请单、请假申请单等等

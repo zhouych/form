@@ -17,8 +17,11 @@ import com.zyc.baselibs.aopv.ParamVerificationAspect;
 import com.zyc.baselibs.aopv.VerificationRulerContainer;
 import com.zyc.baselibs.commons.ReflectUtils;
 import com.zyc.baselibs.commons.Visitor;
+import com.zyc.baselibs.data.DataStatus;
 import com.zyc.baselibs.db.mysql.MysqlScriptComponent;
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.service.GeneralDataService;
+import com.zyc.baselibs.service.GeneralDataServiceImpl;
+import com.zyc.baselibs.web.GeneralDataRestController;
 import com.zyc.form.data.FieldDataType;
 import com.zyc.form.data.FieldDisplayType;
 import com.zyc.form.data.FormArea;
@@ -54,7 +57,7 @@ public class FormApplicationConfiguration {
 	}
 
 	@Bean
-	public MysqlScriptComponent MysqlScriptComponent() {
+	public MysqlScriptComponent mysqlScriptComponent() {
 		MysqlScriptComponent mysqlScriptComponent = new MysqlScriptComponent();
 		
 		System.out.println("\n\n");
@@ -114,5 +117,15 @@ public class FormApplicationConfiguration {
 		System.out.println("\n\n");
     	
 		return mysqlScriptComponent;
+	}
+
+	@Bean
+	public GeneralDataService generalDataService() {
+		return new GeneralDataServiceImpl();
+	}
+	
+	@Bean
+	public GeneralDataRestController generalDataRestController(GeneralDataService generalDataService) {
+		return new GeneralDataRestController(generalDataService);
 	}
 }

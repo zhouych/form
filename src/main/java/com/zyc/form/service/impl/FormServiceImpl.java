@@ -18,7 +18,7 @@ import com.zyc.baselibs.aopv.ParamVerification;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.data.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
 import com.zyc.baselibs.vo.DeleteMode;

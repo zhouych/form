@@ -26,9 +26,8 @@
 	    }
 	    
 	    return value;
-	};
+	}
 	
-    // it only does '%s', and return '' when arguments are undefined
     var _sprintf = function (str) {
         var args = arguments,
             flag = true,
@@ -44,7 +43,35 @@
             return arg;
         });
         return flag ? str : '';
-    };
+    }
+
+	var _syncAjaxGet = function(url) {
+		var result = null;
+		$.ajax({
+		    type: 'get',
+		    url: url,
+		    data: {},
+			async: false,
+			dataType: 'json',
+		    success: function(response) {
+		    	if(response.status === '0') {
+		    		result = response.data;
+		    	} else {
+			    	console.log(url + ": " + response.message);
+		    	}
+		    },
+		    error: function(err) {
+		    	var msg = typeof err === 'object' && err && JSON.stringify(err) || error;
+		    	console.log(url + ": " + msg);
+		    }
+		});
+		return result;
+	}
+	
+	var _treeRelationships = null
+		, _includeOrExclude = null
+		, _dataStatus = null
+		, _emptyNodeTypes = null;
     
 	var zyc = window['zyc'] = {
     	comWebsite: 'www.zyc.com',
@@ -77,26 +104,20 @@
 			var date = zyc.timestampToDate(timestamp);
 			return date && date.format() || '';
 		},
-		textDataStatus: function(value) {
-			var tmp;
-			for(var key in zyc.dataStatus) {
-				tmp = zyc.dataStatus[key];
-				if(tmp.value === value) {
-					return tmp.text;
+    	joinArray: function(array, symbol) {
+    		symbol = typeof symbol !== 'udnefined' && symbol != null ? (symbol + '') : '';
+    		var result = {}, tmp, valid;
+    		for(var i = 0, l = array.length; i < l; i++) {
+    			for (var key in array[i]) {
+    				tmp = array[i][key];
+    				valid = typeof tmp !== 'udnefined' && tmp != null;
+					result[key] = (result[key] || '') + (valid ? tmp : '') + (i === l - 1 ? '' : symbol);
 				}
-			}
-			return '';
-		},
-		dataStatus: {
-			ENABLED: { value: 'enabled', text: '已启用' },
-			DISABLED: { value: 'disabled', text: '已禁用' },
-			LOCKED: { value: 'locked', text: '已锁住' },
-			DELETED: { value: 'deleted', text: '已删除' }
-		},
-    	emptyNodeType: {
-    		NONE: { value: 'none', text: '------' },
-    		ALL: { value: 'all', text: '全部' },
-    		OPTIONAL: { value: 'optional', text: '请选择' }
+    		}
+    		return result;
+    	},
+    	getEmptyNodeTypes: function() {
+    		return _emptyNodeTypes || (_emptyNodeTypes = _syncAjaxGet('/api/emptynodetypes'));
     	},
     	/**
     	 * 判断指定节点值是否指向的是无效的业务节点
@@ -107,42 +128,32 @@
     		if(typeof nodeValue !== 'string') {
     			return true;
     		}
-    		for(var key in zyc.emptyNodeType) {
-    			if(nodeValue === zyc.emptyNodeType[key].value) {
+    		var emptys = zyc.getEmptyNodeTypes();
+    		for(var i = 0; i < emptys.length; i++) {
+    			if(nodeValue === emptys[i].value) {
     				return true;
     			}
     		}
     		return false;
     	},
-    	inexOperate: {
-    		include: { value: 'include', text: '包含' },
-    		exclude: { value: 'exclude', text: '排除' }
+    	getAllDataStatus: function() {
+    		return _dataStatus || (_dataStatus = _syncAjaxGet('/api/datastatus'));
     	},
-    	memberRelation: {
-    		SELF: { value: 'self', text: '本身（自己）'},
-    		PEER: { value: 'peer', text: '同辈（兄弟姐妹）'},
-    		CHILDREN: { value: 'children', text: '成员（子女）'},
-    		DESCENDANT: { value: 'descendant', text: '后代（子孙后代）'},
-    	},
-    	entryBeans: function(entryBeanMap) {
-    		var beans = [], temp;
-    		for(var key in entryBeanMap) {
-    			temp = entryBeanMap[key];
-    			beans.push({ value: temp.value, text: temp.text });
-    		}
-    		return beans;
-    	},
-    	joinArray: function(array, symbol) {
-    		symbol = typeof symbol !== 'udnefined' && symbol != null ? (symbol + '') : '';
-    		var result = {}, tmp, valid;
-    		for(var i = 0, l = array.length; i < l; i++) {
-    			for (var key in array[i]) {
-    				tmp = array[i][key];
-    				valid = typeof tmp !== 'udnefined' && tmp != null;
-					result[key] +=  (valid ? tmp : '') + (i = l - 1 ? '' : symbol);
+		textDataStatus: function(value) {
+			var ds = zyc.getAllDataStatus(), tmp;
+			for(var i = 0; i < ds.length; i++) {
+				tmp = ds[i];
+				if(tmp.value === value) {
+					return tmp.text;
 				}
-    		}
-    		return result;
+			}
+			return '';
+		},
+    	getIncludeOrExclude: function() {
+    		return _includeOrExclude || (_includeOrExclude = _syncAjaxGet('/api/includeorexclude'));
+    	},
+    	getTreeRelationships: function() {
+    		return _treeRelationships || (_treeRelationships = _syncAjaxGet('/api/tree/relationships'));
     	}
     };
 	

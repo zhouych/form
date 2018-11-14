@@ -14,7 +14,7 @@ import com.zyc.baselibs.annotation.FieldRuleUtils;
 import com.zyc.baselibs.aopv.ParamVerification;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
-import com.zyc.baselibs.entities.DataStatus;
+import com.zyc.baselibs.data.DataStatus;
 import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.ex.IllegalValueException;
 import com.zyc.baselibs.service.AbstractSelectByPageService;
