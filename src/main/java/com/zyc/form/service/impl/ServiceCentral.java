@@ -8,17 +8,21 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.zyc.baselibs.asserts.AssertThrowNonRuntime;
 import com.zyc.baselibs.commons.CollectionUtils;
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.commons.Visitor;
+import com.zyc.baselibs.ex.BussinessException;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.SortField;
 import com.zyc.form.dao.FormFieldMapper;
+import com.zyc.form.dao.FormMapper;
 import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.data.FormArea;
 import com.zyc.form.data.FormType;
+import com.zyc.form.entities.Form;
 import com.zyc.form.entities.FormField;
 import com.zyc.form.entities.MetaField;
 
@@ -33,12 +37,23 @@ class ServiceCentral {
 	private static final Logger logger = Logger.getLogger(ServiceCentral.class);
 	
 	@Autowired
+	private FormMapper formMapper;
+	
+	@Autowired
 	private MetaFieldMapper metaFieldMapper;
 
 	@Autowired
 	private FormFieldMapper formFieldMapper;
 	
+	/**
+	 * 加载元字段
+	 * @param formarea 必选参数，元字段所在的表单区域。
+	 * @param fieldvalue 必选参数，元字段的值。
+	 * @return
+	 */
 	public MetaField loadFormMetaField(String formarea, String fieldvalue) {
+		Assert.hasText(formarea, "The parameter 'formid' is null or empty.");
+		Assert.hasText(fieldvalue, "The parameter 'formid' is null or empty.");
 		MetaField mf = new MetaField().clean();
 		mf.setFormarea(formarea);
 		mf.setFieldvalue(fieldvalue);
@@ -47,6 +62,42 @@ class ServiceCentral {
 			throw new RuntimeException("Data error: The meta field is not unique. (formarea=" + formarea + "; fieldvalue=" + fieldvalue + ")");
 		}
 		return CollectionUtils.hasElement(mfs) ? mfs.get(0) : null;
+	}
+	
+	/**
+	 * 申请一个自定义字段
+	 * @param formid 必选参数，代申请自定义字段的表单ID。
+	 * @param formarea 必选参数，代申请自定义字段的表单区域。
+	 * @return {@link MetaField} 的实例对象
+	 * @throws Exception
+	 */
+	public MetaField applyItemField(String formid, String formarea) throws Exception {
+		Assert.hasText(formid, "The parameter 'formid' is null or empty.");
+		Form form = this.formMapper.load(formid, Form.class);
+		Assert.notNull(form, "The form does not exist. (formid=" + formid + ")");
+		
+		FormField ffc = new FormField().clean();
+		ffc.setFormid(formid);
+		ffc.setFormarea(formarea);
+		ffc.setSysfield(false);
+		List<FormField> ffs = this.formFieldMapper.select(ffc);
+		int usedMax = 0;
+		if(CollectionUtils.hasElement(ffs)) {
+			int max;
+			for (FormField ff : ffs) {
+				max = FormField.getItemIndex(ff.getFieldvalue());
+				if(max > 0 && max > usedMax) {
+					usedMax = max;
+				}
+			}
+		}
+		
+		String item = "item" + (usedMax >= 9 ? "" : "0") + (usedMax + 1);
+		MetaField mf = this.loadFormMetaField(formarea, item);
+		if(mf == null || true == mf.getSysfield()) {
+			throw new BussinessException("This custom field is not supported by the system. (fieldvalue=" + item + ")");
+		}
+		return mf;
 	}
 
 	public List<MetaField> selectFormMetaFields(String formtype) {

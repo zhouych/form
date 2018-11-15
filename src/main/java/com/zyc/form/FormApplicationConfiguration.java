@@ -15,6 +15,7 @@ import com.zyc.baselibs.annotation.MainfieldUtils;
 import com.zyc.baselibs.annotation.SubfieldUtils;
 import com.zyc.baselibs.aopv.ParamVerificationAspect;
 import com.zyc.baselibs.aopv.VerificationRulerContainer;
+import com.zyc.baselibs.commons.FileStreamUtils;
 import com.zyc.baselibs.commons.ReflectUtils;
 import com.zyc.baselibs.commons.Visitor;
 import com.zyc.baselibs.data.DataStatus;
@@ -56,20 +57,22 @@ public class FormApplicationConfiguration {
 		return new VerificationRulerContainer();
 	}
 
+	private static final String SQL_PATH = "C:/pro_form_init.sql";
+	
 	@Bean
 	public MysqlScriptComponent mysqlScriptComponent() {
 		MysqlScriptComponent mysqlScriptComponent = new MysqlScriptComponent();
-		
-		System.out.println("\n\n");
+
+		FileStreamUtils.write(SQL_PATH, "\n\n");
 		
 		List<String> sqlscripts = mysqlScriptComponent.entity2tableSqlScripts("com.zyc.form.entities");
     	if(sqlscripts != null && !sqlscripts.isEmpty()) {
     		for (String sqlscript : sqlscripts) {
-				System.out.println(sqlscript);
+				FileStreamUtils.write(SQL_PATH, sqlscript);
 			}
     	}
 
-		System.out.println("\n\n");
+		FileStreamUtils.write(SQL_PATH, "\n\n");
 		
     	String formatInsertSql = mysqlScriptComponent.formatInsertSqlScripts(MetaField.class);
     	Class<?>[] clazzs = new Class<?>[] { Edocument.class, EdocumentDetail.class, EdocumentPayment.class, EdocumentReversal.class };
@@ -98,6 +101,7 @@ public class FormApplicationConfiguration {
     				sql = sql.replace("@datatype", "'" + dataType.getValue() + "'");
     				sql = sql.replace("@displaytype", "'" + displayType.getValue() + "'");
     				sql = sql.replace("@expressiontext", "null");
+    				sql = sql.replace("@expressiondefaulttext", "null");
     				sql = sql.replace("@expressiondefault", "null");
     				sql = sql.replace("@expression", "null");
     				sql = sql.replace("@editable", editable ? "1" : "0");
@@ -107,14 +111,14 @@ public class FormApplicationConfiguration {
     				sql = sql.replace("@updatedat", "current_timestamp()");
     				sql = sql.replace("@version", "0");
     				sql += ";";
-    				
-    				System.out.println(sql);
+
+    				FileStreamUtils.write(SQL_PATH, sql);
     				return false;
     			}
     		}, false, ReflectUtils.MODIFIER_STATIC$FINAL);
 		}
     	
-		System.out.println("\n\n");
+		FileStreamUtils.write(SQL_PATH, "\n\n");
     	
 		return mysqlScriptComponent;
 	}

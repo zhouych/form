@@ -71,3 +71,18 @@ form div.checkbox label {
 form div.checkbox label:FIRST-CHILD {
 	margin-left: 0px;	
 }
+ 
+.form-control[name="expressiontext"] {
+	width: 60%;
+}
+
+span.form-control.default {
+	text-align: right;
+	width: 20%;
+	border-right: none;
+}
+
+.form-control[name="expressiondefaulttext"] {
+	width: 20%;
+	border-left: none;
+}

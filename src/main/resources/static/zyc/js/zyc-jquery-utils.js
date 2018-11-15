@@ -26,6 +26,12 @@
 				
 				fn.apply(this, [ e ]);
 			});
+		},
+		findInput: function(name) {
+			return this.find('input[name="' + name + '"]');
+		},
+		findSelect: function(name) {
+			return this.find('select[name="' + name + '"]');
 		}
 	});
 

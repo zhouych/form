@@ -40,4 +40,12 @@ public interface FormFieldService extends EntityDeleteService, EnumService {
 	 */
 	FormFieldVO applyItemField(String formid, String formarea) throws Exception;
 
+	/**
+	 * 为表单申请一个自定义字段的值
+	 * @param formid 必选参数，代申请自定义字段的表单ID。
+	 * @param formarea 必选参数，代申请自定义字段的表单区域。
+	 * @return
+	 */
+	String applyItemFieldValue(String formid, String formarea) throws Exception;
+
 }

@@ -50,4 +50,15 @@ public class FormFieldRestController extends BaseFormController {
 		}
     	return JSON.toJSONString(result);
     }
+
+    @RequestMapping(value = commonPath + "/value/apply", method = RequestMethod.GET)
+    public String applyValue(@RequestParam("formid") String formid, @RequestParam("formarea") String formarea) {
+    	ResponseResult result = new ResponseResult();
+    	try {
+    		result.setData(formFieldService.applyItemFieldValue(formid, formarea));
+		} catch (Exception e) {
+			this.handleException(result, e, logger);
+		}
+    	return JSON.toJSONString(result);
+    }
 }

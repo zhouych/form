@@ -63,7 +63,10 @@
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="expression">Data Source</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 input-group p-l">
 						<input type="hidden" th:field="*{expression}" />
+						<input type="hidden" th:field="*{expressiondefault}" />
 			        	<input type="text" class="form-control" th:field="*{expressiontext}" readonly="readonly" />
+			        	<span class="form-control default" readonly="readonly">默认值：</span>
+			        	<input type="text" class="form-control" th:field="*{expressiondefaulttext}" readonly="readonly" />
 			        	<span class="input-group-addon hand field-expression-set" th:attr="title='设置字段数据源'">@</span>
 					</div>
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
@@ -76,7 +79,8 @@
 				          		<input type="checkbox" th:field="*{editable}" th:attr="readonly=${readonly},disabled=${readonly}" />可编辑
 				        	</label>
 				        	<label>
-				          		<input type="checkbox" th:field="*{sysfield}" th:attr="readonly=true,disabled=true" />系统字段
+				        		<input type="hidden" th:field="*{sysfield}" />
+				          		<input type="checkbox" th:attr="checked=${sysfield},readonly=true,disabled=true" />系统字段
 				        	</label>
 				      	</div>
 				    </div>
@@ -105,7 +109,8 @@
 <script th:inline="javascript" type="text/javascript">
 	$(document).ready(function() {
 		var $form = $('#form-field-detail')
-			, field = $form.find('input[name="fieldvalue"]').val()
+			, field = $form.findInput('fieldvalue').val()
+			, formid = $form.findInput('formid').val()
 			, _operateOptions = zyc.getIncludeOrExclude()
 			, _relationOptions = zyc.getTreeRelationships()
 			, _expressionResult = []
@@ -128,28 +133,28 @@
 			},
 			enabledExpressionDefaultValue: true,
 			expressionResult: _expressionResult,
-			onSaveExpressionResult: function(result) {
+			onSaveExpressionResult: function(result, defaultValue) {
 				_expressionResult = result;
 				result = zyc.joinArray(result, '');
-				$form.find('input[name="expression"]').val(result.value);
-				$form.find('input[name="expressiontext"]').val(result.text);
+				$form.findInput('expression').val(result.value);
+				$form.findInput('expressiontext').val(result.text);
+				if(defaultValue) {
+					$form.findInput('expressiondefault').val(defaultValue.value);
+					$form.findInput('expressiondefaulttext').val(defaultValue.text);
+				}
 			}
 		};
 		
-		var getInputValue = function(name) {
-			return $form.find('select[name="' + name + '"], input[name="' + name + '"]').val();
-		}
-		
 		$form.find('select[name="formarea"]').onUndisabled('change', function(e) {
 			$.ajax({
-				url : '/api/form/field/apply',
-				data: { 'formid': getInputValue('formid'), 'formarea': getInputValue('formarea') },
+				url : '/api/form/field/value/apply',
+				data: { 'formid': formid, 'formarea': $(this).val() },
 				type: 'get',
 				dataType: 'json',
 				async: true,
 				success: function(resp) {
 					if(resp.status === '0') {
-						alert(resp.data.fieldvalue);
+						$form.findInput('fieldvalue').val(resp.data);
 					} else {
 						alert(resp.message);
 					}

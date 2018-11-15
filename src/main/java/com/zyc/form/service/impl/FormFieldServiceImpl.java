@@ -203,40 +203,19 @@ public class FormFieldServiceImpl extends AbstractSelectByPageService implements
 	 */
 	@Override
 	public FormFieldVO applyItemField(String formid, String formarea) throws Exception {
-		Assert.hasText(formid, "The parameter 'formid' is null or empty.");
-		Form form = this.formMapper.load(formid, Form.class);
-		Assert.notNull(form, "The form does not exist. (formid=" + formid + ")");
-		
-		FormField ffc = new FormField().clean();
-		ffc.setFormid(formid);
-		ffc.setSysfield(false);
-		List<FormField> ffs = this.formFieldMapper.select(ffc);
-		int usedMax = 0;
-		if(CollectionUtils.hasElement(ffs)) {
-			int tmpMax;
-			String tmp;
-			for (FormField ff : ffs) {
-				tmp = ff.getFieldvalue().replace("item0", "").replace("item", "");
-				if(StringUtils.isNumeric(tmp)) {
-					tmpMax = Integer.valueOf(tmp);
-					if(tmpMax > usedMax) {
-						usedMax = tmpMax;
-					}
-				}
-			}
-		}
-		
-		String item = "item" + (usedMax >= 9 ? "" : "0") + (usedMax + 1);
-		MetaField mf = this.central.loadFormMetaField(formarea, item);
-		if(mf == null || true == mf.getSysfield()) {
-			throw new BussinessException("This custom field is not supported by the system. (fieldvalue=" + item + ")");
-		}
-		
+		MetaField mf = this.central.applyItemField(formid, formarea);
 		FormFieldVO vo = FormFieldVO.newInstance();
 		vo.setMetafieldid(mf.getId());
 		vo.setFormid(formid);
-		vo.setFieldvalue(item);
+		vo.setFieldvalue(mf.getFieldvalue());
+		vo.setSysfield(false); //自定义字段与系统字段是对立的
+		vo.setEditable(true); //自定义字段默认可编辑
 		return vo;
+	}
+
+	@Override
+	public String applyItemFieldValue(String formid, String formarea) throws Exception {
+		return this.central.applyItemField(formid, formarea).getFieldvalue();
 	}
 	
 	/**

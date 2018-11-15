@@ -5,6 +5,7 @@ import java.sql.JDBCType;
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
+import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 import com.zyc.form.data.FieldDataType;
 import com.zyc.form.data.FieldDisplayType;
@@ -20,7 +21,7 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
 	private String formarea;
 
-	@FieldRule(required = true)
+	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
 	private Boolean sysfield;
 	
@@ -53,6 +54,10 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@FieldRule(required = false, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
 	private String expressiondefault;
+
+	@FieldRule(required = false, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 128)
+	private String expressiondefaulttext;
 
 	@FieldRule(required = true)
 	@DatabaseColumn(jdbcType = JDBCType.BOOLEAN)
@@ -130,6 +135,14 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 		this.expressiondefault = expressiondefault;
 	}
 
+	public String getExpressiondefaulttext() {
+		return expressiondefaulttext;
+	}
+
+	public void setExpressiondefaulttext(String expressiondefaulttext) {
+		this.expressiondefaulttext = expressiondefaulttext;
+	}
+
 	public Boolean getEditable() {
 		return editable;
 	}
@@ -152,6 +165,12 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 		this.editable = null;
 		return this;
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		this.sysfield = StringUtils.isBlank(this.fieldvalue) || getItemIndex(this.fieldvalue) > 0;
+	}
 
 	@Override
 	public String getDatatypelabel() {
@@ -171,5 +190,15 @@ public abstract class AbstractField extends DescriptionBaseEntity implements Abs
 	@Override
 	public String getEditablelabel() {
 		return this.getEditable() != null && this.getEditable() ? "是" : "否";
+	}
+	
+	/**
+	 * 获取自定义字段的序号
+	 * @param itemfieldvalue 自定义字段
+	 * @return
+	 */
+	public static int getItemIndex(String itemfieldvalue) {
+		String temp = itemfieldvalue.replace("item0", "").replace("item", "");
+		return StringUtils.isNumeric(temp) ? Integer.valueOf(temp) : -1;
 	}
 }
