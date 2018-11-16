@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<link type="text/css" rel="stylesheet" th:href="@{/spread/css/gc.spread.sheets.excel2016colorful.11.2.2.css}"></link>
+</head>
+<body>
+	<!-- SpreadJS表格插件 -->
+	<div th:fragment="formspread(id)" class="container-fluid">
+		<div th:id="${id}" />
+		<script type="text/javascript" th:src="@{/spread/js/gc.spread.sheets.all.11.2.2.min.js}"></script>
+		<script th:inline="javascript" type="text/javascript">
+			(function() {
+				var id = [[${id}]];
+				var FORMSPREAD_DEFAULTS = {
+					id: id,
+					workbook: {
+						sheetCount: 3
+					}
+				};
+
+				/**
+				 * 提供针对Spread模板化相关操作的对象
+				 */
+				var templatable = {
+					xml: {
+						get: function() {
+							throw new Error('The function "templatable.xml.get" not implements.');
+						},
+						set: function(template) {
+							throw new Error('The function "templatable.xml.set" not implements.');
+						}
+					},
+					json: {
+						get: function() {
+							return JSON.stringify(this.spread.toJSON());
+						},
+						set: function(template) {
+							this.spread.fromJSON(JSON.parse(template));
+							return this;
+						}
+					}
+				};
+				
+				var FormSpread = function(options) {
+					var that = this
+						, ops = $.extend(true, {}, FORMSPREAD_DEFAULTS, options || {});
+					
+					this.id = ops.id;
+					this.element = document.getElementById(ops.id);
+					this.spread = new GC.Spread.Sheets.Workbook(element, ops.workbook);
+					
+					return that;
+				}
+				
+				/**
+				 * 获取Spread模板数据或者按指定的模板加载Spread
+				 * @param type 必选参数，模板类型。枚举值，在 [ 'xml' | 'json' ] 中根据需要选择一种。
+				 * @param template 可选参数，模板数据。传值即为按所传值加载Spread模板数据；不传值（undefined）即为获取Spread模板数据
+				 */
+				FormSpread.prototype.template = function(type, template) {
+					var isgets = typeof template === 'undefined'
+						, command = isgets ? 'get' : 'set';
+					return templatable[type][command].apply(this, [ template ]);
+				}
+				
+				/**
+				 * 在Spread上加载表单
+				 * @param options 必选参数，Object对象。
+				 * 	options对象的结构如下： 
+				 *		mode -- 必选，Spread加载表单的模式。字符串枚举值，在 [ 'view' |  'approval' | 'fillin' | 'design' ] 中根据需要选择一种。	
+				 *		template -- 必选，Object对象，其结构如下:
+				 *			type -- 必选，模板类型。字符串枚举值，在 [ 'xml' | 'json' ] 中根据需要选择一种。	
+				 *			value -- 必选，字符串，模板数据。
+				 *		fields -- 必选，数组，表单使用的所有字段信息集合。 
+				 *		
+				 */
+				FormSpread.prototype.loadForm = function(options) {
+					
+				}
+				
+				FormSpread.VERSION  = '1.0';
+				
+				window[id] = FormSpread;
+			})();
+		</script>
+	</div>
+</body>
+</html>

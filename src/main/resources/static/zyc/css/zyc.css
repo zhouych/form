@@ -72,17 +72,75 @@ form div.checkbox label:FIRST-CHILD {
 	margin-left: 0px;	
 }
  
-.form-control[name="expressiontext"] {
-	width: 60%;
+span.form-control.expression-label,
+span.form-control.default-label {
+	text-align: right;
+	width: 5%;
+	border-right: none;
+	padding-left: 0px;
+	padding-right: 0px;
+	white-space:nowrap;
 }
 
-span.form-control.default {
-	text-align: right;
-	width: 20%;
+.form-control[name="expressiontext"] {
+	width: 65%;
+	border-left: none;
 	border-right: none;
 }
 
-.form-control[name="expressiondefaulttext"] {
-	width: 20%;
+span.form-control.default-label {
 	border-left: none;
+}
+
+.form-control[name="expressiondefaulttext"] {
+	width: 25%;
+	border-left: none;
+}
+
+@MEDIA screen and (max-width: 1920px) {
+	span.form-control.expression-label,
+	span.form-control.default-label {
+		width: 5%;
+	}
+	
+	.form-control[name="expressiontext"] {
+		width: 65%;
+	}
+	
+	.form-control[name="expressiondefaulttext"] {
+		width: 25%;
+	}
+}
+
+@MEDIA screen and (max-width: 1280px) {
+	span.form-control.expression-label {
+		width: 7%;
+	}
+	
+	.form-control[name="expressiontext"] {
+		width: 63%;
+	}
+	
+	span.form-control.default-label {
+		width: 7%;
+	}
+	
+	.form-control[name="expressiondefaulttext"] {
+		width: 23%;
+	}
+}
+
+@MEDIA screen and (max-width: 800px) {
+	span.form-control.expression-label,
+	span.form-control.default-label {
+		width: 11%;
+	}
+	
+	.form-control[name="expressiontext"] {
+		width: 59%;
+	}
+	
+	.form-control[name="expressiondefaulttext"] {
+		width: 19%;
+	}
 }

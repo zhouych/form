@@ -6,6 +6,12 @@
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/bs-3.3.7/css/bootstrap-theme.min.css}" ></link>
 <link type="text/css" rel="stylesheet" th:href="@{/spread/css/gc.spread.sheets.excel2016colorful.11.2.2.css}"></link>
+<style type="text/css">
+	#sps {
+		width: 1200px;
+		height: 600px;
+	}
+</style>
 </head>
 <body>
 	<div class="container">
@@ -23,7 +29,7 @@
 			var initSpread = function() {
 				var sps = document.getElementById("sps");
 				var spreadOptions = {
-					sheetCount: 1
+					sheetCount: 2
 				};
 				
 				spread = new GC.Spread.Sheets.Workbook(sps, spreadOptions);
@@ -39,6 +45,47 @@
 				sheet.addSpan(1, 0, 2, 3);
 				
 		        sheet.getCell(1, 3).value("Any characters pushed outside the cell width are displayed as overflows.");
+
+				var cellType1 = new GC.Spread.Sheets.CellTypes.CheckBox();
+				cellType1.caption("caption");
+				cellType1.textTrue("true");
+				cellType1.textFalse("false");
+				cellType1.textIndeterminate("indeterminate");
+				cellType1.textAlign(GC.Spread.Sheets.CellTypes.CheckBoxTextAlign.bottom);
+				cellType1.isThreeState(true);
+				sheet.getCell(3, 3).cellType(cellType1);
+				
+				var cellType2 = new GC.Spread.Sheets.CellTypes.ComboBox();
+				cellType2.items(["a","b","c"]);
+				sheet.getCell(4, 4).cellType(cellType2);
+				sheet.getCell(4, 4).value("a");
+				
+				var cellType = new GC.Spread.Sheets.CellTypes.HyperLink();
+				cellType.linkColor("blue");
+				cellType.visitedLinkColor("#FF2235");
+				cellType.text("GrapeCity");
+				cellType.linkToolTip("Company Web Site");
+				sheet.getCell(5, 5).cellType(cellType).value("http://spread.grapecity.com/");
+				
+				var button = new GC.Spread.Sheets.CellTypes.Button();
+				button.buttonBackColor("#FFFF00");
+				button.text("test");
+				sheet.getCell(6, 6).cellType(button);
+				
+				spread.bind(GC.Spread.Sheets.Events.ButtonClicked, function (e, args) {
+				    var sheet = args.sheet, row = args.row, col = args.col;
+				    var cellType = sheet.getCellType(row, col);
+				    if (cellType instanceof GC.Spread.Sheets.CellTypes.Button) {
+				        alert("Button Clicked");
+				    }
+				});
+				
+				var person = {name: "Wang feng", age: 25, address: {postcode: "710075"}};
+				var source = new GC.Spread.Sheets.Bindings.CellBindingSource(person);
+				sheet.setBindingPath(7, 0, "name");
+				sheet.setBindingPath(7, 1, "age");
+				sheet.setBindingPath(7, 3, "address.postcode");
+				sheet.setDataSource(source);
 			}
 			
 			initSpread();
@@ -52,8 +99,8 @@
 			});
 	        
 			$("button.btn.restore").on("click", function() {
-			   	var sheet = new GC.Spread.Sheets.Worksheet('Sheet1');
-				spread.addSheet(0, sheet);
+			   	//var sheet = new GC.Spread.Sheets.Worksheet('Sheet1');
+				//spread.addSheet(0, sheet);
 				spread.fromJSON(JSON.parse(historyJSON));
 			});
 		});

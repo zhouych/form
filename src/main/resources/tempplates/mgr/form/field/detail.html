@@ -37,11 +37,10 @@
 					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 				</div>
 				<div class="row form-group">
-				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="datatype">Data Type</label>
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="datatype">Field Type</label>
 				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-				    	<select class="form-control" th:field="*{datatype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
-							<option th:each="dt:${dataTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
-						</select>
+		        		<input type="hidden" th:field="*{sysfield}" />
+		        		<span class="form-control" th:text="${field.sysfield} ? '系统字段' : '自定义字段'" th:attr="readonly=true" />
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
 				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="formarea">Form Area</label>
@@ -60,12 +59,22 @@
 						</select>
 					</div>
 					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
-				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="expression">Data Source</label>
-				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 input-group p-l">
+				    <label class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label" for="expression">Data Type</label>
+				    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				    	<select class="form-control" th:field="*{datatype}" th:attr="readonly=${readonly} or ${whether_edit},disabled=${readonly} or ${whether_edit}">
+							<option th:each="dt:${dataTypes}" th:value="${dt.value}" th:text="${dt.text}"></option>
+						</select>
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
+				</div>
+				<div class="row form-group">
+					<label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" for="expression">Data Source</label>
+				    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 input-group p-l">
 						<input type="hidden" th:field="*{expression}" />
 						<input type="hidden" th:field="*{expressiondefault}" />
+			        	<span class="form-control expression-label" readonly="readonly">公式：</span>
 			        	<input type="text" class="form-control" th:field="*{expressiontext}" readonly="readonly" />
-			        	<span class="form-control default" readonly="readonly">默认值：</span>
+			        	<span class="form-control default-label" readonly="readonly">默认值：</span>
 			        	<input type="text" class="form-control" th:field="*{expressiondefaulttext}" readonly="readonly" />
 			        	<span class="input-group-addon hand field-expression-set" th:attr="title='设置字段数据源'">@</span>
 					</div>
@@ -77,10 +86,6 @@
 				      	<div class="checkbox">
 				        	<label>
 				          		<input type="checkbox" th:field="*{editable}" th:attr="readonly=${readonly},disabled=${readonly}" />可编辑
-				        	</label>
-				        	<label>
-				        		<input type="hidden" th:field="*{sysfield}" />
-				          		<input type="checkbox" th:attr="checked=${sysfield},readonly=true,disabled=true" />系统字段
 				        	</label>
 				      	</div>
 				    </div>
