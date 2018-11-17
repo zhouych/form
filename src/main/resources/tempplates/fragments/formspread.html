@@ -71,6 +71,15 @@
 				 *		template -- 必选，Object对象，其结构如下:
 				 *			type -- 必选，模板类型。字符串枚举值，在 [ 'xml' | 'json' ] 中根据需要选择一种。	
 				 *			value -- 必选，字符串，模板数据。
+				 *		source -- 必选，Object对象。绑定到Spread的表单区域、字段等信息。其结构如下： 
+				 *			id -- 必选，字符串，主键ID。
+				 *			formid -- 必选，表单主键ID。
+				 *			json -- 可选（[ 'xml' | 'json' ] 中至少一个有值），基于Spread的模板数据JSON字符串。
+				 *			xml -- 可选（[ 'xml' | 'json' ] 中至少一个有值），基于Spread的模板数据XML字符串。
+				 *			sheets -- 必选，数组，页签列表。数组元素为Object对象，其结构如下：
+				 *				spreadid -- 必选，字符串，外键ID，对应source的id字段。
+				 *				name -- 必选，字符串，页签名称。
+				 *			areas -- 必选，
 				 *		fields -- 必选，数组，表单使用的所有字段信息集合。 
 				 *		
 				 */
