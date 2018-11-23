@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zyc.baselibs.commons.CollectionUtils;
+import com.zyc.baselibs.entities.BaseEntity;
 import com.zyc.baselibs.service.AbstractBaseService;
 import com.zyc.form.dao.MetaFieldMapper;
 import com.zyc.form.data.FormType;

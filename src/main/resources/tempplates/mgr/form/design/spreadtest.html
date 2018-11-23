@@ -18,6 +18,19 @@
 		<div id="sps"></div>
 		<button type="button" class="btn btn-primary clear">清空</button>
 		<button type="button" class="btn btn-primary restore">恢复</button>
+		<button type="button" class="btn btn-primary switch">切换Sheet</button>
+		<button type="button" class="btn btn-primary supend">挂起事件</button>
+		<button type="button" class="btn btn-primary resume">唤醒事件</button>
+		<button type="button" class="btn btn-primary selections">获取选择区域</button>
+	</div>
+	<div class="container">
+		<label>Selections:</label><textarea rows="10" cols="100" id="selections" ></textarea>
+	</div>
+	<div class="container">
+		<textarea rows="10" cols="100" id="showEventArgs" ></textarea>
+	</div>
+	<div class="container">
+		<label>Zoom:</label><input id="zoom" type="range" name="points" min="0" max="100" value="1" />
 	</div>
 	<script type="text/javascript" th:src="@{/jquery/jquery-3.3.1.min.js}" ></script>
 	<script type="text/javascript" th:src="@{/bs-3.3.7/js/bootstrap.min.js}" ></script>
@@ -25,6 +38,65 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			var spread;
+
+
+			function initFunction() {
+			    var sheet = spread.getActiveSheet();
+			    spread.suspendPaint();
+			    //spread.getSheet(0).name("hitTest");
+			    sheet.setColumnWidth(0, 150);
+			    sheet.setText(0, 0, "Click anywhere inside of this Spread instance.");
+			    spread.getHost().addEventListener('click', function(e){
+			        var y = e.pageY - this.offsetTop;
+			        var x = e.pageX - this.offsetLeft;
+
+			        var result = spread.hitTest(x, y);
+
+			        var str = getHitAreaName(result);
+			        document.getElementById("showEventArgs").value="(x: " + result.x.toString() + "," + " y:" + result.y.toString() + ")" + " ; " + str;
+
+			    });
+			    spread.resumePaint();
+			}
+
+			function getHitAreaName(result){
+			    if(result) {
+			        var str = "";
+			        var worksheetHitInfo = result.worksheetHitInfo;
+			        var tabStripHitInfo = result.tabStripHitInfo;
+			        if (worksheetHitInfo) {
+			            var hitTestType = worksheetHitInfo.hitTestType;
+			            if (hitTestType === 0) {
+			                str = 'corner';
+			            } else if (hitTestType === 1) {
+			                str = 'colHeader';
+			            } else if (hitTestType === 2) {
+			                str = 'rowHeader';
+			            } else {
+			                var row = worksheetHitInfo.row;
+			                var col = worksheetHitInfo.col;
+			                str = 'viewport; ' + '(row: ' + row + ', col: ' + col + ')';
+			            }
+			        } else if (tabStripHitInfo) {
+			            if (tabStripHitInfo.navButton) {
+			                str = tabStripHitInfo.navButton;
+			            } else if (tabStripHitInfo.sheetTab) {
+			                str = tabStripHitInfo.sheetTab.sheetName;
+			            } else if (tabStripHitInfo.resize === true) {
+			                str = "resize";
+			            } else {
+			                str = "blank";
+			            }
+			        } else if (result.horizontalScrollBarHitInfo) {
+			            str = result.horizontalScrollBarHitInfo.element;
+			        } else if (result.verticalScrollBarHitInfo) {
+			            str = result.verticalScrollBarHitInfo.element;
+			        } else if (result.footerCornerHitInfo) {
+			            str = result.footerCornerHitInfo.element;
+			        }
+			    }
+			    return str;
+			}
 			
 			var initSpread = function() {
 				var sps = document.getElementById("sps");
@@ -33,6 +105,7 @@
 				};
 				
 				spread = new GC.Spread.Sheets.Workbook(sps, spreadOptions);
+				initFunction();
 			}
 			
 			var drawSpread = function() {
@@ -86,6 +159,118 @@
 				sheet.setBindingPath(7, 1, "age");
 				sheet.setBindingPath(7, 3, "address.postcode");
 				sheet.setDataSource(source);
+				
+				sheet.getCell(10, 1).locked(true);
+				sheet.options.isProtected = true;
+				
+				sheet.getCell(10, 1).value('s');
+				
+				sheet.options.sheetTabColor = 'yellow'; //定制表单标签的颜色
+				
+
+				sheet.options.gridline.showHorizontalGridline = false; //不显示横向网格线
+				sheet.options.gridline.showVerticalGridline = false; //不显示纵向网格线
+				//sheet.options.gridline = {color:"gray", showVerticalGridline: true, showHorizontalGridline: true}; //设置网格线颜色及是否显示
+				
+				sheet.options.sheetAreaOffset= { left: 12, top: 12 }; //设置表单绘制区域相对于左上角的偏移量
+				//sheet.visible(false); //设置sheet是否可见
+				
+				//blank		在标题中显示空白。
+				//letters	在标题中显示字母。
+				//numbers	显示标题中的数字。
+				//sheet.options.rowHeaderAutoTextIndex = 0;
+				sheet.options.rowHeaderAutoText = GC.Spread.Sheets.HeaderAutoText.numbers;
+				//sheet.options.colHeaderAutoTextIndex = 0;
+				sheet.options.colHeaderAutoText = GC.Spread.Sheets.HeaderAutoText.letters;
+				
+				sheet.options.rowHeaderVisible = true; //是否显示行头
+				sheet.options.colHeaderVisible = true; //是否显示列头
+				
+				sheet.suspendPaint();
+				sheet.setValue(22, 2, 'Click me and input a char by keyboard!'); 
+				sheet.addSpan(22, 2, 1, 5); 
+				sheet.setValue(24, 2, 'Double click the black empty cell!'); 
+				sheet.addSpan(24, 2, 1, 5); 
+				//...
+				sheet.resumePaint();
+				
+				/**
+				 *	dashDot表示带有点划线的边框线。
+				 *	dashDotDot表示带有点划线点的边框线。
+				 *	dashed虚线表示带有破折号的边框线。
+				 *	dotted表示带点的边框线。
+				 *	double表示双边框线。
+				 *	empty表示没有样式的边框线。
+				 *	hair表示包含所有点的边框线。
+				 *	medium表示带有实线的中间边框线。
+				 *	mediumDashDot表示带有点划线点的中间边框线。
+				 *	mediumDashDotDot表示带有点划线点的中间边框线。
+				 *	mediumDashed表示带有破折号的中间边框线。
+				 *	slantedDashDot表示带有点划线的倾斜边框线。
+				 *	thick表示带有实线的粗边框线。
+				 *	thin表示带有实线细线的边框线。
+				 */
+				var lineStyle = GC.Spread.Sheets.LineStyle.medium;
+				var lineBorder = new GC.Spread.Sheets.LineBorder('red', lineStyle);
+				var sheetArea = GC.Spread.Sheets.SheetArea.viewport
+				sheet.getRange(14, 1, 1, 1).setBorder(lineBorder, { left: true, right: true}, sheetArea);
+				
+
+				sheet.getCell(15, 1).diagonalDown(new GC.Spread.Sheets.LineBorder('blue',GC.Spread.Sheets.LineStyle.double)); //设置单元格的向下对角线
+				sheet.getCell(16, 1).diagonalUp(new GC.Spread.Sheets.LineBorder('blue',GC.Spread.Sheets.LineStyle.slantedDashDot)); //设置单元格的向上对角线
+
+				spread.options.allowUserDragMerge = true; //Workbook的 allowUserDragMerge 选项表明是否允许通过鼠标拖拽来合并单元格。把 allowUserDragMerge 改为 true，在选择区域边缘处会出现一个特殊的标记。
+				
+				spread.options.tabStripVisible = true; //是否显示页签
+				spread.options.newTabVisible = false; //是否可以添加页签
+				spread.options.tabEditable = false; //是否可以编辑页签名称
+				spread.options.tabNavigationVisible = false; //是否显示页签导航按钮
+				spread.options.allowSheetReorder = true; //是否能够通过拖拽重新排列表单次序
+				spread.options.tabStripRatio = 0.4; //获取或设置以整个水平滚动条宽度比率。
+				
+				//spread.options.showScrollTip = GC.Spread.Sheets.ShowScrollTip.horizontal;
+				//spread.options.showScrollTip = GC.Spread.Sheets.ShowScrollTip.vertical;
+				spread.options.showScrollTip = GC.Spread.Sheets.ShowScrollTip.both; //设置拖拽滚动滑块的过程中,滚动提示条将显示当前可见区域的最顶行和最左列的索引值。
+				//spread.options.showScrollTip = GC.Spread.Sheets.ShowScrollTip.none;
+				
+				spread.options.showVerticalScrollbar = true; //是否显示纵向滚动条。
+				spread.options.showHorizontalScrollbar = true; //是否显示横向滚动条。
+				
+				//spread.options.scrollbarMaxAlign = true; //滚动条是否对齐视图中表单的最后一行或一列。
+				//spread.options.scrollbarShowMax = true; //是否基于表单全部的行列总数显示滚动条。
+				
+				//spread.options.scrollIgnoreHidden = true; //控制滚动条是否忽略隐藏的行或者列。
+				
+				//spread.options.backColor = 'red'; //设置背景色
+				
+				//spread.options.grayAreaBackColor = 'gray'; //设置表单灰色区域的背景色。
+				
+				spread.options.backgroundImage = '/spread/imgs/test.png'; //设置背景图片
+				
+				/**
+				Spread.Sheets 提供控制图片布局方式的能力, 你可以设置 backgroundImageLayout 选项来完成此目标。图片布局包含以下几种类型:
+				stretch: 改变图像尺寸使其充满整个区域,无视实际的长宽比。
+				center: 图片将显示在区域的正中央。
+				zoom: 改变图像的尺寸使其适合控件尺寸,图片实际的长宽比不变。
+				none: 在显示区域中使用图像实际的尺寸显示该图像,没有任何尺寸变化。
+				*/
+				spread.options.backgroundImageLayout = GC.Spread.Sheets.ImageLayout.center;
+
+				spread.repaint(); //重新绘制 Spread。
+				
+				/**
+				 *	大多数时候, 在你改变 Spread 之后, 控件会自动刷新以达到重绘和更新状态的目的。 
+				 *	可是, 如果你一次做出大量的改变, 并且不希望每次改变都去重新绘制 Spread , 那么你可以调用 suspendPaint 暂停重绘， 完成改变之后，你可以调用resumePaint 重新激活Spread重绘。
+				 */
+				spread.suspendPaint();
+				spread.addSheet(2);
+				spread.addSheet(3);
+				spread.resumePaint();
+				
+				var spread2 = GC.Spread.Sheets.findControl(document.getElementById('sps'));
+				spread2.bind(GC.Spread.Sheets.Events.ActiveSheetChanged, function(e, args) {
+					args.newSheet.getCell(10, 5).value(new Date());
+				});
 			}
 			
 			initSpread();
@@ -94,15 +279,56 @@
 			var historyJSON;
 			
 			$("button.btn.clear").on("click", function() {
-				historyJSON = JSON.stringify(spread.toJSON());
+				var serializationOption = {
+					//includeBindingSource: true,
+				   	ignoreFormula: true, // indicate to ignore the style when convert workbook to json, default value is false
+				   	ignoreStyle: true, // indicate to ignore the formula when convert workbook to json, default value is false
+				   	rowHeadersAsFrozenColumns: true, // indicate to treat the row headers as frozen columns when convert workbook to json, default value is false
+				   	columnHeadersAsFrozenRows: true // indicate to treat the column headers as frozen rows when convert workbook to json, default value is false
+				}
+				serializationOption = {};
+				historyJSON = JSON.stringify(spread.toJSON(serializationOption));
 				spread.clearSheets();
 			});
 	        
 			$("button.btn.restore").on("click", function() {
 			   	//var sheet = new GC.Spread.Sheets.Worksheet('Sheet1');
 				//spread.addSheet(0, sheet);
-				spread.fromJSON(JSON.parse(historyJSON));
+				var jsonOptions = {
+				   ignoreFormula: true, // indicate to ignore style when convert json to workbook, default value is false
+				   ignoreStyle: true, // indicate to ignore the formula when convert json to workbook, default value is false
+				   frozenColumnsAsRowHeaders: true, // indicate to treat the frozen columns as row headers when convert json to workbook, default value is false
+				   frozenRowsAsColumnHeaders: true, // indicate to treat the frozen rows as column headers when convert json to workbook, default value is false
+				   doNotRecalculateAfterLoad: true //  indicate to forbid recalculate after load the json, default value is false
+				}
+				jsonOptions = {};
+				spread.fromJSON(JSON.parse(historyJSON), jsonOptions);
 			});
+			
+			$('button.btn.switch').on('click', function(e) {
+				spread.setActiveSheetIndex(spread.getActiveSheetIndex() === 1 ? 0 : 1); 
+			});
+
+			$('button.btn.supend').on('click', function(e) {
+				spread.suspendEvent(); 
+			});
+
+			$('button.btn.resume').on('click', function(e) {
+				spread.resumeEvent(); 
+			});
+			
+			$('button.btn.selections').on('click', function(e) {
+				var selections = spread.getActiveSheet().getSelections();
+				document.getElementById('selections').value = JSON.stringify(selections);
+			});
+			
+			document.getElementById('zoom').addEventListener('change', function() {
+		        var sheet = spread.getActiveSheet();
+		        if (sheet) {
+		            sheet.zoom(parseInt(this.value) / 10);
+		        }
+		    });
+			
 		});
 	</script>
 </body>

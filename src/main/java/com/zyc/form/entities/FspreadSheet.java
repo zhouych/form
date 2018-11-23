@@ -8,24 +8,36 @@ import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 
 @DatabaseTable(name = "spreadsheets")
-public class SpreadSheet extends DescriptionBaseEntity implements java.io.Serializable {
+public class FspreadSheet extends DescriptionBaseEntity implements java.io.Serializable {
 
 	private static final long serialVersionUID = -7940023106871703835L;
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
-	private String spreadid;
+	private String fspreadid;
 
-	@FieldRule(required = true)
+	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.INTEGER)
+	private Integer index;
+	
+	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 64)
 	private String name;
 
-	public String getSpreadid() {
-		return spreadid;
+	public String getFspreadid() {
+		return fspreadid;
 	}
 
-	public void setSpreadid(String spreadid) {
-		this.spreadid = spreadid;
+	public void setFspreadid(String fspreadid) {
+		this.fspreadid = fspreadid;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 
 	public String getName() {
@@ -37,7 +49,7 @@ public class SpreadSheet extends DescriptionBaseEntity implements java.io.Serial
 	}
 	
 	@Override
-	public SpreadSheet clean() {
+	public FspreadSheet clean() {
 		super.clean();
 		this.name = null;
 		return this;

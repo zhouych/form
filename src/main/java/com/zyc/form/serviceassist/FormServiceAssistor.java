@@ -3,6 +3,7 @@ package com.zyc.form.serviceassist;
 import java.util.List;
 
 import com.zyc.baselibs.data.EmptyNodeType;
+import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
@@ -24,4 +25,6 @@ public interface FormServiceAssistor {
 	 * @return
 	 */
 	BsTableDataSource<FormVO> composeBsTableDataSource(FormVO condition, String searchText, Pagination pagination);
+
+	List<EntryBean> formAreas(String formid, EmptyNodeType empty);
 }

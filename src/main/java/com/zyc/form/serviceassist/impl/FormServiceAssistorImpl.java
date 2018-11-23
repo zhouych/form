@@ -7,11 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zyc.baselibs.commons.CollectionUtils;
+import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.data.EmptyNodeType;
+import com.zyc.baselibs.vo.EntryBean;
 import com.zyc.baselibs.vo.Pagination;
 import com.zyc.baselibs.vo.PaginationResult;
 import com.zyc.baselibs.web.bootstrap.BsTableDataSource;
 import com.zyc.baselibs.web.bootstrap.HierarchySelectNode;
+import com.zyc.form.data.FormArea;
+import com.zyc.form.data.FormType;
+import com.zyc.form.entities.Form;
 import com.zyc.form.service.FormDomainService;
 import com.zyc.form.service.FormService;
 import com.zyc.form.serviceassist.FormServiceAssistor;
@@ -72,6 +77,17 @@ public class FormServiceAssistorImpl implements FormServiceAssistor {
 		dataSource.setRows(result.getRows());
 		dataSource.setTotal(result.getTotal());
 		return dataSource;
+	}
+
+	@Override
+	public List<EntryBean> formAreas(String formid, EmptyNodeType empty) {
+		Form form = this.formService.load(formid);
+		FormType formtype = form == null ? null : StringUtils.toEnumIgnoreCase(FormType.class, form.getFormtype());
+		List<EntryBean> areas = FormArea.toList(formtype);
+		if(empty != null) {
+			areas.add(new EntryBean(empty.getValue(), empty.getText()));
+		}
+		return areas;
 	}
 
 }

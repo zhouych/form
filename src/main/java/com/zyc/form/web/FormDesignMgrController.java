@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.zyc.baselibs.commons.StringUtils;
 import com.zyc.baselibs.data.EmptyNodeType;
+import com.zyc.form.service.FormService;
 import com.zyc.form.serviceassist.FieldServiceAssistor;
 import com.zyc.form.serviceassist.FormServiceAssistor;
 
@@ -16,13 +17,16 @@ import com.zyc.form.serviceassist.FormServiceAssistor;
 public class FormDesignMgrController {
 
 	private static final String commonPath = "/mgr/form/design";
+
+	@Autowired
+	private FormService formService;
 	
 	@Autowired
 	private FormServiceAssistor formServiceAssistor;
 	
 	@Autowired
 	private FieldServiceAssistor fieldServiceAssistor;
-
+	
     @RequestMapping(value = commonPath, method = RequestMethod.GET)
 	public String index(Model model) throws Exception {
     	this.handleIndex(model, null);
@@ -40,6 +44,8 @@ public class FormDesignMgrController {
     	model.addAttribute("currentFormid", hasFormid ? formid : "");
     	model.addAttribute("formTree", this.formServiceAssistor.composeFormTree(EmptyNodeType.OPTIONAL));
     	model.addAttribute("areaFieldTree", hasFormid ? this.fieldServiceAssistor.composeAreaFieldTree(formid, null) : null);
+    	model.addAttribute("areas", this.formServiceAssistor.formAreas(formid, EmptyNodeType.OPTIONAL));
+    	model.addAttribute("emptyNodeType", this.formService.enumToMap(EmptyNodeType.class));
     }
 
     @RequestMapping(value = commonPath + "/spreadtest", method = RequestMethod.GET)

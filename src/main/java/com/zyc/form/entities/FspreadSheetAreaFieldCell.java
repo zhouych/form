@@ -8,13 +8,13 @@ import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.BaseEntity;
 
 @DatabaseTable(name = "spreadsheetareafieldcells")
-public class SpreadSheetAreaFieldCell extends BaseEntity implements java.io.Serializable {
+public class FspreadSheetAreaFieldCell extends BaseEntity implements java.io.Serializable {
 
 	private static final long serialVersionUID = -7940023106871703835L;
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
-	private String spreadsheetareaid;
+	private String fspreadsheetareaid;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.INTEGER)
@@ -30,12 +30,12 @@ public class SpreadSheetAreaFieldCell extends BaseEntity implements java.io.Seri
 	@FieldRule(required = true, externalUneditable = false)
 	private String field;
 
-	public String getSpreadsheetareaid() {
-		return spreadsheetareaid;
+	public String getFspreadsheetareaid() {
+		return fspreadsheetareaid;
 	}
 
-	public void setSpreadsheetareaid(String spreadsheetareaid) {
-		this.spreadsheetareaid = spreadsheetareaid;
+	public void setFspreadsheetareaid(String fspreadsheetareaid) {
+		this.fspreadsheetareaid = fspreadsheetareaid;
 	}
 
 	public Integer getRow() {

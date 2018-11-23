@@ -4,17 +4,24 @@ import java.sql.JDBCType;
 
 import com.zyc.baselibs.annotation.DatabaseColumn;
 import com.zyc.baselibs.annotation.DatabaseTable;
+import com.zyc.baselibs.annotation.EnumMapping;
 import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.BaseEntity;
+import com.zyc.form.data.FormArea;
 
 @DatabaseTable(name = "spreadsheetareas")
-public class SpreadSheetArea extends BaseEntity implements java.io.Serializable {
+public class FspreadSheetArea extends BaseEntity implements java.io.Serializable {
 
 	private static final long serialVersionUID = -7940023106871703835L;
 
 	@FieldRule(required = true, externalUneditable = true)
 	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 36)
-	private String spreadsheetid;
+	private String fspreadsheetid;
+
+	@FieldRule(required = true, externalUneditable = true)
+	@EnumMapping(enumClazz = FormArea.class)
+	@DatabaseColumn(jdbcType = JDBCType.VARCHAR, jdbcTypeVarcharLength = 16)
+	private String formarea;
 
 	@FieldRule(required = true, externalUneditable = false)
 	@DatabaseColumn(jdbcType = JDBCType.INTEGER)
@@ -32,12 +39,24 @@ public class SpreadSheetArea extends BaseEntity implements java.io.Serializable 
 	@DatabaseColumn(jdbcType = JDBCType.INTEGER)
 	private Integer endcol;
 
-	public String getSpreadsheetid() {
-		return spreadsheetid;
+	@FieldRule(required = true, externalUneditable = false)
+	@DatabaseColumn(jdbcType = JDBCType.INTEGER)
+	private Integer rowmax;
+
+	public String getFspreadsheetid() {
+		return fspreadsheetid;
 	}
 
-	public void setSpreadsheetid(String spreadsheetid) {
-		this.spreadsheetid = spreadsheetid;
+	public void setFspreadsheetid(String fspreadsheetid) {
+		this.fspreadsheetid = fspreadsheetid;
+	}
+
+	public String getFormarea() {
+		return formarea;
+	}
+
+	public void setFormarea(String formarea) {
+		this.formarea = formarea;
 	}
 
 	public Integer getStartrow() {
@@ -70,5 +89,13 @@ public class SpreadSheetArea extends BaseEntity implements java.io.Serializable 
 
 	public void setEndcol(Integer endcol) {
 		this.endcol = endcol;
+	}
+
+	public Integer getRowmax() {
+		return rowmax;
+	}
+
+	public void setRowmax(Integer rowmax) {
+		this.rowmax = rowmax;
 	}
 }

@@ -8,7 +8,7 @@ import com.zyc.baselibs.annotation.FieldRule;
 import com.zyc.baselibs.entities.DescriptionBaseEntity;
 
 @DatabaseTable(name = "spreads")
-public class Spread extends DescriptionBaseEntity implements java.io.Serializable {
+public class Fspread extends DescriptionBaseEntity implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1752297332060772330L;
 
@@ -49,7 +49,7 @@ public class Spread extends DescriptionBaseEntity implements java.io.Serializabl
 	}
 	
 	@Override
-	public Spread clean() {
+	public Fspread clean() {
 		super.clean();
 		this.formid = null;
 		this.json = null;

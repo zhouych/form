@@ -47,6 +47,11 @@ public class FormServiceImpl extends AbstractSelectByPageService implements Form
 	
 	@Autowired
 	private ServiceCentral central;
+
+	@Override
+	public Form load(String entityId) {
+		return StringUtils.isBlank(entityId) ? null : this.formMapper.load(entityId, Form.class);
+	}
 	
 	@Override
 	public List<FormVO> selectAll() {

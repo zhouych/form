@@ -10,6 +10,12 @@
 	cursor: pointer; 
 }
 
+.nowrap {
+	white-space: nowrap; 
+	overflow: hidden; 
+	text-overflow: ellipsis;
+}
+
 .tooltip-inner {
 	max-width: 500px;
 	color: #000000;
@@ -43,6 +49,22 @@
 .label-tag[href]:hover,
 .label-tag[href]:focus {
   	background-color: #74a0dc;
+}
+
+.label-link {
+	float: right;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-decoration: underline;
+	color: #5397e1;
+}
+
+.label-link:hover,
+.label-link:focus {
+	text-decoration: none;
+  	background-color: #5397e1;
+  	color: #ffffff;
+  	border-radius: 5px;
 }
 
 .label-none {

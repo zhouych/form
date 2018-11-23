@@ -49,9 +49,17 @@ public class FieldServiceAssistorImpl implements FieldServiceAssistor {
 		for (EntryBean area : FormArea.toList(formtype)) {
 			areaNode = new TreeViewNode();
 			areaNode.setText(area.label());
+			areaNode.setTooltip(area.label());
 			areaNode.getAttrs().put("value", area.getValue());
 			areaNode.getAttrs().put("text", area.getText());
 			areaNode.getAttrs().put("nodeType", FieldTreeNodeType.AREA.getValue());
+			if(areaNode.getState() == null) {
+				areaNode.setState(new TreeViewNodeState());
+				areaNode.getState().setChecked(false);
+				areaNode.getState().setDisabled(false);
+				areaNode.getState().setExpanded(true);
+				areaNode.getState().setSelected(false);
+			}
 			nodes.add(areaNode);
 		}
 
@@ -76,6 +84,7 @@ public class FieldServiceAssistorImpl implements FieldServiceAssistor {
 			if(areaNode != null) {
 				TreeViewNode fieldNode = new TreeViewNode();
 				fieldNode.setText(fieldvo.label());
+				fieldNode.setTooltip(fieldvo.label());
 				//通过反射将字段（fieldvo）的所有属性值传给字段节点（fieldNode）
 				ReflectUtils.scanFields(FormFieldVO.class, new Visitor<Field, Boolean>() {
 					public Boolean visit(Field field) {
@@ -84,10 +93,18 @@ public class FieldServiceAssistorImpl implements FieldServiceAssistor {
 						return false;
 					}
 				}, false, ReflectUtils.MODIFIER_STATIC$FINAL);
+				if(fieldNode.getState() == null) {
+					fieldNode.setState(new TreeViewNodeState());
+					fieldNode.getState().setChecked(false);
+					fieldNode.getState().setDisabled(false);
+					fieldNode.getState().setExpanded(true);
+					fieldNode.getState().setSelected(false);
+				}
 				fieldNode.getAttrs().put("nodeType", FieldTreeNodeType.FIELD.getValue());
 				
 				if(areaNode.getState() == null) {
-					areaNode.setState(new TreeViewNodeState());	
+					areaNode.setState(new TreeViewNodeState());
+					areaNode.getState().setExpanded(true);
 				}
 				
 				if(areaNode.getNodes() == null) {
