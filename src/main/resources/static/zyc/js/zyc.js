@@ -154,6 +154,20 @@
     	},
     	getTreeRelationships: function() {
     		return _treeRelationships || (_treeRelationships = _syncAjaxGet('/api/tree/relationships'));
+    	},
+    	refjs: function(url) {
+    		if(typeof url === 'string' && url) {
+        		var script = document.createElement('script'); 
+        		script.setAttribute('type', 'text/javascript'); 
+        		script.setAttribute('src', url);
+        		
+        		var heads = document.getElementsByTagName('head');
+        		if(heads.length) {
+        			heads[0].appendChild(script);	
+        		} else {
+        			document.documentElement.appendChild(script);
+        		}
+    		}
     	}
     };
 	
